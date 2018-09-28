@@ -2,7 +2,7 @@ package tests;
 
 import java.io.*;
 import java.net.*;
-
+//xyk
 /**
  * FileName: SimpleSocketClient
  * Author:   DannyBlue
@@ -13,7 +13,7 @@ import java.net.*;
  * 作者姓名           修改时间           版本号              描述
  */
 public class SimpleSocketClient {
-
+    byte a = 1;
     public static void main(String[] args) {
 
         Socket socket = null;
