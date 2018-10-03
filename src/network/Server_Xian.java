@@ -5,14 +5,15 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.io.InputStream;
 import java.io.OutputStream;
-
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 public class Server_Xian {
     static ServerSocket serverSocket = null;
     static Socket socket = null;
     static OutputStream os = null;
     static InputStream is = null;
     static InetAddress ia=null;
-
     public static void main(String[] args) {
         //监听端口号
         int port = 8087;
@@ -65,7 +66,7 @@ public class Server_Xian {
         }
     }
 
-    //发送数据处理
+    //数据发送处理
     private static byte[] send_data(String[] lip_split){
         byte lipp[] = new byte[17];
         //头文件，两个字节
@@ -104,7 +105,7 @@ public class Server_Xian {
         lipp[16] =(byte) (crc_2&0xff);
         return lipp;
     }
-
+    //数据接收解析，数组
     private static void dnp(int n) {
         //接收数据处理
         int i;
@@ -121,14 +122,14 @@ public class Server_Xian {
             for(i=0;i<(n-11);i++){
                 new_data[i]=rev_data[i+9];
             }
-            getList(new_data,(n-11));
+            getList(new_data,(n-11),source_id);
         }
         else {
             System.out.println("receive data error!!!");
         }
     }
-
-    private static void getList(byte[] list,int n) {
+    //解析有效数据方法
+    private static void getList(byte[] list,int n,String Sourse_id) {
         if (n%4==0){
             int i = 0;
             int[] da = new int[(n/4)];
@@ -139,12 +140,39 @@ public class Server_Xian {
                 // System.out.println("jh");
             }
 
+            try {// 准备文件666.txt其中的内容是空的
+                File f1 = new File("D:/"+Sourse_id+".txt");
+                if (f1.exists()==false){
+                    f1.getParentFile().mkdirs();
+                }
+// 准备长度是2的字节数组，用88,89初始化，其对应的字符分别是X,Y
+
+// 创建基于文件的输出流
+                FileOutputStream fos = new FileOutputStream(f1);
+// 把数据写入到输出流
+                String file_data="";
+                int m=0;
+                for (m=0;m<(n/4);m++){
+                    file_data =da[m]+" ";
+                    System.out.print(file_data);
+                    fos.write(file_data.getBytes());
+                }
+
+
+
+
+// 关闭输出流
+                fos.close();
+                System.out.println("输入完成");} catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         else {
             System.out.println("heavy data error!!!!");
         }
-    }
 
+    }
+    //crc校验
     private static Integer getCrc(byte[] data) {
         int high;
         int flag;
