@@ -14,9 +14,9 @@ public class Server_Xian {
     static OutputStream os = null;
     static InputStream is = null;
     static InetAddress ia=null;
+    //主函数
     public static void main(String[] args) {
-        //监听端口号
-        int port = 8087;
+        int port = 8087;//监听端口号
         //String hello = "Hello,ImServer";
         try {
             byte lipp[] = new byte[16];
@@ -24,30 +24,27 @@ public class Server_Xian {
             //获取本机IP地址
             ia=ia.getLocalHost();
             String lip=ia.getHostAddress();
-            String[] lip_split=lip.split("\\.");//去掉间隔“.”
+            String[] lip_split=lip.split("\\.");//去掉IP地址的间隔“.”
             for(String c:lip_split){
-                System.out.print(c+" ");  //输出ip：169 254 117 061
+                System.out.print(c+" ");  //输出以空格间隔的ip
             }
-            System.out.println();
+            System.out.println();//隔一行
             //建立连接
             serverSocket = new ServerSocket(port);
             socket = serverSocket.accept();
 
+            //发送数据
             os = socket.getOutputStream();//得到输出流
-            System.out.println(("connect successful!"));
-            lipp=send_data(lip_split);
-            //String s=new String(lipp);
-
-            //os.write(s.getBytes());
-            String info="用户名：Tom,用户密码：123456";
+            System.out.println(("connect successful!"));//输出“connect successful!”
+            lipp=sendData(lip_split);//送到方法处理发送的数据
             os.write(lipp);
-
+            //接收数据
             is = socket.getInputStream();//得到输入流
             byte[] b = new byte[1024];//定义字符串b
             int n = is.read(b);//计算读取到的b的长=度;
-            System.out.println("客户端发送的内容为" +new String(b,0,n));
+            System.out.println("客户端发送的内容为" +new String(b,0,n));//显示
+            dnp(b,n);//数据解析
             //当接受完收据后断开连接（无）
-            dnp(23);//对接收数据处理
             os.close();
             is.close();
             socket.close();
@@ -65,91 +62,90 @@ public class Server_Xian {
             }
         }
     }
-
-    //数据发送处理
-    private static byte[] send_data(String[] lip_split){
-        byte lipp[] = new byte[17];
-        //头文件，两个字节
+    //方法，数据发送处理
+    private static byte[] sendData(String[] lip_split){
+        byte lipp[] = new byte[17];//定义输出数组的长度
+        //定义头文件
         byte head_1 = 0x05;
         byte head_2 = 0x64;
-        byte con_num1 = 0x01;
-        String des_add = "10.1";
-        String sou_add = "20.1";
-        String[] des_add_split=des_add.split("\\.");//去掉间隔“.”
-        String[] sou_add_split=sou_add.split("\\.");//去掉间隔“.”
-
+        byte con_num1 = 0x01;//定义控制字
+        String des_add = "10.1";//定义目的地址
+        String sou_add = "20.1";//定义源地址
+        String[] des_add_split=des_add.split("\\.");//去掉目的地址的间隔“.”
+        String[] sou_add_split=sou_add.split("\\.");//去掉源地址的间隔“.”
+        //添加头文件
         lipp[0] =head_1;
         lipp[1] =head_2;
-        char lengh=17;
-        lipp[2] =  (byte) ((lengh & 0xFF00) >> 8);
-        lipp[3] = (byte) (lengh & 0xFF);
+        char lengh=17;//定义长度
+
+        lipp[2] =  (byte) ((lengh & 0xFF00) >> 8);//长度的高位字节
+        lipp[3] = (byte) (lengh & 0xFF);//长度的低位字节
+
         lipp[4] =con_num1;//控制字
+
         lipp[5] =(byte)Short.parseShort(des_add_split[0]);//目的地址
         lipp[6] =(byte)Short.parseShort(des_add_split[1]);
 
         lipp[7] =(byte)Short.parseShort(sou_add_split[0]);//源地址
         lipp[8] =(byte)Short.parseShort(sou_add_split[1]);
-        lipp[11] =(byte)Short.parseShort(lip_split[0]);//发送IP地址
+        //发送IP地址数据
+        lipp[11] =(byte)Short.parseShort(lip_split[0]);
         lipp[12] =(byte)Short.parseShort(lip_split[1]);
         lipp[13] =(byte)Short.parseShort(lip_split[2]);
         lipp[14] =(byte)Short.parseShort(lip_split[3]);
         //计算第一个crc值
         int crc_1 =getCrc(lipp);
-        System.out.println("crc校验1： "+crc_1);
-        lipp[9] =(byte) ((crc_1>>8)&0xff);
-        lipp[10] =(byte) (crc_1&0xff);
+        System.out.println("crc校验1： "+crc_1);//显示crc值
+        lipp[9] =(byte) ((crc_1>>8)&0xff);//crc处理高位
+        lipp[10] =(byte) (crc_1&0xff);//crc处理低位
         //计算第二个crc值
         int crc_2 =getCrc(lipp);
-        System.out.println("crc校验2： "+crc_2);
-        lipp[15] =(byte) ((crc_2>>8)&0xff);
-        lipp[16] =(byte) (crc_2&0xff);
-        return lipp;
+        System.out.println("crc校验2： "+crc_2);//显示crc值
+        lipp[15] =(byte) ((crc_2>>8)&0xff);//crc处理高位
+        lipp[16] =(byte) (crc_2&0xff);//crc处理低位
+        return lipp;//返回发送的数组
     }
-    //数据接收解析，数组
-    private static void dnp(int n) {
+    //方法，数据接收解析，数组
+    private static void dnp(byte[] rev_data,int n) {  //rev_data为接收的数组，n为该数组的长度
+    //private static void dnp(int n) {
         //接收数据处理
         int i;
-        byte[] rev_data ={0x05,0x64,0x00,0x30,0x01,0x12,0x02,0x33,0x21,
-                0x01,0x02,0x03,0x04,
-                0x05,0x06,0x07,0x08,
-                0x10,0x20,0x30,0x40,
-                0x56,0x70}; //23
-        if((rev_data[0]==0x05)&&(rev_data[1]==0x64))
-        {
+        if((rev_data[0]==0x05)&&(rev_data[1]==0x64)){    //判断头文件，报错
+
             String source_id = rev_data[7]+"."+rev_data[8];//输出源地址
             System.out.println("源地址为："+source_id);
+            //只获取有效的重量数据
             byte[] new_data = new byte[n-11];
             for(i=0;i<(n-11);i++){
-                new_data[i]=rev_data[i+9];
+                new_data[i]=rev_data[i+9];//重新定义一个新的只含有效数据的数组
             }
-            getList(new_data,(n-11),source_id);
+            getList(new_data,(n-11),source_id);//对新的数组进行处理
         }
         else {
-            System.out.println("receive data error!!!");
+            System.out.println("receive data error!!!");//当头文件不是0x0564时报错
         }
     }
-    //解析有效数据方法
+    //方法，解析有效数据方法
     private static void getList(byte[] list,int n,String Sourse_id) {
         if (n%4==0){
             int i = 0;
-            int[] da = new int[(n/4)];
+            int[] da = new int[(n/4)];//每隔四位重新新建一个数组
             for (int j=0;j<(n/4);j++) {
+                //将四个数据重新组合成一个数据
                 da[j] = (int)(list[(4*i)]*1)+(int)(list[(4*i)+1]*2)+(int)(list[(4*i)+2]*4)+(int)(list[(4*i)+3]*8);
                 i++;
-                System.out.println(da[j]);
+                System.out.println(da[j]);//显示这个数据
                 // System.out.println("jh");
             }
 
             try {// 准备文件666.txt其中的内容是空的
-                File f1 = new File("D:/"+Sourse_id+".txt");
+                File f1 = new File("D:/"+Sourse_id+".txt");//在d盘新建一个以源地址命名的txt文件
                 if (f1.exists()==false){
                     f1.getParentFile().mkdirs();
                 }
-// 准备长度是2的字节数组，用88,89初始化，其对应的字符分别是X,Y
-
-// 创建基于文件的输出流
+                // 创建基于文件的输出流
                 FileOutputStream fos = new FileOutputStream(f1);
-// 把数据写入到输出流
+                // 把数据写入到输出流
                 String file_data="";
                 int m=0;
                 for (m=0;m<(n/4);m++){
@@ -157,14 +153,12 @@ public class Server_Xian {
                     System.out.print(file_data);
                     fos.write(file_data.getBytes());
                 }
-
-
-
-
-// 关闭输出流
+                // 关闭输出流
                 fos.close();
                 System.out.println("输入完成");} catch (IOException e) {
                 e.printStackTrace();
+            }catch (Exception e){
+                System.out.println("creat file error!");
             }
         }
         else {
@@ -172,22 +166,17 @@ public class Server_Xian {
         }
 
     }
-    //crc校验
+    //方法，crc校验 16位
     private static Integer getCrc(byte[] data) {
         int high;
         int flag;
-        // 16位寄存器，所有数位均为1
-        Integer wcrc = 0xffff;
+        Integer wcrc = 0xffff; // 16位寄存器，所有数位均为1
         for (int i = 0; i < data.length; i++) {
-            // 16 位寄存器的高位字节
-            high = wcrc >> 8;
-            // 取被校验串的一个字节与 16 位寄存器的高位字节进行“异或”运算
-            wcrc = high ^ data[i];
-
+            high = wcrc >> 8; // 16 位寄存器的高位字节
+            wcrc = high ^ data[i];// 取被校验串的一个字节与 16 位寄存器的高位字节进行“异或”运算
             for (int j = 0; j < 8; j++) {
                 flag = wcrc & 0x0001;
-                // 把这个 16 寄存器向右移一位
-                wcrc = wcrc >> 1;
+                wcrc = wcrc >> 1;// 把这个 16 寄存器向右移一位
                 // 若向右(标记位)移出的数位是 1,则生成多项式 1010 0000 0000 0001 和这个寄存器进行“异或”运算
                 if (flag == 1)
                     wcrc ^= 0xa001;
