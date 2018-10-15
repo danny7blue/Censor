@@ -19,7 +19,7 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
-public class JTreeRightClick extends JFrame implements MouseListener,ActionListener {
+public class JTreeRightClickDemo1 extends JFrame implements MouseListener,ActionListener {
 
     private static final long serialVersionUID = 1L;
     JTree tree;
@@ -28,7 +28,7 @@ public class JTreeRightClick extends JFrame implements MouseListener,ActionListe
     JMenuItem delItem;
     JMenuItem editItem;
 
-    public JTreeRightClick() {
+    public JTreeRightClickDemo1() {
         tree = new JTree();
         tree.setEditable(true);
         tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
@@ -97,7 +97,7 @@ public class JTreeRightClick extends JFrame implements MouseListener,ActionListe
     }
 
     public static void main(String[] args) {
-        JTreeRightClick frame = new JTreeRightClick();
+        JTreeRightClickDemo1 frame = new JTreeRightClickDemo1();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
     }
