@@ -8,6 +8,8 @@ import java.io.OutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.sql.*;
+
 public class Server_Xian {
     static ServerSocket serverSocket = null;
     static Socket socket = null;
@@ -107,10 +109,10 @@ public class Server_Xian {
     }
     //方法，数据接收解析，数组
     private static void dnp(byte[] rev_data,int n) {  //rev_data为接收的数组，n为该数组的长度
-    //private static void dnp(int n) {
+        //private static void dnp(int n) {
         //接收数据处理
         int i;
-        if((rev_data[0]==0x05)&&(rev_data[1]==0x64)){    //判断头文件，报错
+      //  if((rev_data[0]==0x05)&&(rev_data[1]==0x64)){    //判断头文件，报错
 
             String source_id = rev_data[7]+"."+rev_data[8];//输出源地址
             System.out.println("源地址为："+source_id);
@@ -120,50 +122,43 @@ public class Server_Xian {
                 new_data[i]=rev_data[i+9];//重新定义一个新的只含有效数据的数组
             }
             getList(new_data,(n-11),source_id);//对新的数组进行处理
-        }
-        else {
-            System.out.println("receive data error!!!");//当头文件不是0x0564时报错
-        }
+       // }
+      //  else {
+        //    System.out.println("receive data error!!!");//当头文件不是0x0564时报错
+      //  }
     }
     //方法，解析有效数据方法
     private static void getList(byte[] list,int n,String Sourse_id) {
+        String[] strdata=new String[1000];
         if (n%4==0){
             int i = 0;
             int[] da = new int[(n/4)];//每隔四位重新新建一个数组
             for (int j=0;j<(n/4);j++) {
                 //将四个数据重新组合成一个数据
-                da[j] = (int)(list[(4*i)]*1)+(int)(list[(4*i)+1]*2)+(int)(list[(4*i)+2]*4)+(int)(list[(4*i)+3]*8);
+                da[j] = (int) (list[(4*i)]*1)+(int)(list[(4*i)+1]*2)+(int)(list[(4*i)+2]*4)+(int)(list[(4*i)+3]*8);
                 i++;
+
+                strdata[2*j]="测量点"+(j+1);
+                strdata[(2*j+1)] =String.valueOf(da[j]);
                 System.out.println(da[j]);//显示这个数据
+
                 // System.out.println("jh");
             }
-
-            try {// 准备文件666.txt其中的内容是空的
-                File f1 = new File("D:/"+Sourse_id+".txt");//在d盘新建一个以源地址命名的txt文件
-                if (f1.exists()==false){
-                    f1.getParentFile().mkdirs();
-                }
-                // 创建基于文件的输出流
-                FileOutputStream fos = new FileOutputStream(f1);
-                // 把数据写入到输出流
-                String file_data="";
-                int m=0;
-                for (m=0;m<(n/4);m++){
-                    file_data =da[m]+" ";
-                    System.out.print(file_data);
-                    fos.write(file_data.getBytes());
-                }
-                // 关闭输出流
-                fos.close();
-                System.out.println("输入完成");} catch (IOException e) {
+            System.out.println(Sourse_id);
+            for(int p=0;p<strdata.length;p++)
+            {
+                System.out.println(strdata[p]);
+            }
+            try {
+                insert(strdata);
+            } catch (SQLException e) {
                 e.printStackTrace();
-            }catch (Exception e){
-                System.out.println("creat file error!");
             }
         }
         else {
             System.out.println("heavy data error!!!!");
         }
+
 
     }
     //方法，crc校验 16位
@@ -185,6 +180,67 @@ public class Server_Xian {
         return wcrc;//16位二进制
         // return Integer.toHexString(wcrc); //参数所表示的值以十六进制
     }
+    public static Connection getConn() {
+        String user = "root";
+        String password = "123456";
+        String url = "jdbc:mysql://localhost:3306/StationDatabase?useUnicode=true&characterEncoding=utf-8&useSSL=false";
+        String driver = "com.mysql.cj.jdbc.Driver";
+        Connection conn=null;
+        try {
+            //加载驱动
+            Class.forName(driver);
+            //创建连接
+            conn = DriverManager.getConnection(url, user, password);
 
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return conn;
+    }
+
+    /**功能介绍：与数据采集进行信息交互，主要将前端采集过来的数据，存放在数据库中。
+     * 实现插入数据的操作方法。输入参数为一个数组。
+     *  如果传过来的数组数据不是按照测试点名称和测试点数据值，那么如何处理这种异常？
+     *  这个异常处理机制还没有解决。思考ing中。
+     */
+
+    public static int insert(String [] temp ) throws SQLException {
+        Connection conn = getConn();
+        int num=1;
+        PreparedStatement pstmt;
+        Statement stmt = conn.createStatement();
+        try {
+            //将数据进行分割处理，将测试点名称放在数组temp01，将对应的测量数据值放在数组temp02中
+            String  temp01[],temp02[];
+            int size01 =temp.length%2==0?(temp.length/2):(temp.length/2+1);
+            int size02 =temp.length-size01;
+            temp01 =new String[size01];
+            temp02 =new String[size02];
+            for(int i =0,j=0,k=0;i<temp.length;i++){
+                if(i%2==0){
+                    temp01[j++]=temp[i];
+                }else {
+                    temp02[k++]=temp[i];
+                }
+            }
+            //分别将temp01的测量点名称和temp02的测量数据值插入数据库中对应的测量数据表中。
+            for (int m=0,n=0; m<temp01.length|n<temp02.length;m++,n++) {
+                String sql = "INSERT INTO 测量数据表(测量点名称,测量数据值) VALUES ('"+temp01[m]+"','"+temp02[n]+"')";
+                num=stmt.executeUpdate(sql);
+                System.out.println("插入数据成功！");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return num;
+    }
+
+    /**功能介绍如下：实现监测点信息表，用户实现增加，删除，修改的功能。
+     * 主要构建三个方法，分别为用户向监测点信息表中添加相关信息，删除相关信息，修改相关信息。
+     * @param MonitorId,MonitorName,MonitorPosition;
+     * @return
+     * @throws SQLException
+     */
 }
-
