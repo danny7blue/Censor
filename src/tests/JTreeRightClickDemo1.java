@@ -3,6 +3,7 @@ package tests;
 /**
  * Created by 305027244 on 2018/10/15.
  */
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -19,7 +20,7 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
-public class JTreeRightClickDemo1 extends JFrame implements MouseListener,ActionListener {
+public class JTreeRightClickDemo1 extends JFrame implements MouseListener, ActionListener {
 
     private static final long serialVersionUID = 1L;
     JTree tree;

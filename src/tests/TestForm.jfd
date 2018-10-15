@@ -1,0 +1,64 @@
+JFDML JFormDesigner: "6.0.4.0.167" Java: "1.8.0_121" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormWindow( "javax.swing.JFrame", new FormLayoutManager( class java.awt.GridBagLayout ) {
+			"$columnSpecs": "0, center:0, center:0, center:0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0"
+			"$rowSpecs": "0, 0, 0, 0, 0, 0, 0, 0, 0, 0"
+			"$hGap": 5
+			"$vGap": 5
+			"$alignLeft": true
+			"$alignTop": true
+		} ) {
+			name: "mainFrame"
+			add( new FormComponent( "javax.swing.JSeparator" ) {
+				name: "verticalSeparator"
+				"orientation": 1
+			}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
+				"gridx": 5
+				"gridheight": 10
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "dateSelector"
+				"text": "日历"
+				"font": new java.awt.Font( "Microsoft YaHei UI", 2, 18 )
+			}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
+				"gridx": 1
+				"gridy": 1
+				"gridwidth": 3
+				"hAlign": 0
+			} )
+			add( new FormComponent( "javax.swing.JSeparator" ) {
+				name: "horizontalSeparator"
+			}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
+				"gridy": 3
+				"gridwidth": 20
+			} )
+			add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+				name: "jTreeScrollPane"
+				add( new FormComponent( "javax.swing.JTree" ) {
+					name: "inspectorSelectorTree"
+				} )
+			}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
+				"gridy": 3
+				"gridwidth": 5
+				"gridheight": 7
+			} )
+			add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+				name: "jTableScrollPane"
+				add( new FormComponent( "javax.swing.JTable" ) {
+					name: "dataTable"
+				} )
+			}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
+				"gridx": 5
+				"gridy": 3
+				"gridwidth": 15
+				"gridheight": 7
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 500, 280 )
+		} )
+	}
+}
