@@ -1,8 +1,10 @@
-package tests;
+package tests.JTreeFromDatabaeDemo;
 
 /**
  * Created by 305027244 on 2018/10/15.
  */
+
+import tests.DatabaseCon;
 
 import java.sql.Connection;
 import java.sql.*;

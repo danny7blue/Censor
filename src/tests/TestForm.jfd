@@ -5,29 +5,55 @@ new FormModel {
 	root: new FormRoot {
 		add( new FormWindow( "javax.swing.JFrame", new FormLayoutManager( class java.awt.GridBagLayout ) {
 			"$columnSpecs": "0, center:0, center:0, center:0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0"
-			"$rowSpecs": "0, 0, 0, 0, 0, 0, 0, 0, 0, 0"
+			"$rowSpecs": "0, center:0, 0, 0, 0, 0, 0, 0, 0, 0"
 			"$hGap": 5
 			"$vGap": 5
 			"$alignLeft": true
 			"$alignTop": true
 		} ) {
 			name: "mainFrame"
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.GridBagLayout ) {
+				"$columnSpecs": "0, 0, 0, 0, 0, 0"
+				"$rowSpecs": "0, 0, 0"
+				"$hGap": 5
+				"$vGap": 5
+				"$alignLeft": true
+				"$alignTop": true
+			} ) {
+				name: "datePanel"
+				"preferredSize": new java.awt.Dimension( 161, 67 )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "selectDateLabel"
+					"text": "请选择日期:"
+				}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
+					"gridx": 1
+					"gridy": 1
+					"vAlign": 0
+					"hAlign": 0
+				} )
+				add( new FormComponent( "javax.swing.JTextField" ) {
+					name: "dateTextField"
+					"preferredSize": new java.awt.Dimension( 75, 25 )
+					"text": "date"
+				}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
+					"gridx": 2
+					"gridy": 1
+					"hAlign": 0
+				} )
+			}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
+				"gridwidth": 5
+				"gridheight": 3
+				"weightx": 5.0
+				"weighty": 3.0
+				"hAlign": 0
+				"vAlign": 0
+			} )
 			add( new FormComponent( "javax.swing.JSeparator" ) {
 				name: "verticalSeparator"
 				"orientation": 1
 			}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
 				"gridx": 5
 				"gridheight": 10
-			} )
-			add( new FormComponent( "javax.swing.JLabel" ) {
-				name: "dateSelector"
-				"text": "日历"
-				"font": new java.awt.Font( "Microsoft YaHei UI", 2, 18 )
-			}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
-				"gridx": 1
-				"gridy": 1
-				"gridwidth": 3
-				"hAlign": 0
 			} )
 			add( new FormComponent( "javax.swing.JSeparator" ) {
 				name: "horizontalSeparator"
@@ -49,6 +75,28 @@ new FormModel {
 				name: "jTableScrollPane"
 				add( new FormComponent( "javax.swing.JTable" ) {
 					name: "dataTable"
+					"model": new com.jformdesigner.model.SwingTableModel( new java.util.Vector {
+						add( new java.util.Vector {
+							add( null )
+							add( null )
+						} )
+						add( new java.util.Vector {
+							add( null )
+							add( null )
+						} )
+					}, new java.util.Vector {
+						add( null )
+						add( null )
+					}, new java.util.Vector {
+						add( null )
+						add( null )
+					}, new java.util.Vector {
+						add( null )
+						add( null )
+					}, new java.util.Vector {
+						add( null )
+						add( null )
+					} )
 				} )
 			}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
 				"gridx": 5
@@ -59,6 +107,11 @@ new FormModel {
 		}, new FormLayoutConstraints( null ) {
 			"location": new java.awt.Point( 0, 0 )
 			"size": new java.awt.Dimension( 500, 280 )
+		} )
+		add( new FormContainer( "javax.swing.JPopupMenu", new FormLayoutManager( class javax.swing.JPopupMenu ) ) {
+			name: "popupMenu1"
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 50, 400 )
 		} )
 	}
 }

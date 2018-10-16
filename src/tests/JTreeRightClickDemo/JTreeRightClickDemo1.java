@@ -1,4 +1,4 @@
-package tests;
+package tests.JTreeRightClickDemo;
 
 /**
  * Created by 305027244 on 2018/10/15.
