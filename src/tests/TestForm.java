@@ -4,7 +4,7 @@
 
 package tests;
 
-import ui.Chooser;
+import util.DateSelector;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -30,7 +30,7 @@ public class TestForm extends JPanel {
     private static Connection con = null;
     private static Statement stm = null;
     DefaultTableModel tableModel;		// 默认显示的表格
-    Chooser ser;
+    DateSelector ser;
 
     static {
         con = DatabaseCon.getConnection();
@@ -156,7 +156,7 @@ public class TestForm extends JPanel {
         String form=String.format("%tF",date);
         dateTextField = new JTextField(form);
         //获取日期控件工具类
-        ser = Chooser.getInstance();
+        ser = DateSelector.getInstance();
         //使用日期控件工具
         ser.register(dateTextField, inspectorSelectorTree);
         dateTextField.addActionListener(new ActionListener() {
