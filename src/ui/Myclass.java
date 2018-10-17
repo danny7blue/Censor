@@ -93,7 +93,7 @@ public class Myclass extends JFrame implements ActionListener {
         //获取日期控件工具类
         Chooser ser = Chooser.getInstance();
         //使用日期控件工具
-        ser.register(textField);
+        ser.register(textField, null);
 
         textField.setColumns(10);
         GroupLayout gl_contentPane = new GroupLayout(jp1);

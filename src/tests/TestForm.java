@@ -30,6 +30,7 @@ public class TestForm extends JPanel {
     private static Connection con = null;
     private static Statement stm = null;
     DefaultTableModel tableModel;		// 默认显示的表格
+    Chooser ser;
 
     static {
         con = DatabaseCon.getConnection();
@@ -42,7 +43,6 @@ public class TestForm extends JPanel {
 
     public TestForm() {
         initComponents();
-        setDateSelector();
         // 取得数据库的表的各行数据
         Vector rowData = getRows();
         // 取得数据库的表的表头数据
@@ -156,9 +156,15 @@ public class TestForm extends JPanel {
         String form=String.format("%tF",date);
         dateTextField = new JTextField(form);
         //获取日期控件工具类
-        Chooser ser = Chooser.getInstance();
+        ser = Chooser.getInstance();
         //使用日期控件工具
-        ser.register(dateTextField);
+        ser.register(dateTextField, inspectorSelectorTree);
+        dateTextField.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println(dateTextField.getText());
+            }
+        });
     }
 
     public final void init_tree() {
@@ -237,6 +243,10 @@ public class TestForm extends JPanel {
         return rightClickPopMenu;
     }
 
+    public JTextField getDateTextField(){
+        return dateTextField;
+    }
+
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
         // Generated using JFormDesigner Evaluation license - danny
@@ -244,13 +254,14 @@ public class TestForm extends JPanel {
         datePanel = new JPanel();
         selectDateLabel = new JLabel();
 //        dateTextField = new JTextField();
-        setDateSelector();
         verticalSeparator = new JSeparator();
         horizontalSeparator = new JSeparator();
         jTreeScrollPane = new JScrollPane();
         inspectorSelectorTree = new JTree();
         jTableScrollPane = new JScrollPane();
         dataTable = new JTable();
+        rightClickPopMenu = new JPopupMenu();
+        setDateSelector();
 
         //======== mainFrame ========
         {
@@ -265,7 +276,7 @@ public class TestForm extends JPanel {
             {
                 datePanel.setPreferredSize(new Dimension(161, 67));
 
-//                // JFormDesigner evaluation mark
+                // JFormDesigner evaluation mark
 //                datePanel.setBorder(new javax.swing.border.CompoundBorder(
 //                    new javax.swing.border.TitledBorder(new javax.swing.border.EmptyBorder(0, 0, 0, 0),
 //                        "JFormDesigner Evaluation", javax.swing.border.TitledBorder.CENTER,
@@ -281,13 +292,14 @@ public class TestForm extends JPanel {
                 //---- selectDateLabel ----
                 selectDateLabel.setText("\u8bf7\u9009\u62e9\u65e5\u671f:");
                 datePanel.add(selectDateLabel, new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0,
-                    GridBagConstraints.CENTER, GridBagConstraints.CENTER,
+                    GridBagConstraints.CENTER, GridBagConstraints.NONE,
                     new Insets(0, 0, 5, 5), 0, 0));
 
                 //---- dateTextField ----
                 dateTextField.setPreferredSize(new Dimension(75, 25));
+//                dateTextField.setText("date");
                 datePanel.add(dateTextField, new GridBagConstraints(2, 1, 1, 1, 0.0, 0.0,
-                    GridBagConstraints.CENTER, GridBagConstraints.CENTER,
+                    GridBagConstraints.CENTER, GridBagConstraints.VERTICAL,
                     new Insets(0, 0, 5, 5), 0, 0));
             }
             mainFrameContentPane.add(datePanel, new GridBagConstraints(0, 0, 5, 3, 5.0, 3.0,
@@ -324,6 +336,7 @@ public class TestForm extends JPanel {
                         null, null
                     }
                 ));
+                dataTable.setPreferredScrollableViewportSize(new Dimension(550, 400));
                 jTableScrollPane.setViewportView(dataTable);
             }
             mainFrameContentPane.add(jTableScrollPane, new GridBagConstraints(5, 3, 15, 7, 0.0, 0.0,
@@ -423,23 +436,28 @@ class TreeDeleteViewMenuEvent implements ActionListener {
 
 class TreePopMenuEvent implements MouseListener {
 
-    private TestForm adaptee;
+    private TestForm testForm;
 
-    public TreePopMenuEvent(TestForm adaptee) {
-        this.adaptee = adaptee;
+    public TreePopMenuEvent(TestForm testForm) {
+        this.testForm = testForm;
     }
 
     public void mouseClicked(MouseEvent e) {
     }
 
     public void mousePressed(MouseEvent e) {
-        TreePath path = adaptee.getTree().getPathForLocation(e.getX(), e.getY()); // 关键是这个方法的使用
+        TreePath path = testForm.getTree().getPathForLocation(e.getX(), e.getY()); // 关键是这个方法的使用
         if (path == null) {
             return;
         }
-        adaptee.getTree().setSelectionPath(path);
+        testForm.getTree().setSelectionPath(path);
+        //左键点击节点时查询数据库获得该节点数据并刷新右侧table
+        if (e.getButton() == 1) {
+            System.out.println(testForm.getTree().getLastSelectedPathComponent());
+            System.out.println(testForm.getDateTextField().getText());
+        }
         if (e.getButton() == 3) {
-            adaptee.getRightClickPopMenu().show(adaptee.getTree(), e.getX(), e.getY());
+            testForm.getRightClickPopMenu().show(testForm.getTree(), e.getX(), e.getY());
         }
     }
 

@@ -23,14 +23,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import javax.swing.BorderFactory;
-import javax.swing.JComponent;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.PopupFactory;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
 
@@ -51,6 +44,7 @@ public class Chooser extends JPanel{
     private FooterPanel footerPanel;
 
     private JComponent showDate;
+    private JTree tree;
     private boolean isShow = false;
     private static final String DEFAULTFORMAT = "yyyy-MM-dd";
     private static final String[] showTEXT = {"Sun","Mon","Tue","Wed","Thu","Fri","Sat"};
@@ -102,15 +96,16 @@ public class Chooser extends JPanel{
             }
         });
     }
-    public void register(final JComponent showComponent) {
+    public void register(JComponent showComponent, JTree tree) {
         this.showDate = showComponent;
+        this.tree = tree;
         showComponent.setRequestFocusEnabled(true);
         showComponent.addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent me) {
                 showComponent.requestFocusInWindow();
             }
         });
-        this.add(showComponent, BorderLayout.CENTER);
+//        this.add(showComponent, BorderLayout.CENTER);
         this.setPreferredSize(new Dimension(90, 25));
         this.setBorder(BorderFactory.createLineBorder(Color.GRAY));
         showComponent.addMouseListener(new MouseAdapter() {
@@ -172,14 +167,17 @@ public class Chooser extends JPanel{
         pop.show();
         isShow = true;
     }
-    // change text or label's content.
+    //修改日历显示textField的文字
     private void commit() {
-        if (showDate instanceof JTextField) {
-            ((JTextField) showDate).setText(sdf.format(calendar.getTime()));
-        }else if (showDate instanceof JLabel) {
-            ((JLabel) showDate).setText(sdf.format(calendar.getTime()));
+        if (this.showDate instanceof JTextField) {
+            ((JTextField)this.showDate).setText(sdf.format(calendar.getTime()));
+        }else if (this.showDate instanceof JLabel) {
+            ((JLabel) this.showDate).setText(sdf.format(calendar.getTime()));
         }
         hidePanel();
+        //查询数据库并刷新测量数据表
+        System.out.println(((JTextField)showDate).getText());
+        System.out.println(tree.getLastSelectedPathComponent());
     }
 
     // control panel

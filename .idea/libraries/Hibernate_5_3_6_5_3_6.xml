@@ -30,10 +30,12 @@
       <root url="jar://$PROJECT_DIR$/lib/jdbc/mysql-connector-java-8.0.12.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/jdbc/protobuf-java-2.6.0.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/jdbc/slf4j-api-1.6.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/datepicker.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>
       <root url="jar://$PROJECT_DIR$/lib/jdbc/jboss-common-jdbc-wrapper-src.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/datepicker.jar!/" />
     </SOURCES>
   </library>
 </component>

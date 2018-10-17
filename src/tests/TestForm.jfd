@@ -97,6 +97,7 @@ new FormModel {
 						add( null )
 						add( null )
 					} )
+					"preferredScrollableViewportSize": new java.awt.Dimension( 550, 400 )
 				} )
 			}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
 				"gridx": 5
@@ -106,10 +107,10 @@ new FormModel {
 			} )
 		}, new FormLayoutConstraints( null ) {
 			"location": new java.awt.Point( 0, 0 )
-			"size": new java.awt.Dimension( 500, 280 )
+			"size": new java.awt.Dimension( 575, 280 )
 		} )
 		add( new FormContainer( "javax.swing.JPopupMenu", new FormLayoutManager( class javax.swing.JPopupMenu ) ) {
-			name: "popupMenu1"
+			name: "rightClickPopMenu"
 		}, new FormLayoutConstraints( null ) {
 			"location": new java.awt.Point( 50, 400 )
 		} )
