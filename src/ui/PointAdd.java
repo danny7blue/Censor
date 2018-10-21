@@ -1,3 +1,5 @@
+package ui;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -5,7 +7,7 @@ import java.awt.event.ActionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
-public class TableAdd extends JDialog implements ActionListener {
+public class PointAdd extends JDialog implements ActionListener {
     JButton jb1,jb2;
     JLabel jl1,jl2,jl3;
     JTextField jtf1,jtf2,jtf3;
@@ -14,14 +16,14 @@ public class TableAdd extends JDialog implements ActionListener {
     //owner代表父窗口
     //title代表窗口名
     //model指定的是模式窗口好事非模式窗口
-    public  TableAdd(Frame owner,String title,boolean model)
+    public  PointAdd(Frame owner,String title,boolean model)
     {
         super(owner, title,model);//调用父类构造方法，达到模式对话框效果
         //定义组件
         this.owner = (Myclass)owner;
-        jl1=new JLabel("监测点编号");
-        jl2=new JLabel("监测点名称");
-        jl3=new JLabel("监测点位置");
+        jl1=new JLabel("测量点编号");
+        jl2=new JLabel("测量点名称");
+        jl3=new JLabel("所属监测点编号");
 
         jtf1=new JTextField(10);
         jtf2=new JTextField(10);
@@ -84,3 +86,5 @@ public class TableAdd extends JDialog implements ActionListener {
 
 
 }
+
+
