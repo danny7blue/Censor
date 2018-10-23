@@ -30,7 +30,7 @@ public class Myclass extends JFrame implements ActionListener{
     JScrollPane jsp=null;
     JPopupMenu popMenu;
 
-    boolean judge=false;   //设置一个全局变量
+    int judge=0;   //设置一个全局变量
     public static final boolean flag=false;
 
     public JScrollPane getjScrollPane1() {
@@ -216,10 +216,10 @@ class TreeAddViewMenuEvent implements ActionListener {
     //通过判断全局变量judge的值，触发不同页面
     public void actionPerformed(ActionEvent e) {
 
-        if(adaptee.judge==false) {
+        if(adaptee.judge==0) {
             TableAdd ta = new TableAdd(adaptee, "添加监测点", true);
         }
-        else
+        else if(adaptee.judge==1)
         {
             PointAdd ta1 = new  PointAdd(adaptee, "添加测量点", true);
         }
@@ -239,12 +239,18 @@ class TreeDeleteViewMenuEvent implements ActionListener {
     }
 
     public void actionPerformed(ActionEvent e) {
-        int conform = JOptionPane.showConfirmDialog(null, "是否确认删除？", "删除景点确认", JOptionPane.YES_NO_OPTION);
-        if (conform == JOptionPane.YES_OPTION) {
-            DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode) (((DefaultMutableTreeNode) this.adaptee.getTree().getLastSelectedPathComponent()).getParent());
-            ((DefaultMutableTreeNode) this.adaptee.getTree().getLastSelectedPathComponent()).removeFromParent();
-            this.adaptee.getTree().updateUI();
+        if (adaptee.judge==3) {
+           JOptionPane.showMessageDialog(null,"不能删除该节点","提示框",JOptionPane.NO_OPTION);
+
+        }else {
+            int conform = JOptionPane.showConfirmDialog(null, "是否确认删除？", "删除节点确认", JOptionPane.YES_NO_OPTION);
+            if (conform == JOptionPane.YES_OPTION) {
+                ((DefaultMutableTreeNode) this.adaptee.getTree().getLastSelectedPathComponent()).removeFromParent();
+                this.adaptee.getTree().updateUI();
+//            DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode) (((DefaultMutableTreeNode) this.adaptee.getTree().getLastSelectedPathComponent()).getParent());
+            }
         }
+
     }
 }
 
@@ -261,13 +267,14 @@ class TreeModifyViewMenuEvent implements ActionListener {
     }
 
     public void actionPerformed(ActionEvent e) {
-        String name1 = JOptionPane.showInputDialog("请输入测量点名称：");
-
-        DefaultMutableTreeNode node = (DefaultMutableTreeNode) this.adaptee.getTree().getSelectionPath().getLastPathComponent();
-        //改名
-        node.setUserObject(name1);
-        //刷新
-        this.adaptee.getTree().updateUI();
+//
+        if(adaptee.judge==1) {
+            TableAmend ta= new TableAmend(adaptee, "修改监测点信息", true);
+        }
+        else if(adaptee.judge==2)
+        {
+            PointAmend  ta1 = new  PointAmend (adaptee, "修改测量点信息", true);
+        }
     }
 }
 
@@ -294,18 +301,29 @@ class TreePopMenuEvent implements MouseListener {
         //判断当前节点
         DefaultMutableTreeNode currentNode=((DefaultMutableTreeNode)path.getLastPathComponent());
 
+        //判断右键点击的是父节点还是子节点，点击根节点时能添加但不能修改，点击父节点时能添加能修改
+        //点击子节点时能修改但不能添加
         for(int i=0;i<=currentNode.getLevel();i++) {
             if (currentNode.getLevel() == 0) {
                 if (e.getButton() == 3) {
                     adaptee.getPopMenu().show(adaptee.getTree(), e.getX(), e.getY());
-                    adaptee.judge=false;
+                    adaptee.judge=0;
                 }
             }else if(currentNode.getLevel() == 1){
                 if (e.getButton() == 3) {
                     adaptee.getPopMenu().show(adaptee.getTree(), e.getX(), e.getY());
-                    adaptee.judge=true;
+                    adaptee.judge=1;
+                    if (currentNode.getChildCount()!=0)
+                    {
+                        adaptee.judge=3;
+                    }
                 }
+           }else if (currentNode.getLevel() ==2)
+            {
+                adaptee.getPopMenu().show(adaptee.getTree(), e.getX(), e.getY());
+                adaptee.judge=2;
             }
+
         }
         adaptee.getTree().setSelectionPath(path);
         if (e.getButton() == 3) {
