@@ -1,5 +1,5 @@
 /**
- * FileName: JFreeChart
+ * FileName: JFreeChartDemo
  * Author:   DannyBlue
  * Date:     2018/9/22 17:09
  * Description: JFreeChart测试类
@@ -27,9 +27,9 @@ import org.jfree.ui.RefineryUtilities;
  * @create 2018/9/22
  * @since 1.0.0
  */
-public class JFreeChart extends ApplicationFrame
+public class JFreeChartDemo extends ApplicationFrame
 {
-    public JFreeChart(final String title )
+    public JFreeChartDemo(final String title )
     {
         super( title );
         final XYDataset dataset = createDataset( );
@@ -77,7 +77,7 @@ public class JFreeChart extends ApplicationFrame
     public static void main( final String[ ] args )
     {
         final String title = "Time Series Management";
-        final JFreeChart demo = new JFreeChart( title );
+        final JFreeChartDemo demo = new JFreeChartDemo( title );
         demo.pack( );
         RefineryUtilities.positionFrameRandomly( demo );
         demo.setVisible( true );

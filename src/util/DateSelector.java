@@ -1,34 +1,17 @@
-package ui;
+package util;
 
-import java.awt.BasicStroke;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.GridLayout;
-import java.awt.Point;
-import java.awt.Polygon;
-import java.awt.Stroke;
-import java.awt.Toolkit;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import javax.swing.*;
+import javax.swing.event.AncestorEvent;
+import javax.swing.event.AncestorListener;
+import java.awt.*;
+import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import javax.swing.*;
-import javax.swing.event.AncestorEvent;
-import javax.swing.event.AncestorListener;
 
-
-public class Chooser extends JPanel{
+public class DateSelector extends JPanel{
 
     private static final long serialVersionUID = -5384012731547358720L;
 
@@ -38,7 +21,7 @@ public class Chooser extends JPanel{
     private java.awt.Font font = new java.awt.Font("Times",java.awt.Font.PLAIN,12);
     private java.text.SimpleDateFormat sdf;
     private final LabelManager lm = new LabelManager();
-    private javax.swing.Popup pop;
+    private Popup pop;
     private TitlePanel titlePanel;
     private BodyPanel bodyPanel;
     private FooterPanel footerPanel;
@@ -53,7 +36,7 @@ public class Chooser extends JPanel{
     private static Color hoverColor = Color.BLUE; // hover color
 
 
-    private Chooser(java.util.Date date, String format, int startDAY){
+    private DateSelector(Date date, String format, int startDAY){
         if(startDAY > -1 && startDAY < 7) defaultStartDAY = startDAY;
         int dayIndex = defaultStartDAY;
         for(int i=0; i<7; i++){
@@ -67,26 +50,26 @@ public class Chooser extends JPanel{
         initCalendarPanel();
     }
 
-    public static Chooser getInstance(java.util.Date date, String format){
-        return new Chooser(date, format, defaultStartDAY);
+    public static DateSelector getInstance(Date date, String format){
+        return new DateSelector(date, format, defaultStartDAY);
     }
 
-    public static Chooser getInstance(java.util.Date date){
+    public static DateSelector getInstance(Date date){
         return getInstance(date, DEFAULTFORMAT);
     }
-    public static Chooser getInstance(String format){
-        return getInstance(new java.util.Date(), format);
+    public static DateSelector getInstance(String format){
+        return getInstance(new Date(), format);
     }
-    public static Chooser getInstance(){
-        return getInstance(new java.util.Date(), DEFAULTFORMAT);
+    public static DateSelector getInstance(){
+        return getInstance(new Date(), DEFAULTFORMAT);
     }
 
     private void initCalendarPanel(){
-        calendarPanel = new JPanel(new java.awt.BorderLayout());
-        calendarPanel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0xAA, 0xAA, 0xAA)));
-        calendarPanel.add(titlePanel = new TitlePanel(), java.awt.BorderLayout.NORTH);
-        calendarPanel.add(bodyPanel = new BodyPanel(), java.awt.BorderLayout.CENTER);
-        calendarPanel.add(footerPanel = new FooterPanel(),java.awt.BorderLayout.SOUTH);
+        calendarPanel = new JPanel(new BorderLayout());
+        calendarPanel.setBorder(BorderFactory.createLineBorder(new Color(0xAA, 0xAA, 0xAA)));
+        calendarPanel.add(titlePanel = new TitlePanel(), BorderLayout.NORTH);
+        calendarPanel.add(bodyPanel = new BodyPanel(), BorderLayout.CENTER);
+        calendarPanel.add(footerPanel = new FooterPanel(), BorderLayout.SOUTH);
         this.addAncestorListener(new AncestorListener() {
             public void ancestorAdded(AncestorEvent event) { }
             public void ancestorRemoved(AncestorEvent event) {hidePanel();}
@@ -187,8 +170,8 @@ public class Chooser extends JPanel{
         private JLabel preYear,preMonth,center,nextMonth,nextYear,centercontainer;
 
         public TitlePanel(){
-            super(new java.awt.BorderLayout());
-            this.setBackground(new java.awt.Color(190, 200, 200));
+            super(new BorderLayout());
+            this.setBackground(new Color(190, 200, 200));
             initTitlePanel();
         }
         private void initTitlePanel(){
@@ -204,20 +187,20 @@ public class Chooser extends JPanel{
             nextMonth.setToolTipText("Next Month");
             nextYear.setToolTipText("Next Year");
 
-            preYear.setBorder(javax.swing.BorderFactory.createEmptyBorder(2, 10, 0, 0));
-            preMonth.setBorder(javax.swing.BorderFactory.createEmptyBorder(2, 15, 0, 0));
-            nextMonth.setBorder(javax.swing.BorderFactory.createEmptyBorder(2, 0, 0, 15));
-            nextYear.setBorder(javax.swing.BorderFactory.createEmptyBorder(2, 0, 0, 10));
+            preYear.setBorder(BorderFactory.createEmptyBorder(2, 10, 0, 0));
+            preMonth.setBorder(BorderFactory.createEmptyBorder(2, 15, 0, 0));
+            nextMonth.setBorder(BorderFactory.createEmptyBorder(2, 0, 0, 15));
+            nextYear.setBorder(BorderFactory.createEmptyBorder(2, 0, 0, 10));
 
-            centercontainer.setLayout(new java.awt.BorderLayout());
-            centercontainer.add(preMonth,java.awt.BorderLayout.WEST);
-            centercontainer.add(center,java.awt.BorderLayout.CENTER);
-            centercontainer.add(nextMonth,java.awt.BorderLayout.EAST);
+            centercontainer.setLayout(new BorderLayout());
+            centercontainer.add(preMonth, BorderLayout.WEST);
+            centercontainer.add(center, BorderLayout.CENTER);
+            centercontainer.add(nextMonth, BorderLayout.EAST);
 
-            this.add(preYear,java.awt.BorderLayout.WEST);
-            this.add(centercontainer,java.awt.BorderLayout.CENTER);
-            this.add(nextYear,java.awt.BorderLayout.EAST);
-            this.setPreferredSize(new java.awt.Dimension(210, 25));
+            this.add(preYear, BorderLayout.WEST);
+            this.add(centercontainer, BorderLayout.CENTER);
+            this.add(nextYear, BorderLayout.EAST);
+            this.setPreferredSize(new Dimension(210, 25));
 
             updateDate();
 
@@ -231,7 +214,7 @@ public class Chooser extends JPanel{
             center.setText(calendar.get(Calendar.YEAR)+"-"+(calendar.get(Calendar.MONTH) + 1));
         }
         // listener for control label.
-        class MyMouseAdapter extends java.awt.event.MouseAdapter{
+        class MyMouseAdapter extends MouseAdapter{
 
             JLabel label;
             private int type, value;
@@ -241,21 +224,21 @@ public class Chooser extends JPanel{
                 this.type = type;
                 this.value = value;
             }
-            public void mouseEntered(java.awt.event.MouseEvent me) {
-                label.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+            public void mouseEntered(MouseEvent me) {
+                label.setCursor(new Cursor(Cursor.HAND_CURSOR));
                 label.setForeground(hoverColor);
             }
-            public void mouseExited(java.awt.event.MouseEvent me) {
-                label.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-                label.setForeground(java.awt.Color.BLACK);
+            public void mouseExited(MouseEvent me) {
+                label.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+                label.setForeground(Color.BLACK);
             }
-            public void mousePressed(java.awt.event.MouseEvent me) {
+            public void mousePressed(MouseEvent me) {
                 calendar.add(type, value);
-                label.setForeground(java.awt.Color.WHITE);
+                label.setForeground(Color.WHITE);
                 refresh();
             }
-            public void mouseReleased(java.awt.event.MouseEvent me) {
-                label.setForeground(java.awt.Color.BLACK);
+            public void mouseReleased(MouseEvent me) {
+                label.setForeground(Color.BLACK);
             }
         }
     }
@@ -266,7 +249,7 @@ public class Chooser extends JPanel{
 
         public BodyPanel(){
             super(new GridLayout(7, 7));
-            this.setPreferredSize(new java.awt.Dimension(210, 140));
+            this.setPreferredSize(new Dimension(210, 140));
             initMonthPanel();
         }
         private void initMonthPanel(){
@@ -275,7 +258,7 @@ public class Chooser extends JPanel{
         public void updateDate() {
             this.removeAll();
             lm.clear();
-            java.util.Date temp = calendar.getTime();
+            Date temp = calendar.getTime();
             Calendar cal = Calendar.getInstance();
             cal.setTime(temp);
             cal.set(Calendar.DAY_OF_MONTH, 1);
@@ -308,7 +291,7 @@ public class Chooser extends JPanel{
             initFooterPanel();
         }
         private void initFooterPanel(){
-            dateLabel = new JLabel("Today is : "+sdf.format(new java.util.Date()));
+            dateLabel = new JLabel("Today is : "+sdf.format(new Date()));
             dateLabel.addMouseListener(new MouseListener() {
 
                 @Override
@@ -357,7 +340,7 @@ public class Chooser extends JPanel{
         }
     }
 
-    private class DayLabel extends JLabel implements java.util.Comparator<DayLabel>, java.awt.event.MouseListener, java.awt.event.MouseMotionListener {
+    private class DayLabel extends JLabel implements java.util.Comparator<DayLabel>, MouseListener, java.awt.event.MouseMotionListener {
 
         private static final long serialVersionUID = -6002103678554799020L;
         private boolean isSelected;
@@ -372,8 +355,8 @@ public class Chooser extends JPanel{
             this.setFont(font);
             this.addMouseListener(this);
             this.addMouseMotionListener(this);
-            if(month == calendar.get(Calendar.MONTH)) this.setForeground(java.awt.Color.BLACK);
-            else this.setForeground(java.awt.Color.LIGHT_GRAY);
+            if(month == calendar.get(Calendar.MONTH)) this.setForeground(Color.BLACK);
+            else this.setForeground(Color.LIGHT_GRAY);
 
         }
         public boolean getIsSelected() {
@@ -397,13 +380,13 @@ public class Chooser extends JPanel{
         protected void paintComponent(Graphics g) {
             //set curr select day's background
             if(day == calendar.get(Calendar.DAY_OF_MONTH) && month == calendar.get(Calendar.MONTH)){
-                g.setColor(new java.awt.Color(0xBB, 0xBF, 0xDA));
+                g.setColor(new Color(0xBB, 0xBF, 0xDA));
                 g.fillRect(0, 0, getWidth(), getHeight());
             }
             //set current day's border
             if(year == now.get(Calendar.YEAR) && month == now.get(Calendar.MONTH) && day == now.get(Calendar.DAY_OF_MONTH)){
                 Graphics2D gd = (Graphics2D) g;
-                gd.setColor(new java.awt.Color(0x55, 0x55, 0x88));
+                gd.setColor(new Color(0x55, 0x55, 0x88));
                 Polygon p = new Polygon();
                 p.addPoint(0, 0);
                 p.addPoint(getWidth() - 1, 0);
@@ -458,8 +441,8 @@ public class Chooser extends JPanel{
         }
         @Override // change color when mouse exit.
         public void mouseExited(MouseEvent e) {
-            if(month == calendar.get(Calendar.MONTH)) this.setForeground(java.awt.Color.BLACK);
-            else this.setForeground(java.awt.Color.LIGHT_GRAY);
+            if(month == calendar.get(Calendar.MONTH)) this.setForeground(Color.BLACK);
+            else this.setForeground(Color.LIGHT_GRAY);
             this.repaint();
         }
         @Override
@@ -477,7 +460,7 @@ public class Chooser extends JPanel{
         private List<DayLabel> list;
 
         public LabelManager(){
-            list = new ArrayList<Chooser.DayLabel>();
+            list = new ArrayList<DateSelector.DayLabel>();
         }
 
         public List<DayLabel> getLabels(){

@@ -1,19 +1,28 @@
-package tests;
-
-import java.io.*;
-import java.net.*;
-//xyk
 /**
- * FileName: SimpleSocketClient
+ * FileName: MulSocketClient
  * Author:   DannyBlue
- * Date:     2018/9/22 17:19
- * Description: 简单的socket测试
+ * Date:     2018/9/22 17:30
+ * Description: 多次连接的socket测试
  * History:
  * <author>          <time>          <version>          <desc>
  * 作者姓名           修改时间           版本号              描述
  */
-public class SimpleSocketClient {
-    byte a = 1;
+package tests.SocketDemo;
+
+import java.io.*;
+import java.net.*;
+
+/**
+ * 复用连接的Socket客户端
+ * 功能为：发送字符串“Hello”到服务器端，并打印出服务器端的反馈
+ *
+ * @author DannyBlue
+ * @create 2018/9/22
+ * @since 1.0.0
+ */
+
+public class MulSocketClient {
+
     public static void main(String[] args) {
 
         Socket socket = null;
@@ -32,7 +41,7 @@ public class SimpleSocketClient {
 
         //发送内容
 
-        String data = "Hello";
+        String data[] ={"First","Second","Third"};
 
         try {
 
@@ -40,23 +49,29 @@ public class SimpleSocketClient {
 
             socket = new Socket(serverIP,port);
 
-            //发送数据
+            //初始化流
 
             os = socket.getOutputStream();
-
-            os.write(data.getBytes());
-
-            //接收数据
 
             is = socket.getInputStream();
 
             byte[] b = new byte[1024];
 
-            int n = is.read(b);
+            for(int i = 0;i < data.length;i++){
 
-            //输出反馈数据
+                //发送数据
 
-            System.out.println("服务器反馈：" + new String(b,0,n));
+                os.write(data[i].getBytes());
+
+                //接收数据
+
+                int n = is.read(b);
+
+                //输出反馈数据
+
+                System.out.println("服务器反馈：" + new String(b,0,n));
+
+            }
 
         } catch (Exception e) {
 
