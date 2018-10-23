@@ -1,5 +1,4 @@
 package ui;
-
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -23,7 +22,13 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.PopupFactory;
+import javax.swing.SwingUtilities;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
 
@@ -44,7 +49,6 @@ public class Chooser extends JPanel{
     private FooterPanel footerPanel;
 
     private JComponent showDate;
-    private JTree tree;
     private boolean isShow = false;
     private static final String DEFAULTFORMAT = "yyyy-MM-dd";
     private static final String[] showTEXT = {"Sun","Mon","Tue","Wed","Thu","Fri","Sat"};
@@ -90,22 +94,21 @@ public class Chooser extends JPanel{
         this.addAncestorListener(new AncestorListener() {
             public void ancestorAdded(AncestorEvent event) { }
             public void ancestorRemoved(AncestorEvent event) {hidePanel();}
-            //hide pop when move component.
+            //hide pop when move component. 
             public void ancestorMoved(AncestorEvent event) {
                 hidePanel();
             }
         });
     }
-    public void register(JComponent showComponent, JTree tree) {
+    public void register(final JComponent showComponent) {
         this.showDate = showComponent;
-        this.tree = tree;
         showComponent.setRequestFocusEnabled(true);
         showComponent.addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent me) {
                 showComponent.requestFocusInWindow();
             }
         });
-//        this.add(showComponent, BorderLayout.CENTER);
+        this.add(showComponent, BorderLayout.CENTER);
         this.setPreferredSize(new Dimension(90, 25));
         this.setBorder(BorderFactory.createLineBorder(Color.GRAY));
         showComponent.addMouseListener(new MouseAdapter() {
@@ -167,17 +170,14 @@ public class Chooser extends JPanel{
         pop.show();
         isShow = true;
     }
-    //修改日历显示textField的文字
+    // change text or label's content.
     private void commit() {
-        if (this.showDate instanceof JTextField) {
-            ((JTextField)this.showDate).setText(sdf.format(calendar.getTime()));
-        }else if (this.showDate instanceof JLabel) {
-            ((JLabel) this.showDate).setText(sdf.format(calendar.getTime()));
+        if (showDate instanceof JTextField) {
+            ((JTextField) showDate).setText(sdf.format(calendar.getTime()));
+        }else if (showDate instanceof JLabel) {
+            ((JLabel) showDate).setText(sdf.format(calendar.getTime()));
         }
         hidePanel();
-        //查询数据库并刷新测量数据表
-        System.out.println(((JTextField)showDate).getText());
-        System.out.println(tree.getLastSelectedPathComponent());
     }
 
     // control panel
@@ -490,10 +490,10 @@ public class Chooser extends JPanel{
             list.clear();
         }
         public void setSelect(Point p, boolean b) {
-            //如果是拖动,则要优化一下,以提高效率
+            //如果是拖动,则要优化一下,以提高效率 
             if (b) {
-                //表示是否能返回,不用比较完所有的标签,能返回的标志就是把上一个标签和
-                //将要显示的标签找到了就可以了
+                //表示是否能返回,不用比较完所有的标签,能返回的标志就是把上一个标签和 
+                //将要显示的标签找到了就可以了 
                 boolean findPrevious = false, findNext = false;
                 for (DayLabel lab : list) {
                     if (lab.contains(p)) {
