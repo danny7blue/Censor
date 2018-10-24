@@ -1,5 +1,7 @@
 package ui;
-
+/*
+   测量点的修改方法
+ */
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -34,15 +36,13 @@ public class PointAmend extends JDialog implements ActionListener {
         jb2.addActionListener(this);
         jp1=new JPanel(new GridLayout(3,2,10,10));
         jp2=new JPanel();
-
+      //把定义的各组件加入对应的显示面板中
         jp1.add(jl1);
         jp1.add(jtf1);
         jp1.add(jl2);
         jp1.add(jtf2);
         jp1.add(jl3);
         jp1.add(jtf3);
-
-
         jp2.add(jb1);
         jp2.add(jb2);
         this.add(jp1,BorderLayout.NORTH);
@@ -58,14 +58,14 @@ public class PointAmend extends JDialog implements ActionListener {
     }
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == jb1) {
-            String msg=jtf2.getText();
+            String msg=jtf2.getText();   //获得输入的测量点名称
             DefaultMutableTreeNode node = (DefaultMutableTreeNode) this.owner.getTree().getSelectionPath().getLastPathComponent();
             //改名
             node.setUserObject(msg);
             //刷新
             this.owner.getTree().updateUI();
             owner.getTree().updateUI();
-            this.setVisible(false);
+            this.setVisible(false); //设置Jdilog不可见
         } else if (e.getSource() == jb2) {
             this.setVisible(false);
         }

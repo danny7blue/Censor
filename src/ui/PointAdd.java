@@ -1,5 +1,7 @@
 package ui;
-
+/*
+   测量点的增加方法
+ */
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -58,12 +60,12 @@ public class PointAdd extends JDialog implements ActionListener {
     }
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == jb1) {
-            String msg=jtf2.getText();
-            DefaultMutableTreeNode treenode = new DefaultMutableTreeNode(msg);
-            ((DefaultMutableTreeNode) owner.getTree().getLastSelectedPathComponent()).add(treenode);
-            ((DefaultMutableTreeNode)owner.getTree().getLastSelectedPathComponent()).add(treenode);
-            owner.getTree().expandPath(new TreePath(((DefaultMutableTreeNode) this.owner.getTree().getLastSelectedPathComponent()).getPath()));
-            owner.getTree().updateUI();
+            String msg=jtf2.getText();   //获得输入的测量点名称
+            DefaultMutableTreeNode treenode = new DefaultMutableTreeNode(msg);  //新建树节点存放测量点名称
+            ((DefaultMutableTreeNode) owner.getTree().getLastSelectedPathComponent()).add(treenode);//添加该树节点到树模型中
+            owner.getTree().expandPath(new TreePath(((DefaultMutableTreeNode)
+                    this.owner.getTree().getLastSelectedPathComponent()).getPath()));
+            owner.getTree().updateUI();    //刷新以显示该树模型
             this.setVisible(false);
         } else if (e.getSource() == jb2) {
             this.setVisible(false);

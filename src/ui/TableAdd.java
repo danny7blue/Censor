@@ -1,4 +1,7 @@
 package ui;
+/*
+   监测点的增加方法
+ */
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -7,6 +10,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
 public class TableAdd extends JDialog implements ActionListener {
+   //定义面板所需各组件
     JButton jb1,jb2;
     JLabel jl1,jl2,jl3;
     JTextField jtf1,jtf2,jtf3;
@@ -28,12 +32,12 @@ public class TableAdd extends JDialog implements ActionListener {
         jtf2=new JTextField(10);
         jtf3=new JTextField(10);
         jb1=new JButton("新建");
-        jb1.addActionListener(this);
+        jb1.addActionListener(this);   //为jb1设置监听事件
         jb2=new JButton("取消");
-        jb2.addActionListener(this);
-        jp1=new JPanel(new GridLayout(3,2,10,10));
+        jb2.addActionListener(this);   //为jb2设置监听事件
+        jp1=new JPanel(new GridLayout(3,2,10,10));   //设置JPanel为三行两列的网格布局
         jp2=new JPanel();
-
+        //添加组件
         jp1.add(jl1);
         jp1.add(jtf1);
         jp1.add(jl2);
@@ -55,12 +59,12 @@ public class TableAdd extends JDialog implements ActionListener {
 
 
     }
+    //按键监听方法
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == jb1) {
             String msg=jtf2.getText();
             DefaultMutableTreeNode treenode = new DefaultMutableTreeNode(msg);
             ((DefaultMutableTreeNode) owner.getTree().getLastSelectedPathComponent()).add(treenode);
-            ((DefaultMutableTreeNode)owner.getTree().getLastSelectedPathComponent()).add(treenode);
             owner.getTree().expandPath(new TreePath(((DefaultMutableTreeNode) this.owner.getTree().getLastSelectedPathComponent()).getPath()));
             owner.getTree().updateUI();
             this.setVisible(false);
