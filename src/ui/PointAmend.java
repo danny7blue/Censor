@@ -1,15 +1,15 @@
 package ui;
 /*
-   测量点的增加方法
+   测量点的修改方法
  */
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreePath;
 
-public class PointAdd extends JDialog implements ActionListener {
+
+public class PointAmend extends JDialog implements ActionListener {
     JButton jb1,jb2;
     JLabel jl1,jl2,jl3;
     JTextField jtf1,jtf2,jtf3;
@@ -18,7 +18,7 @@ public class PointAdd extends JDialog implements ActionListener {
     //owner代表父窗口
     //title代表窗口名
     //model指定的是模式窗口好事非模式窗口
-    public  PointAdd(Frame owner,String title,boolean model)
+    public  PointAmend(Frame owner,String title,boolean model)
     {
         super(owner, title,model);//调用父类构造方法，达到模式对话框效果
         //定义组件
@@ -30,21 +30,19 @@ public class PointAdd extends JDialog implements ActionListener {
         jtf1=new JTextField(10);
         jtf2=new JTextField(10);
         jtf3=new JTextField(10);
-        jb1=new JButton("新建");
+        jb1=new JButton("修改");
         jb1.addActionListener(this);
         jb2=new JButton("取消");
         jb2.addActionListener(this);
         jp1=new JPanel(new GridLayout(3,2,10,10));
         jp2=new JPanel();
-
+      //把定义的各组件加入对应的显示面板中
         jp1.add(jl1);
         jp1.add(jtf1);
         jp1.add(jl2);
         jp1.add(jtf2);
         jp1.add(jl3);
         jp1.add(jtf3);
-
-
         jp2.add(jb1);
         jp2.add(jb2);
         this.add(jp1,BorderLayout.NORTH);
@@ -61,12 +59,13 @@ public class PointAdd extends JDialog implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == jb1) {
             String msg=jtf2.getText();   //获得输入的测量点名称
-            DefaultMutableTreeNode treenode = new DefaultMutableTreeNode(msg);  //新建树节点存放测量点名称
-            ((DefaultMutableTreeNode) owner.getTree().getLastSelectedPathComponent()).add(treenode);//添加该树节点到树模型中
-            owner.getTree().expandPath(new TreePath(((DefaultMutableTreeNode)
-                    this.owner.getTree().getLastSelectedPathComponent()).getPath()));
-            owner.getTree().updateUI();    //刷新以显示该树模型
-            this.setVisible(false);
+            DefaultMutableTreeNode node = (DefaultMutableTreeNode) this.owner.getTree().getSelectionPath().getLastPathComponent();
+            //改名
+            node.setUserObject(msg);
+            //刷新
+            this.owner.getTree().updateUI();
+            owner.getTree().updateUI();
+            this.setVisible(false); //设置Jdilog不可见
         } else if (e.getSource() == jb2) {
             this.setVisible(false);
         }
