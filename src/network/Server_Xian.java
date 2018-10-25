@@ -1,4 +1,6 @@
 package network;
+import log.Log4JTest;
+import org.apache.log4j.Logger;
 
 import java.net.*;
 import java.net.ServerSocket;
@@ -16,8 +18,10 @@ public class Server_Xian {
     static OutputStream os = null;
     static InputStream is = null;
     static InetAddress ia=null;
+    private static  final Logger LOGGER = Logger.getLogger(Log4JTest.class);
     //主函数
     public static void main(String[] args) {
+        LOGGER.debug("socket主程序...");
         int port = 8087;//监听端口号
         //String hello = "Hello,ImServer";
         try {
@@ -34,18 +38,23 @@ public class Server_Xian {
             //建立连接
             serverSocket = new ServerSocket(port);
             socket = serverSocket.accept();
-
             //发送数据
             os = socket.getOutputStream();//得到输出流
+
             System.out.println(("connect successful!"));//输出“connect successful!”
+            LOGGER.debug("已经建立连接并开始发送数据...");
             lipp=sendData(lip_split);//送到方法处理发送的数据
             os.write(lipp);
+            LOGGER.debug("发送数据成功。");
             //接收数据
+            LOGGER.debug("开始接收数据...");
             is = socket.getInputStream();//得到输入流
+            LOGGER.debug("已获取得到输入流，开始解析...");
             byte[] b = new byte[1024];//定义字符串b
             int n = is.read(b);//计算读取到的b的长=度;
             System.out.println("客户端发送的内容为" +new String(b,0,n));//显示
             dnp(b,n);//数据解析
+            LOGGER.debug("数据解析成功");
             //当接受完收据后断开连接（无）
             os.close();
             is.close();
@@ -116,7 +125,9 @@ public class Server_Xian {
 
             String source_id = rev_data[7]+"."+rev_data[8];//输出源地址
             System.out.println("源地址为："+source_id);
+            LOGGER.debug("获取到源地址:"+source_id);
             //只获取有效的重量数据
+            LOGGER.debug("开始提取有效重量数据...");
             byte[] new_data = new byte[n-11];
             for(i=0;i<(n-11);i++){
                 new_data[i]=rev_data[i+9];//重新定义一个新的只含有效数据的数组
@@ -129,7 +140,7 @@ public class Server_Xian {
     }
     //方法，解析有效数据方法
     private static void getList(byte[] list,int n,String Sourse_id) {
-        String[] strdata=new String[1000];
+        String[] strdata=new String[100];
         if (n%4==0){
             int i = 0;
             int[] da = new int[(n/4)];//每隔四位重新新建一个数组
@@ -137,28 +148,25 @@ public class Server_Xian {
                 //将四个数据重新组合成一个数据
                 da[j] = (int) (list[(4*i)]*1)+(int)(list[(4*i)+1]*2)+(int)(list[(4*i)+2]*4)+(int)(list[(4*i)+3]*8);
                 i++;
-
                 strdata[2*j]="测量点"+(j+1);
                 strdata[(2*j+1)] =String.valueOf(da[j]);
                 System.out.println(da[j]);//显示这个数据
-
-                // System.out.println("jh");
             }
             System.out.println(Sourse_id);
             for(int p=0;p<strdata.length;p++)
             {
                 System.out.println(strdata[p]);
             }
-            try {
-                insert(strdata);
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+
         }
         else {
             System.out.println("heavy data error!!!!");
         }
-
+        try {
+            insert(strdata); //往数据库插入数据
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
     }
     //方法，crc校验 16位
@@ -207,6 +215,7 @@ public class Server_Xian {
      */
 
     public static int insert(String [] temp ) throws SQLException {
+        LOGGER.debug("开始写入数据库...");
         Connection conn = getConn();
         int num=1;
         PreparedStatement pstmt;
@@ -227,13 +236,14 @@ public class Server_Xian {
             }
             //分别将temp01的测量点名称和temp02的测量数据值插入数据库中对应的测量数据表中。
             for (int m=0,n=0; m<temp01.length|n<temp02.length;m++,n++) {
-                String sql = "INSERT INTO 测量数据表(测量点名称,测量数据值) VALUES ('"+temp01[m]+"','"+temp02[n]+"')";
+                String sql = "INSERT INTO 测量数据表(测量点名称,测量数据值) VALUES ('"+temp01[m]+"','"+temp02[n]+"')" ;
                 num=stmt.executeUpdate(sql);
                 System.out.println("插入数据成功！");
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        LOGGER.debug("写入数据库成功");
         return num;
     }
 
