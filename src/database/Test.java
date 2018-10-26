@@ -1,6 +1,4 @@
 package database;
-import org.junit.rules.TestName;
-
 import java.sql.*;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -12,87 +10,15 @@ import java.sql.SQLException;
  */
 
 public class Test {
-
-
-    public static void main(String[] args) {
-        Test t =new Test();
-        //测试将数据送到数据库的方法。(测试通过)
-//        String [] temp ={"1","100","2","200","3","300","4","400","5","500"};
-//        try{
-//            t.insert(temp);
-//        }catch (SQLException e){
-//            e.printStackTrace();
-//        }
-        //测试对监测点信息表数据的插入（测试通过）
-//        try {
-//            int MonitorId = 3;
-//            String MonitorName = "M3";
-//            String MonitorPosition = "西安";
-//            t.insertMonitorInfo(MonitorId, MonitorName, MonitorPosition);
-//        }catch (SQLException e){
-//            e.printStackTrace();
-//        }
-        //测试对监测点信息表数据的更新（测试通过）
-//        try {
-//            int MonitorId =1 ;
-//            String MonitorName = "M3";
-//            String MonitorPosition = "重庆";
-//            t.updataMonitorInfo(MonitorId, MonitorName, MonitorPosition);
-//        }catch (SQLException e){
-//            e.printStackTrace();
-//        }
-//        //测试对监测点信息表的删除（测试通过）
-//        try {
-//            int MonitorId = 1;
-//            t.deleteMonitorInfo(MonitorId);
-//        }catch (SQLException e){
-//            e.printStackTrace();
-//        }
-        //测试测量点信息表数据的插入（测试通过）
-//        try {
-//            int TestId = 5;
-//            String TestName = "T1";
-//            int    TestMonitorId = 1;
-//            t.insertTestInfo(TestId,TestName,TestMonitorId);
-//        }catch (SQLException e){
-//            e.printStackTrace();
-//        }
-        //测试测量点信息表数据的更新（测试通过）
-//        try {
-//            int TestId = 5;
-//            String TestName = "测试点三号";
-//            int TestMonitorId = 2;
-//            t.updataTestInfo(TestId,TestName,TestMonitorId);
-//        }catch (SQLException e){
-//            e.printStackTrace();
-//        }
-//        //测试测量点信息表的删除功能（测试通过）
-//        try {
-//            int TestId = 1;
-//            t.deleteTestInfo(TestId);
-//        }catch (SQLException e){
-//            e.printStackTrace();
-//        }
-        //测试将测量点的压力值显示出来的功能（测试通过）
-//        try {
-//            String MonitorName="M1";
-//           String TestName = "T1";
-//           String time ="2018-10-21";
-//            t.search(MonitorName,TestName,time);
-//         }catch (SQLException e){
-//           e.printStackTrace();
-//       }
-    }
-
     /**
      *   获取数据库的连接的方法getConn();
      *   2018.10.10
      */
+
     public static   Connection getConn() {
         String user = "root";
-//        String password = "575615578";
-        String password = "123456";
-        String url = "jdbc:mysql://localhost:3306/StationDatabase?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
+        String password = "575615578";
+        String url = "jdbc:mysql://localhost:3306/StationDatabase?useUnicode=true&characterEncoding=utf-8&useSSL=false";
         String driver = "com.mysql.cj.jdbc.Driver";
         Connection conn=null;
         try {
@@ -113,21 +39,20 @@ public class Test {
      * 实现插入数据的操作方法。输入参数为一个数组。
      *  如果传过来的数组数据不是按照测试点名称和测试点数据值，那么如何处理这种异常？
      *  这个异常处理机制还没有解决。思考ing中。
-     *  输入参数为一个字符型的数组，即从前端采集的数据放在字符型数组中，调用此方法可以实现数据的存储。
      */
 
-    public static int insert(String [] temp ) throws SQLException {
+    public static int insert(int [] temp ) throws SQLException {
         Connection conn = getConn();
         int num=1;
         PreparedStatement pstmt;
         Statement stmt = conn.createStatement();
         try {
             //将数据进行分割处理，将测试点名称放在数组temp01，将对应的测量数据值放在数组temp02中
-            String  temp01[],temp02[];
+            int  temp01[],temp02[];
             int size01 =temp.length%2==0?(temp.length/2):(temp.length/2+1);
             int size02 =temp.length-size01;
-            temp01 =new String[size01];
-            temp02 =new String[size02];
+            temp01 =new int[size01];
+            temp02 =new int[size02];
             for(int i =0,j=0,k=0;i<temp.length;i++){
                 if(i%2==0){
                     temp01[j++]=temp[i];
@@ -137,7 +62,7 @@ public class Test {
             }
             //分别将temp01的测量点名称和temp02的测量数据值插入数据库中对应的测量数据表中。
             for (int m=0,n=0; m<temp01.length|n<temp02.length;m++,n++) {
-                String sql = "INSERT INTO 测量数据表(测量点编号,测量数据值) VALUES ('"+temp01[m]+"','"+temp02[n]+"')";
+                String sql = "INSERT INTO testDatainfo(testID,testData) VALUES ('"+temp01[m]+"','"+temp02[n]+"')";
                 num=stmt.executeUpdate(sql);
                 System.out.println("插入数据成功！");
             }
@@ -228,13 +153,38 @@ public class Test {
         }
         return deflag;
     }
+    //查询测量点信息的方法selectMonitorInfo.输入参数为监测点的名称，查询出的结果为编号，名称以及所在位置。
+    public void selectMonitorInfo() throws SQLException{
+        // boolean insflag =false;
+        try {
+            Statement stmt;
+            Connection conn = getConn();
+            stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
+
+            //当mysql中监测点信息表中的属性名称发生改变时，下面的sql语句要相应的修改。
+            String selectInfo="select * from MonitorInfo ";
+            System.out.println("插入监测点信息的SQL语句为："+selectInfo);
+            stmt.executeQuery(selectInfo);
+//            if(count>0){
+////                /* 如果有SQL语句被更新*/
+////                insflag=true;
+////            }else{
+////                /*如何没有SQL语句被更新*/
+////                insflag=false;
+////            }
+        } catch (SQLException e) {
+            System.out.println("SQLException异常"+e.getMessage());
+            e.printStackTrace();
+        }
+        // return insflag;
+    }
     /**功能介绍：实现用户对测量点信息表的增加，修改，删除的操作
      * 主要构建三个方法：用户对测量信息表进行数据添加的功能，修改数据的功能，删除数据的功能。
      *@param TestId,TestName,TestMonitorId;
      */
     //(1)实现用户对测量点信息进行增加数据的操作。添加的信息主要有测量点编号，测量点名称，所属的监测点编号这三个信息，并保存在测量点信息表中
     //输入参数为测量点编号，测量点名称，所属监测点的编号，调用此方法，实现测量点信息的增添功能。
-    public boolean insertTestInfo(int TestId, String TestName, int TestMonitorId) throws SQLException{
+    public boolean insertTestInfo(int TestId, String TestName, String MonitorName) throws SQLException{
         boolean insflag =false;
 
         try {
@@ -242,7 +192,7 @@ public class Test {
             Statement stmt;
             stmt=conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_UPDATABLE);
             //当mysql中测量点信息表中的属性名称发生改变时，下面的sql语句要相应的修改。
-            String insertInfo="INSERT INTO TestInfo(TestID,TestName,TestMonitorID) VALUES ("+"'"+TestId+"','"+TestName+"','"+TestMonitorId+"'"+")";
+            String insertInfo="INSERT INTO testinfo(TestID,TestName,TestMonitorID) VALUES('"+TestId+"','"+TestName+"',(SELECT MonitorID FROM monitorinfo WHERE MonitorName='"+MonitorName+"'))";
             System.out.println("插入测量点信息的SQL语句为："+insertInfo);
             int count =stmt.executeUpdate(insertInfo);
             if(count>0){
@@ -332,17 +282,15 @@ public class Test {
             Statement stmt;
             stmt =conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_UPDATABLE);
             rs=stmt.executeQuery(selTestPointinfo);//执行查询语句
-//            rs.last();//将结果集位置移到最后。
-//
-//            rowcount =rs.getRow();//获得当前的行编号
-//            rs.beforeFirst();
-//            System.out.println("检索出的记录为"+rowcount);
-//            if(rowcount>0){
-//                return rs;//返回取得的结果集。
-//            }else{
-//                rs=null;
-//            }
-            return rs;
+            rs.last();//将结果集位置移到最后。
+
+            rowcount =rs.getRow();//获得当前的行编号
+            System.out.println("检索出的记录为"+rowcount);
+            if(rowcount>0){
+                return rs;//返回取得的结果集。
+            }else{
+                rs=null;
+            }
         }catch (SQLException e){
             System.out.println("SQLException异常"+e.getMessage());//打印输出异常信息
             e.printStackTrace();
@@ -350,3 +298,4 @@ public class Test {
         return rs;
     }
 }
+
