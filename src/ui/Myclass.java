@@ -209,19 +209,21 @@ public class Myclass extends JFrame implements ActionListener{
 class TreeAddViewMenuEvent implements ActionListener {
     private static  final org.apache.log4j.Logger LOGGER = org.apache.log4j.Logger.getLogger(TreeAddViewMenuEvent.class);
     private Myclass  adaptee;
-
     public TreeAddViewMenuEvent(Myclass  adaptee) {
         this.adaptee = adaptee;
+        LOGGER.info("点击右键的增加处理...");
     }
     //通过判断全局变量judge的值，触发不同页面
     public void actionPerformed(ActionEvent e) {
         //judge为0时，弹出监测点添加页面；
         //judge为1时，弹出测量点添加页面；
         if(adaptee.judge==0) {
+            LOGGER.debug("执行添加监测点...");
             TableAdd ta = new TableAdd(adaptee, "添加监测点", true);
         }
         else if(adaptee.judge==1)
         {
+            LOGGER.debug("执行添加测量点...");
             PointAdd ta1 = new  PointAdd(adaptee, "添加测量点", true);
         }
 
@@ -237,13 +239,14 @@ class TreeDeleteViewMenuEvent implements ActionListener {
 
     public TreeDeleteViewMenuEvent(Myclass adaptee) {
         this.adaptee = adaptee;
+        LOGGER.info("点击右键的删除处理...");
     }
 
     public void actionPerformed(ActionEvent e) {
         //全局变量x为真时，父节点下还有未删除的子节点，弹出“不能删除”的提示框
         if (adaptee.x==true) {
            JOptionPane.showMessageDialog(null,"不能删除该节点!","提示框",JOptionPane.NO_OPTION);
-
+           LOGGER.error("不能删除该节点!");
         }else {
             //弹出是否确认删除提示框
             int conform = JOptionPane.showConfirmDialog(null, "是否确认删除？", "删除节点确认", JOptionPane.YES_NO_OPTION);
@@ -251,7 +254,7 @@ class TreeDeleteViewMenuEvent implements ActionListener {
             if (conform == JOptionPane.YES_OPTION) {
                 ((DefaultMutableTreeNode) this.adaptee.getTree().getLastSelectedPathComponent()).removeFromParent();
                 this.adaptee.getTree().updateUI();
-
+                LOGGER.debug("删除完成。");
             }
         }
 
@@ -268,6 +271,7 @@ class TreeModifyViewMenuEvent implements ActionListener {
 
     public TreeModifyViewMenuEvent(Myclass adaptee) {
         this.adaptee = adaptee;
+        LOGGER.info("点击右键的修改处理...");
     }
 
     public void actionPerformed(ActionEvent e) {

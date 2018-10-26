@@ -24,15 +24,20 @@ public class SimpleSocketClient {
 
         //服务器端IP地址
 
-        String serverIP = "127.0.0.1";
+        String serverIP = "10.0.0.3";
 
         //服务器端端口号
 
-        int port = 10000;
+        int port = 8087;
 
         //发送内容
+        char a =0x05;
+        char h = 0x00;
+        char c[] ={a,'h','e','l','l','o',h};
 
-        String data = "Hello";
+
+        String data = String.valueOf(c);
+        //String data = "Hello";
 
         try {
 
