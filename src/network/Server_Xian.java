@@ -21,7 +21,7 @@ public class Server_Xian {
     private static  final Logger LOGGER = Logger.getLogger(Log4JTest.class);
     //主函数
     public static void main(String[] args) {
-        LOGGER.debug("socket主程序...");
+        LOGGER.warn("socket主程序...");
         int port = 8087;//监听端口号
         //String hello = "Hello,ImServer";
         try {
@@ -33,7 +33,9 @@ public class Server_Xian {
             String[] lip_split=lip.split("\\.");//去掉IP地址的间隔“.”
             for(String c:lip_split){
                 System.out.print(c+" ");  //输出以空格间隔的ip
+
             }
+            LOGGER.debug("获取本地IP地址成功");
             System.out.println();//隔一行
             //建立连接
             serverSocket = new ServerSocket(port);
@@ -42,26 +44,27 @@ public class Server_Xian {
             os = socket.getOutputStream();//得到输出流
 
             System.out.println(("connect successful!"));//输出“connect successful!”
-            LOGGER.debug("已经建立连接并开始发送数据...");
+            LOGGER.info("已经建立连接并开始发送数据...");
             lipp=sendData(lip_split);//送到方法处理发送的数据
             os.write(lipp);
-            LOGGER.debug("发送数据成功。");
+            LOGGER.info("发送数据成功。");
             //接收数据
-            LOGGER.debug("开始接收数据...");
+            LOGGER.info("开始接收数据...");
             is = socket.getInputStream();//得到输入流
-            LOGGER.debug("已获取得到输入流，开始解析...");
+            LOGGER.info("已获取得到输入流，开始解析...");
             byte[] b = new byte[1024];//定义字符串b
             int n = is.read(b);//计算读取到的b的长=度;
             System.out.println("客户端发送的内容为" +new String(b,0,n));//显示
             dnp(b,n);//数据解析
-            LOGGER.debug("数据解析成功");
             //当接受完收据后断开连接（无）
             os.close();
             is.close();
             socket.close();
             serverSocket.close();
+            LOGGER.warn("关闭socket");
         }catch (Exception e){
             e.printStackTrace();
+            LOGGER.error("socket连接失败...");
         }finally {
             try {
                 os.close();
@@ -70,6 +73,7 @@ public class Server_Xian {
                 serverSocket.close();
             }catch (Exception e){
                 e.printStackTrace();
+                LOGGER.error("关闭socket失败...");
             }
         }
     }
@@ -105,15 +109,18 @@ public class Server_Xian {
         lipp[13] =(byte)Short.parseShort(lip_split[2]);
         lipp[14] =(byte)Short.parseShort(lip_split[3]);
         //计算第一个crc值
+
         int crc_1 =getCrc(lipp);
         System.out.println("crc校验1： "+crc_1);//显示crc值
         lipp[9] =(byte) ((crc_1>>8)&0xff);//crc处理高位
         lipp[10] =(byte) (crc_1&0xff);//crc处理低位
+        LOGGER.debug("计算第一个CRC:"+crc_1);
         //计算第二个crc值
         int crc_2 =getCrc(lipp);
         System.out.println("crc校验2： "+crc_2);//显示crc值
         lipp[15] =(byte) ((crc_2>>8)&0xff);//crc处理高位
         lipp[16] =(byte) (crc_2&0xff);//crc处理低位
+        LOGGER.debug("计算第二个CRC:"+crc_2);
         return lipp;//返回发送的数组
     }
     //方法，数据接收解析，数组
@@ -151,6 +158,7 @@ public class Server_Xian {
                 strdata[2*j]="测量点"+(j+1);
                 strdata[(2*j+1)] =String.valueOf(da[j]);
                 System.out.println(da[j]);//显示这个数据
+                LOGGER.debug("重量数据"+(j+1)+":"+da[j]);
             }
             System.out.println(Sourse_id);
             for(int p=0;p<strdata.length;p++)
@@ -161,11 +169,13 @@ public class Server_Xian {
         }
         else {
             System.out.println("heavy data error!!!!");
+            LOGGER.error("heavy data error!!!!");
         }
         try {
             insert(strdata); //往数据库插入数据
         } catch (SQLException e) {
             e.printStackTrace();
+            LOGGER.error("往数据库插入数据失败...");
         }
 
     }
@@ -189,6 +199,7 @@ public class Server_Xian {
         // return Integer.toHexString(wcrc); //参数所表示的值以十六进制
     }
     public static Connection getConn() {
+        LOGGER.debug("建立数据库连接...");
         String user = "root";
         String password = "123456";
         String url = "jdbc:mysql://localhost:3306/StationDatabase?useUnicode=true&characterEncoding=utf-8&useSSL=false";
@@ -199,7 +210,7 @@ public class Server_Xian {
             Class.forName(driver);
             //创建连接
             conn = DriverManager.getConnection(url, user, password);
-
+            LOGGER.debug("数据库连接成功");
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         } catch (SQLException e) {
@@ -215,7 +226,7 @@ public class Server_Xian {
      */
 
     public static int insert(String [] temp ) throws SQLException {
-        LOGGER.debug("开始写入数据库...");
+        LOGGER.info("开始写入数据库...");
         Connection conn = getConn();
         int num=1;
         PreparedStatement pstmt;
@@ -227,6 +238,7 @@ public class Server_Xian {
             int size02 =temp.length-size01;
             temp01 =new String[size01];
             temp02 =new String[size02];
+            LOGGER.debug("开始分类数组...");
             for(int i =0,j=0,k=0;i<temp.length;i++){
                 if(i%2==0){
                     temp01[j++]=temp[i];
@@ -234,16 +246,19 @@ public class Server_Xian {
                     temp02[k++]=temp[i];
                 }
             }
+            LOGGER.debug("分类成功。");
             //分别将temp01的测量点名称和temp02的测量数据值插入数据库中对应的测量数据表中。
+            LOGGER.info("开始往数据表插入数据...");
             for (int m=0,n=0; m<temp01.length|n<temp02.length;m++,n++) {
                 String sql = "INSERT INTO 测量数据表(测量点名称,测量数据值) VALUES ('"+temp01[m]+"','"+temp02[n]+"')" ;
                 num=stmt.executeUpdate(sql);
                 System.out.println("插入数据成功！");
             }
+            LOGGER.debug("插入完成。");
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        LOGGER.debug("写入数据库成功");
+        LOGGER.info("写入数据库成功");
         return num;
     }
 
