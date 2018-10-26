@@ -18,7 +18,7 @@ public class Test {
     public static   Connection getConn() {
         String user = "root";
         String password = "575615578";
-        String url = "jdbc:mysql://localhost:3306/StationDatabase?useUnicode=true&characterEncoding=utf-8&useSSL=false";
+        String url = "jdbc:mysql://localhost:3306/StationDatabase?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
         String driver = "com.mysql.cj.jdbc.Driver";
         Connection conn=null;
         try {
@@ -282,15 +282,15 @@ public class Test {
             Statement stmt;
             stmt =conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_UPDATABLE);
             rs=stmt.executeQuery(selTestPointinfo);//执行查询语句
-            rs.last();//将结果集位置移到最后。
-
-            rowcount =rs.getRow();//获得当前的行编号
-            System.out.println("检索出的记录为"+rowcount);
-            if(rowcount>0){
-                return rs;//返回取得的结果集。
-            }else{
-                rs=null;
-            }
+//            rs.last();//将结果集位置移到最后。
+//
+//            rowcount =rs.getRow();//获得当前的行编号
+//            System.out.println("检索出的记录为"+rowcount);
+//            if(rowcount>0){
+//                return rs;//返回取得的结果集。
+//            }else{
+//                rs=null;
+//            }
         }catch (SQLException e){
             System.out.println("SQLException异常"+e.getMessage());//打印输出异常信息
             e.printStackTrace();
