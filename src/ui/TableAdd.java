@@ -15,6 +15,8 @@ import java.sql.SQLIntegrityConstraintViolationException;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
+import static javax.swing.JOptionPane.showMessageDialog;
+
 public class TableAdd extends JDialog implements ActionListener {
     private static final Logger LOGGER = Logger.getLogger(TableAdd.class);
     //定义面板所需各组件
@@ -83,13 +85,17 @@ public class TableAdd extends JDialog implements ActionListener {
             LOGGER.debug("刷新显示树模型");
             this.setVisible(false);
             try {
+
                 t1 = new Test();
+                //调用监测点信息添加的方法
                 t1.insertMonitorInfo(Integer.parseInt(jtf1.getText()), msg, jtf3.getText());
-            } catch (SQLIntegrityConstraintViolationException e1) {
-                JOptionPane.showMessageDialog(null, "请输入整数!", "提示框", JOptionPane.NO_OPTION);
+
+            } catch (NumberFormatException e1){
                 e1.printStackTrace();
-            } catch (SQLException e1) {
-                e1.printStackTrace();
+                JOptionPane.showMessageDialog(null, "输入编号非法，输入编号应该为整数，请重新输入编号.", "提示框", JOptionPane.NO_OPTION);
+//
+            }catch (SQLException e2) {
+                e2.printStackTrace();
             }
 
         } else if (e.getSource() == jb2) {

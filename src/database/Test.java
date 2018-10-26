@@ -1,4 +1,5 @@
 package database;
+import javax.swing.*;
 import java.sql.*;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -101,6 +102,8 @@ public class Test {
             }
         } catch (SQLException e) {
             System.out.println("SQLException异常"+e.getMessage());
+            //当用户插入的监测点编号，数据库已经存在时，提示用户重新输入编号。
+            JOptionPane.showMessageDialog(null, "输入编号已重复，请重新输入编号.", "提示框", JOptionPane.NO_OPTION);
             e.printStackTrace();
         }
         return insflag;
@@ -131,13 +134,14 @@ public class Test {
     }
     //(3)实现用户对监测点信息进行删除数据的操作。以监测点信息表的监测点编号，删除的信息主要有监测点名称，监测点位置这两个信息。
     // 输入参数为监测点编号，调用此方法，实现监测点信息的删除功能。
-    public boolean deleteMonitorInfo(int MonitorId)throws SQLException{
+    //删除监测点的记录信息。
+    public boolean deleteMonitorInfo(String MonitorName)throws SQLException{
         boolean deflag=false;
         try{
             Connection conn = getConn();
             Statement stmt;
             stmt =conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_UPDATABLE);
-            String deleteInfo ="DELETE FROM MonitorInfo "+" WHERE MonitorID ='"+MonitorId+"'";
+            String deleteInfo ="DELETE FROM MonitorInfo "+" WHERE MonitorID ='"+MonitorName+"'";
             System.out.println("删除监测点信息的SQl语句为"+deleteInfo);
             int count = stmt.executeUpdate(deleteInfo);
             if(count>0){
@@ -165,13 +169,6 @@ public class Test {
             String selectInfo="select * from MonitorInfo ";
             System.out.println("插入监测点信息的SQL语句为："+selectInfo);
             stmt.executeQuery(selectInfo);
-//            if(count>0){
-////                /* 如果有SQL语句被更新*/
-////                insflag=true;
-////            }else{
-////                /*如何没有SQL语句被更新*/
-////                insflag=false;
-////            }
         } catch (SQLException e) {
             System.out.println("SQLException异常"+e.getMessage());
             e.printStackTrace();
