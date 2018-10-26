@@ -317,7 +317,7 @@ class TreeModifyViewMenuEvent implements ActionListener {
         }
         else if(adaptee.getJudge()==2)
         {
-            TableAmend ta1 = new  TableAmend (adaptee, "修改测量点信息", true);
+           PointAmend ta1 = new  PointAmend (adaptee, "修改测量点信息", true);
         }
     }
 
