@@ -12,8 +12,8 @@ import javax.swing.tree.DefaultMutableTreeNode;
 public class PointAmend extends JDialog implements ActionListener {
     private static  final org.apache.log4j.Logger LOGGER = org.apache.log4j.Logger.getLogger(PointAmend.class);
     JButton jb1,jb2;
-    JLabel jl1,jl2,jl3;
-    JTextField jtf1,jtf2,jtf3;
+    JLabel jl1,jl2;
+    JTextField jtf1,jtf2;
     JPanel jp1,jp2;
     Myclass owner;
     //owner代表父窗口
@@ -27,11 +27,11 @@ public class PointAmend extends JDialog implements ActionListener {
         this.owner = (Myclass)owner;
         jl1=new JLabel("测量点编号");
         jl2=new JLabel("测量点名称");
-        jl3=new JLabel("所属监测点编号");
+
 
         jtf1=new JTextField(10);
         jtf2=new JTextField(10);
-        jtf3=new JTextField(10);
+
         jb1=new JButton("修改");
         jb1.addActionListener(this);
         jb2=new JButton("取消");
@@ -43,8 +43,8 @@ public class PointAmend extends JDialog implements ActionListener {
         jp1.add(jtf1);
         jp1.add(jl2);
         jp1.add(jtf2);
-        jp1.add(jl3);
-        jp1.add(jtf3);
+
+
         jp2.add(jb1);
         jp2.add(jb2);
         this.add(jp1,BorderLayout.NORTH);

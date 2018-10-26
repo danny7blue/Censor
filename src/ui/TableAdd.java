@@ -2,13 +2,16 @@ package ui;
 /*
    监测点的增加方法
  */
-import log.Log4JTest;
+
+import database.Test;
 import org.apache.log4j.Logger;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
@@ -20,6 +23,7 @@ public class TableAdd extends JDialog implements ActionListener {
     JTextField jtf1,jtf2,jtf3;
     JPanel jp1,jp2;
     Myclass owner;
+    Test t1;
     //owner代表父窗口
     //title代表窗口名
     //model指定的是模式窗口好事非模式窗口
@@ -66,8 +70,9 @@ public class TableAdd extends JDialog implements ActionListener {
     }
     //按键监听方法
     public void actionPerformed(ActionEvent e) {
+
         if (e.getSource() == jb1) {
-            String msg=jtf2.getText();//获得输入的监测点名称
+            String msg = jtf2.getText();//获得输入的监测点名称
             LOGGER.debug("获得输入的监测点名称");
             DefaultMutableTreeNode treenode = new DefaultMutableTreeNode(msg);
             ((DefaultMutableTreeNode) owner.getTree().getLastSelectedPathComponent()).add(treenode);
@@ -76,8 +81,20 @@ public class TableAdd extends JDialog implements ActionListener {
             owner.getTree().updateUI();
             LOGGER.debug("刷新显示树模型");
             this.setVisible(false);
-        } else if (e.getSource() == jb2) {
-            this.setVisible(false);
+//            try {
+//                t1 = new Test();
+//                t1.insertMonitorInfo(Integer.parseInt(jtf1.getText()), msg, jtf3.getText());
+//            } catch (SQLIntegrityConstraintViolationException e1) {
+//                JOptionPane.showMessageDialog(null,"请输入整数!","提示框",JOptionPane.NO_OPTION);
+//                e1.printStackTrace();
+//
+//            } catch (SQLException e1) {
+//                e1.printStackTrace();
+//            }
+//
+//        } else if (e.getSource() == jb2) {
+//            this.setVisible(false);
+//        }
         }
     }
 

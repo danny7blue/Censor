@@ -2,7 +2,6 @@ package ui;
 /*
    监测点的修改方法
  */
-import log.Log4JTest;
 import org.apache.log4j.Logger;
 
 import javax.swing.*;
