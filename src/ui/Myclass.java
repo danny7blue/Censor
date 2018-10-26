@@ -1,4 +1,6 @@
 package ui;
+import log.Log4JTest;
+
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
@@ -13,7 +15,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Myclass extends JFrame implements ActionListener{
-
     //北部区域
     JLabel label;
     JPanel jp1;
@@ -206,7 +207,7 @@ public class Myclass extends JFrame implements ActionListener{
  * popmenu点击右键的增加处理
  */
 class TreeAddViewMenuEvent implements ActionListener {
-
+    private static  final org.apache.log4j.Logger LOGGER = org.apache.log4j.Logger.getLogger(TreeAddViewMenuEvent.class);
     private Myclass  adaptee;
 
     public TreeAddViewMenuEvent(Myclass  adaptee) {
@@ -231,7 +232,7 @@ class TreeAddViewMenuEvent implements ActionListener {
  * popmenu点击右键的删除处理
  */
 class TreeDeleteViewMenuEvent implements ActionListener {
-
+    private static  final org.apache.log4j.Logger LOGGER = org.apache.log4j.Logger.getLogger(TreeDeleteViewMenuEvent.class);
     private Myclass  adaptee;
 
     public TreeDeleteViewMenuEvent(Myclass adaptee) {
@@ -262,7 +263,7 @@ class TreeDeleteViewMenuEvent implements ActionListener {
  * popmenu点击右键的修改处理
  */
 class TreeModifyViewMenuEvent implements ActionListener {
-
+    private static  final org.apache.log4j.Logger LOGGER = org.apache.log4j.Logger.getLogger(TreeModifyViewMenuEvent.class);
     private Myclass adaptee;
 
     public TreeModifyViewMenuEvent(Myclass adaptee) {
@@ -271,12 +272,17 @@ class TreeModifyViewMenuEvent implements ActionListener {
 
     public void actionPerformed(ActionEvent e) {
 //
+
         if(adaptee.judge==1) {
+            LOGGER.info("修改监测点信息...");
             TableAmend ta= new TableAmend(adaptee, "修改监测点信息", true);
+            LOGGER.info("修改监测点信息完成。");
         }
         else if(adaptee.judge==2)
         {
+            LOGGER.info("修改测量点信息...");
             PointAmend  ta1 = new  PointAmend (adaptee, "修改测量点信息", true);
+            LOGGER.info("修改测量点信息完成。");
         }
     }
 }
@@ -285,11 +291,12 @@ class TreeModifyViewMenuEvent implements ActionListener {
  * 菜单点击右键的事件处理
  */
 class TreePopMenuEvent implements MouseListener {
-
+    private static  final org.apache.log4j.Logger LOGGER = org.apache.log4j.Logger.getLogger(TreePopMenuEvent.class);
     private Myclass adaptee;
 
     public TreePopMenuEvent(Myclass  adaptee) {
         this.adaptee = adaptee;
+        LOGGER.warn("显示界面");
     }
 
     public void mouseClicked(MouseEvent e) {
@@ -297,6 +304,7 @@ class TreePopMenuEvent implements MouseListener {
     }
 
     public void mousePressed(MouseEvent e) {
+        LOGGER.info("鼠标点击...");
         TreePath path = adaptee.getTree().getPathForLocation(e.getX(), e.getY()); // 关键是这个方法的使用
         if (path == null) {
             return;
@@ -306,39 +314,42 @@ class TreePopMenuEvent implements MouseListener {
 
         //判断右键点击的是父节点还是子节点，点击根节点时能添加但不能修改，点击父节点时能添加能修改
         //点击子节点时能修改但不能添加
+        LOGGER.debug("判断节点类型...");
         for(int i=0;i<=currentNode.getLevel();i++) {
             if (currentNode.getLevel() == 0) {
                 //判断是否点击当前节点
                 if (e.getButton() == 3) {
                     adaptee.getPopMenu().show(adaptee.getTree(), e.getX(), e.getY()); //显示菜单栏
                     adaptee.judge=0;
+                    LOGGER.debug("鼠标点击空节点层");
                 }
             }else if(currentNode.getLevel() == 1){
                 if (e.getButton() == 3) {
                     adaptee.getPopMenu().show(adaptee.getTree(), e.getX(), e.getY());
                     adaptee.judge=1;
-
-
+                    LOGGER.debug("鼠标点击监测点层");
                 }
-
            }else if (currentNode.getLevel() ==2)
             {
                 adaptee.getPopMenu().show(adaptee.getTree(), e.getX(), e.getY());
                 adaptee.judge=2;
+                LOGGER.debug("鼠标点击测量点层");
             }
             //当监测点下还有未删除的测量点，则不能删除该监测点
             if (currentNode.getChildCount()!=0)
             {
                 adaptee.x=true;
+                LOGGER.debug("判断监测点下没有测量点，能删除");
             }else
             {
                 adaptee.x=false;
+                LOGGER.debug("监测点下有测量点，不能删除");
             }
         }
         adaptee.getTree().setSelectionPath(path);
-        if (e.getButton() == 3) {
-            adaptee.getPopMenu().show(adaptee.getTree(), e.getX(), e.getY());
-        }
+//        if (e.getButton() == 3) {
+//            adaptee.getPopMenu().show(adaptee.getTree(), e.getX(), e.getY());
+//        }
 
     }
 

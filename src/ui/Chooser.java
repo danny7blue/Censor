@@ -1,5 +1,8 @@
 package ui;
 
+import log.Log4JTest;
+import org.apache.log4j.Logger;
+
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -35,7 +38,6 @@ import javax.swing.event.AncestorListener;
 
 
 public class Chooser extends JPanel{
-
     private static final long serialVersionUID = -5384012731547358720L;
 
     private Calendar calendar;

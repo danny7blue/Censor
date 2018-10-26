@@ -10,6 +10,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 
 
 public class PointAmend extends JDialog implements ActionListener {
+    private static  final org.apache.log4j.Logger LOGGER = org.apache.log4j.Logger.getLogger(PointAmend.class);
     JButton jb1,jb2;
     JLabel jl1,jl2,jl3;
     JTextField jtf1,jtf2,jtf3;
@@ -21,6 +22,7 @@ public class PointAmend extends JDialog implements ActionListener {
     public  PointAmend(Frame owner,String title,boolean model)
     {
         super(owner, title,model);//调用父类构造方法，达到模式对话框效果
+        LOGGER.info("进入修改测量点模式...");
         //定义组件
         this.owner = (Myclass)owner;
         jl1=new JLabel("测量点编号");
@@ -51,7 +53,7 @@ public class PointAmend extends JDialog implements ActionListener {
         this.setLocation(500,200);
         this.setSize(300,200);
         this.setVisible(true);
-
+        LOGGER.info("显示窗体...");
 //        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 
@@ -59,13 +61,17 @@ public class PointAmend extends JDialog implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == jb1) {
             String msg=jtf2.getText();   //获得输入的测量点名称
+            LOGGER.debug("获得输入的测量点名称");
             DefaultMutableTreeNode node = (DefaultMutableTreeNode) this.owner.getTree().getSelectionPath().getLastPathComponent();
+
             //改名
             node.setUserObject(msg);
+            LOGGER.debug("更改测量点名称成功");
             //刷新
             this.owner.getTree().updateUI();
             owner.getTree().updateUI();
             this.setVisible(false); //设置Jdilog不可见
+            LOGGER.debug("刷新测量点信息成功");
         } else if (e.getSource() == jb2) {
             this.setVisible(false);
         }
