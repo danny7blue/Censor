@@ -1,5 +1,4 @@
 package ui;
-import log.Log4JTest;
 
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;

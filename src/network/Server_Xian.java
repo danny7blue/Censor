@@ -1,5 +1,4 @@
 package network;
-import log.Log4JTest;
 import org.apache.log4j.Logger;
 
 import java.net.*;
@@ -18,7 +17,7 @@ public class Server_Xian {
     static OutputStream os = null;
     static InputStream is = null;
     static InetAddress ia=null;
-    private static  final Logger LOGGER = Logger.getLogger(Log4JTest.class);
+    private static  final Logger LOGGER = Logger.getLogger(Server_Xian.class);
     //主函数
     public static void main(String[] args) {
         LOGGER.warn("socket主程序...");

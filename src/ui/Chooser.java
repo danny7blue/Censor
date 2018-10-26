@@ -1,6 +1,5 @@
 package ui;
 
-import log.Log4JTest;
 import org.apache.log4j.Logger;
 
 import java.awt.BasicStroke;

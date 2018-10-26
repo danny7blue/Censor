@@ -2,7 +2,6 @@ package ui;
 /*
    测量点的增加方法
  */
-import log.Log4JTest;
 import org.apache.log4j.Logger;
 
 import javax.swing.*;

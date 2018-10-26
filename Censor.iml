@@ -21,7 +21,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://E:/install/log4j-1.2.17/apache-log4j-1.2.17/log4j-1.2.17.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/log4j-1.2.17.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
