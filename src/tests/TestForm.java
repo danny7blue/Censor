@@ -4,6 +4,7 @@
 
 package tests;
 
+import database.Test;
 import util.DateSelector;
 
 import java.awt.*;
@@ -29,11 +30,16 @@ import javax.swing.tree.TreePath;
 public class TestForm extends JPanel {
     private static Connection con = null;
     private static Statement stm = null;
-    DefaultTableModel tableModel;		// 默认显示的表格
+    //默认显示的表格
+    DefaultTableModel tableModel;
     DateSelector ser;
+    static Test dataOper;
+    int level = 0;
 
     static {
-        con = DatabaseCon.getConnection();
+//        con = DatabaseCon.getConnection();
+        dataOper = new Test();
+        con = dataOper.getConn();
         try {
             stm = con.createStatement();
         } catch (SQLException e) {
@@ -44,30 +50,51 @@ public class TestForm extends JPanel {
     public TestForm() {
         initComponents();
         // 取得数据库的表的各行数据
-        Vector rowData = getRows();
+        Vector rowData = getRows(null);
         // 取得数据库的表的表头数据
-        Vector columnNames = getHead();
+        Vector columnNames = getHead(null);
         // 新建表格
         tableModel = new DefaultTableModel(rowData,columnNames);
         dataTable.setModel(tableModel);
         //初始化树结构
         init_tree();
         //初始化树的右键菜单
-        popMenuInit();
+        rootPopMenuInit();
+        inspectorPopMenuInit();
+        measurePointPopMenuInit();
     }
 
-    //右键点击分类导航树的菜单
-    private void popMenuInit() {
-        rightClickPopMenu = new JPopupMenu();
-        JMenuItem addItem = new JMenuItem("添加");
+    //根节点右键点击分类导航树的菜单
+    private void rootPopMenuInit() {
+        rootRightClickPopMenu = new JPopupMenu();
+        JMenuItem addItem = new JMenuItem("添加监测点");
         addItem.addActionListener(new TreeAddViewMenuEvent(this));
-        JMenuItem delItem = new JMenuItem("删除");
+        rootRightClickPopMenu.add(addItem);
+    }
+
+    //监测点节点右键点击分类导航树的菜单
+    private void inspectorPopMenuInit() {
+        inspectorRightClickPopMenu = new JPopupMenu();
+        JMenuItem addItem = new JMenuItem("添加测量点");
+        addItem.addActionListener(new TreeAddViewMenuEvent(this));
+        JMenuItem delItem = new JMenuItem("删除本监测点");
         delItem.addActionListener(new TreeDeleteViewMenuEvent(this));
-        JMenuItem modifyItem = new JMenuItem("修改");
+        JMenuItem modifyItem = new JMenuItem("修改本监测点");
         modifyItem.addActionListener(new TreeModifyViewMenuEvent(this));
-        rightClickPopMenu.add(addItem);
-        rightClickPopMenu.add(delItem);
-        rightClickPopMenu.add(modifyItem);
+        inspectorRightClickPopMenu.add(addItem);
+        inspectorRightClickPopMenu.add(delItem);
+        inspectorRightClickPopMenu.add(modifyItem);
+    }
+
+    //测量点右键点击分类导航树的菜单
+    private void measurePointPopMenuInit() {
+        measureRightClickPopMenu = new JPopupMenu();
+        JMenuItem delItem = new JMenuItem("删除本测量点");
+        delItem.addActionListener(new TreeDeleteViewMenuEvent(this));
+        JMenuItem modifyItem = new JMenuItem("修改本测量点");
+        modifyItem.addActionListener(new TreeModifyViewMenuEvent(this));
+        measureRightClickPopMenu.add(delItem);
+        measureRightClickPopMenu.add(modifyItem);
     }
 
     /**
@@ -87,24 +114,31 @@ public class TestForm extends JPanel {
         jTreeScrollPane.getViewport().add(inspectorSelectorTree);
     }
 
+    public static Test getDataOper(){
+        return dataOper;
+    }
+
 
 
     // 得到数据库表数据
-    public static Vector getRows(){
+    public static Vector getRows(ResultSet rs){
         Vector rows = null;
         Vector columnHeads = null;
 
         try {
-            PreparedStatement preparedStatement = null;
-            preparedStatement = con.prepareStatement("select * from price_data");
-            ResultSet result1 = preparedStatement.executeQuery();
+//            PreparedStatement preparedStatement = null;
+//            preparedStatement = con.prepareStatement("select * from price_data");
+//            ResultSet result1 = preparedStatement.executeQuery();
 
+//            ResultSet result1 = dataOper.search(((DefaultMutableTreeNode)getTree().getLastSelectedPathComponent()).getParent().toString(), getTree().getLastSelectedPathComponent().toString(), getDateTextField().toString());
             rows = new Vector();
+            if (rs != null) {
 
-            ResultSetMetaData rsmd = result1.getMetaData();
+                ResultSetMetaData rsmd = rs.getMetaData();
 
-            while(result1.next()){
-                rows.addElement(getNextRow(result1,rsmd));
+                while(rs.next()){
+                    rows.addElement(getNextRow(rs,rsmd));
+                }
             }
 
         } catch (SQLException e) {
@@ -116,24 +150,23 @@ public class TestForm extends JPanel {
     }
 
     // 得到数据库表头
-    public static Vector getHead(){
+    public static Vector getHead(ResultSet rs){
         PreparedStatement preparedStatement = null;
 
         Vector columnHeads = null;
 
         try {
-            preparedStatement = con.prepareStatement("select * from price_data");
-            ResultSet result1 = preparedStatement.executeQuery();
+//            preparedStatement = con.prepareStatement("select * from price_data");
+//            ResultSet result1 = preparedStatement.executeQuery();
 
-            boolean moreRecords = result1.next();
-            if(!moreRecords)
-                JOptionPane.showMessageDialog(null, "结果集中无记录");
+//            ResultSet result1 = dataOper.search(((DefaultMutableTreeNode)getTree().getLastSelectedPathComponent()).getParent().toString(), getTree().getLastSelectedPathComponent().toString(), getDateTextField().toString());
 
             columnHeads = new Vector();
-            ResultSetMetaData rsmd = result1.getMetaData();
-            for(int i = 1; i <= rsmd.getColumnCount(); i++)
-                columnHeads.addElement(rsmd.getColumnName(i));
-
+            if (rs != null) {
+                ResultSetMetaData rsmd = rs.getMetaData();
+                for(int i = 1; i <= rsmd.getColumnCount(); i++)
+                    columnHeads.addElement(rsmd.getColumnName(i));
+            }
         } catch (SQLException e) {
             // TODO Auto-generated catch block
             System.out.println("未成功打开数据库。");
@@ -158,7 +191,7 @@ public class TestForm extends JPanel {
         //获取日期控件工具类
         ser = DateSelector.getInstance();
         //使用日期控件工具
-        ser.register(dateTextField, inspectorSelectorTree);
+        ser.register(this);
         dateTextField.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -170,8 +203,8 @@ public class TestForm extends JPanel {
     public final void init_tree() {
         try {
             ArrayList list = new ArrayList();
-            list.add("Category List");
-            String sql = "SELECT * from category";
+            list.add("监测点列表");
+            String sql = "SELECT * from monitorinfo";
 
             ResultSet rs = stm.executeQuery(sql);
 
@@ -199,7 +232,7 @@ public class TestForm extends JPanel {
             int ctrow = 0;
             int i = 0;
             try {
-                String sql = "SELECT catid, catname from category";
+                String sql = "SELECT MonitorID, MonitorName from monitorinfo";
                 ResultSet rs = stm.executeQuery(sql);
 
                 while (rs.next()) {
@@ -209,18 +242,18 @@ public class TestForm extends JPanel {
                 String L1Id[] = new String[ctrow];
                 ResultSet rs1 = stm.executeQuery(sql);
                 while (rs1.next()) {
-                    L1Nam[i] = rs1.getString("catname");
-                    L1Id[i] = rs1.getString("catid");
+                    L1Nam[i] = rs1.getString("MonitorName");
+                    L1Id[i] = rs1.getString("MonitorID");
                     i++;
                 }
                 DefaultMutableTreeNode child, grandchild;
                 for (int childIndex = 0; childIndex < L1Nam.length; childIndex++) {
                     child = new DefaultMutableTreeNode(L1Nam[childIndex]);
                     node.add(child);//add each created child to root
-                    String sql2 = "SELECT scatname from subcategory where catid= '" + L1Id[childIndex] + "' ";
+                    String sql2 = "SELECT TestName from testinfo where TestMonitorID= '" + L1Id[childIndex] + "' ";
                     ResultSet rs3 = stm.executeQuery(sql2);
                     while (rs3.next()) {
-                        grandchild = new DefaultMutableTreeNode(rs3.getString("scatname"));
+                        grandchild = new DefaultMutableTreeNode(rs3.getString("TestName"));
                         child.add(grandchild);//add each grandchild to each child
                     }
                 }
@@ -235,15 +268,27 @@ public class TestForm extends JPanel {
         return (node);
     }
 
-    public JTree getTree(){
+    public static JTree getTree(){
         return inspectorSelectorTree;
     }
 
-    public JPopupMenu getRightClickPopMenu(){
-        return rightClickPopMenu;
+    public JTable getDataTable(){
+        return dataTable;
     }
 
-    public JTextField getDateTextField(){
+    public JPopupMenu getRootRightClickPopMenu(){
+        return rootRightClickPopMenu;
+    }
+
+    public JPopupMenu getInspectorRightClickPopMenu(){
+        return inspectorRightClickPopMenu;
+    }
+
+    public JPopupMenu getMeasureRightClickPopMenu(){
+        return measureRightClickPopMenu;
+    }
+
+    public static JTextField getDateTextField(){
         return dateTextField;
     }
 
@@ -260,7 +305,6 @@ public class TestForm extends JPanel {
         inspectorSelectorTree = new JTree();
         jTableScrollPane = new JScrollPane();
         dataTable = new JTable();
-        rightClickPopMenu = new JPopupMenu();
         setDateSelector();
 
         //======== mainFrame ========
@@ -353,14 +397,16 @@ public class TestForm extends JPanel {
     private JFrame mainFrame;
     private JPanel datePanel;
     private JLabel selectDateLabel;
-    private JTextField dateTextField;
+    private static JTextField dateTextField;
     private JSeparator verticalSeparator;
     private JSeparator horizontalSeparator;
     private JScrollPane jTreeScrollPane;
-    private JTree inspectorSelectorTree;
+    private static JTree inspectorSelectorTree;
     private JScrollPane jTableScrollPane;
     private JTable dataTable;
-    private JPopupMenu rightClickPopMenu;
+    private JPopupMenu rootRightClickPopMenu;
+    private JPopupMenu inspectorRightClickPopMenu;
+    private JPopupMenu measureRightClickPopMenu;
     // JFormDesigner - End of variables declaration  //GEN-END:variables
 
     public static void main(String[] args){
@@ -369,6 +415,17 @@ public class TestForm extends JPanel {
         form.mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
+    }
+
+    public JFrame getMainFrame(){
+        return mainFrame;
+    }
 }
 
 /**
@@ -376,20 +433,27 @@ public class TestForm extends JPanel {
  */
 class TreeModifyViewMenuEvent implements ActionListener {
 
-    private TestForm adaptee;
+    private TestForm testForm;
 
-    public TreeModifyViewMenuEvent(TestForm adaptee) {
-        this.adaptee = adaptee;
+    public TreeModifyViewMenuEvent(TestForm testForm) {
+        this.testForm = testForm;
     }
 
     public void actionPerformed(ActionEvent e) {
-        String name = JOptionPane.showInputDialog("请输入新分类节点名称：");
-
-        DefaultMutableTreeNode node = (DefaultMutableTreeNode) this.adaptee.getTree().getSelectionPath().getLastPathComponent();
-        //改名
-        node.setUserObject(name);
-        //刷新
-        this.adaptee.getTree().updateUI();
+        if(testForm.getLevel() == 1) {
+            InspectorModifyDialog inspectorModifyDialog = new InspectorModifyDialog(testForm.getMainFrame(), "修改监测点", true, testForm.getTree());
+        }
+        else if (testForm.getLevel() == 2)
+        {
+            MeasurePointModifyDialog measurePointModifyDialog = new MeasurePointModifyDialog(testForm.getMainFrame(), "修改测量点", true, testForm.getTree());
+        }
+//        String name = JOptionPane.showInputDialog("请输入新分类节点名称：");
+//
+//        DefaultMutableTreeNode node = (DefaultMutableTreeNode) this.adaptee.getTree().getSelectionPath().getLastPathComponent();
+//        //改名
+//        node.setUserObject(name);
+//        //刷新
+//        this.adaptee.getTree().updateUI();
     }
 }
 
@@ -398,18 +462,25 @@ class TreeModifyViewMenuEvent implements ActionListener {
  */
 class TreeAddViewMenuEvent implements ActionListener {
 
-    private TestForm adaptee;
+    private TestForm testForm;
 
-    public TreeAddViewMenuEvent(TestForm adaptee) {
-        this.adaptee = adaptee;
+    public TreeAddViewMenuEvent(TestForm testForm) {
+        this.testForm = testForm;
     }
 
     public void actionPerformed(ActionEvent e) {
-        String name = JOptionPane.showInputDialog("请输入分类节点名称：");
-        DefaultMutableTreeNode treenode = new DefaultMutableTreeNode(name);
-        ((DefaultMutableTreeNode) this.adaptee.getTree().getLastSelectedPathComponent()).add(treenode);
-        this.adaptee.getTree().expandPath(new TreePath(((DefaultMutableTreeNode) this.adaptee.getTree().getLastSelectedPathComponent()).getPath()));
-        this.adaptee.getTree().updateUI();
+        if(testForm.getLevel() == 0) {
+            InspectorAddDialog inspectorAddDialog = new InspectorAddDialog(testForm.getMainFrame(), "添加监测点", true, testForm.getTree());
+        }
+        else if (testForm.getLevel() == 1)
+        {
+            MeasurePointAddDialog measurePointAddDialog = new MeasurePointAddDialog(testForm.getMainFrame(), "添加测量点", true, testForm.getTree());
+        }
+//        String name = JOptionPane.showInputDialog("请输入分类节点名称：");
+//        DefaultMutableTreeNode treenode = new DefaultMutableTreeNode(name);
+//        ((DefaultMutableTreeNode) this.adaptee.getTree().getLastSelectedPathComponent()).add(treenode);
+//        this.adaptee.getTree().expandPath(new TreePath(((DefaultMutableTreeNode) this.adaptee.getTree().getLastSelectedPathComponent()).getPath()));
+//        this.adaptee.getTree().updateUI();
     }
 }
 
@@ -418,18 +489,18 @@ class TreeAddViewMenuEvent implements ActionListener {
  */
 class TreeDeleteViewMenuEvent implements ActionListener {
 
-    private TestForm adaptee;
+    private TestForm testForm;
 
-    public TreeDeleteViewMenuEvent(TestForm adaptee) {
-        this.adaptee = adaptee;
+    public TreeDeleteViewMenuEvent(TestForm testForm) {
+        this.testForm = testForm;
     }
 
     public void actionPerformed(ActionEvent e) {
         int conform = JOptionPane.showConfirmDialog(null, "是否确认删除？", "删除景点确认", JOptionPane.YES_NO_OPTION);
         if (conform == JOptionPane.YES_OPTION) {
-            DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode) (((DefaultMutableTreeNode) this.adaptee.getTree().getLastSelectedPathComponent()).getParent());
-            ((DefaultMutableTreeNode) this.adaptee.getTree().getLastSelectedPathComponent()).removeFromParent();
-            this.adaptee.getTree().updateUI();
+            DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode) (((DefaultMutableTreeNode) this.testForm.getTree().getLastSelectedPathComponent()).getParent());
+            ((DefaultMutableTreeNode) this.testForm.getTree().getLastSelectedPathComponent()).removeFromParent();
+            this.testForm.getTree().updateUI();
         }
     }
 }
@@ -453,11 +524,66 @@ class TreePopMenuEvent implements MouseListener {
         testForm.getTree().setSelectionPath(path);
         //左键点击节点时查询数据库获得该节点数据并刷新右侧table
         if (e.getButton() == 1) {
-            System.out.println(testForm.getTree().getLastSelectedPathComponent());
-            System.out.println(testForm.getDateTextField().getText());
+            //点击监测节点时
+            if (((DefaultMutableTreeNode)testForm.getTree().getLastSelectedPathComponent()).getLevel() == 1) {
+                //Do nothing
+                System.out.println("当前层级为1");
+                System.out.println(testForm.getTree().getLastSelectedPathComponent());
+                System.out.println(testForm.getDateTextField().getText());
+            } else
+                //点击测量节点时
+                if (((DefaultMutableTreeNode)testForm.getTree().getLastSelectedPathComponent()).getLevel() == 2) {
+                    System.out.println("当前层级为2");
+                    try {
+                        String monitorName = ((DefaultMutableTreeNode)testForm.getTree().getLastSelectedPathComponent()).getParent().toString();
+                        String measureName = testForm.getTree().getLastSelectedPathComponent().toString();
+                        String selectedDate = testForm.getDateTextField().getText();
+                        System.out.println(monitorName);
+                        System.out.println(measureName);
+                        System.out.println(selectedDate);
+                        ResultSet result1 = testForm.getDataOper().search(monitorName, measureName, selectedDate);
+                        // 取得数据库的表的各行数据
+                        Vector rowData = testForm.getRows(result1);
+                        // 取得数据库的表的表头数据
+                        Vector columnNames = testForm.getHead(result1);
+                        // 新建表格
+                        DefaultTableModel tableModel = new DefaultTableModel(rowData,columnNames);
+                        testForm.getDataTable().setModel(tableModel);
+                        testForm.updateUI();
+                    } catch (SQLException e1) {
+                        e1.printStackTrace();
+                    }
+                }
         }
         if (e.getButton() == 3) {
-            testForm.getRightClickPopMenu().show(testForm.getTree(), e.getX(), e.getY());
+            //点击根节点时
+            if (((DefaultMutableTreeNode)testForm.getTree().getLastSelectedPathComponent()).getLevel() == 0) {
+                System.out.println("当前层级为0");
+                System.out.println(testForm.getTree().getLastSelectedPathComponent());
+                System.out.println(testForm.getDateTextField().getText());
+                testForm.getRootRightClickPopMenu().show(testForm.getTree(), e.getX(), e.getY());
+                //当前为根节点
+                testForm.setLevel(0);
+            }
+            //点击监测节点时
+            if (((DefaultMutableTreeNode)testForm.getTree().getLastSelectedPathComponent()).getLevel() == 1) {
+                System.out.println("当前层级为1");
+                System.out.println(testForm.getTree().getLastSelectedPathComponent());
+                System.out.println(testForm.getDateTextField().getText());
+                testForm.getInspectorRightClickPopMenu().show(testForm.getTree(), e.getX(), e.getY());
+                //当前为监测节点
+                testForm.setLevel(1);
+            } else
+                //点击测量节点时
+                if (((DefaultMutableTreeNode)testForm.getTree().getLastSelectedPathComponent()).getLevel() == 2) {
+                    System.out.println("当前层级为2");
+                    System.out.println(testForm.getTree().getLastSelectedPathComponent());
+                    System.out.println(testForm.getDateTextField().getText());
+                    System.out.println(((DefaultMutableTreeNode)testForm.getTree().getLastSelectedPathComponent()).getParent());
+                    testForm.getMeasureRightClickPopMenu().show(testForm.getTree(), e.getX(), e.getY());
+                    //当前为测量节点
+                    testForm.setLevel(2);
+                }
         }
     }
 

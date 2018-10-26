@@ -1,13 +1,17 @@
 package util;
 
+import tests.TestForm;
+
 import javax.swing.*;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.tree.DefaultMutableTreeNode;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.*;
 import java.util.List;
 
 
@@ -26,6 +30,7 @@ public class DateSelector extends JPanel{
     private BodyPanel bodyPanel;
     private FooterPanel footerPanel;
 
+    private TestForm testForm;
     private JComponent showDate;
     private JTree tree;
     private boolean isShow = false;
@@ -79,47 +84,48 @@ public class DateSelector extends JPanel{
             }
         });
     }
-    public void register(JComponent showComponent, JTree tree) {
-        this.showDate = showComponent;
-        this.tree = tree;
-        showComponent.setRequestFocusEnabled(true);
-        showComponent.addMouseListener(new MouseAdapter() {
+    public void register(TestForm testForm) {
+        this.testForm = testForm;
+        this.showDate = testForm.getDateTextField();
+        this.tree = testForm.getTree();
+        showDate.setRequestFocusEnabled(true);
+        showDate.addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent me) {
-                showComponent.requestFocusInWindow();
+                showDate.requestFocusInWindow();
             }
         });
 //        this.add(showComponent, BorderLayout.CENTER);
         this.setPreferredSize(new Dimension(90, 25));
         this.setBorder(BorderFactory.createLineBorder(Color.GRAY));
-        showComponent.addMouseListener(new MouseAdapter() {
+        showDate.addMouseListener(new MouseAdapter() {
             public void mouseEntered(MouseEvent me) {
-                if (showComponent.isEnabled()) {
-                    showComponent.setCursor(new Cursor(Cursor.HAND_CURSOR));
+                if (showDate.isEnabled()) {
+                    showDate.setCursor(new Cursor(Cursor.HAND_CURSOR));
                 }
             }
             public void mouseExited(MouseEvent me) {
-                if (showComponent.isEnabled()) {
-                    showComponent.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-                    showComponent.setForeground(Color.BLACK);
+                if (showDate.isEnabled()) {
+                    showDate.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+                    showDate.setForeground(Color.BLACK);
                 }
             }
             public void mousePressed(MouseEvent me) {
-                if (showComponent.isEnabled()) {
-                    showComponent.setForeground(hoverColor);
+                if (showDate.isEnabled()) {
+                    showDate.setForeground(hoverColor);
                     if (isShow) {
                         hidePanel();
                     } else {
-                        showPanel(showComponent);
+                        showPanel(showDate);
                     }
                 }
             }
             public void mouseReleased(MouseEvent me) {
-                if (showComponent.isEnabled()) {
-                    showComponent.setForeground(Color.BLACK);
+                if (showDate.isEnabled()) {
+                    showDate.setForeground(Color.BLACK);
                 }
             }
         });
-        showComponent.addFocusListener(new FocusListener() {
+        showDate.addFocusListener(new FocusListener() {
             public void focusLost(FocusEvent e) {
                 hidePanel();
             }
@@ -159,8 +165,36 @@ public class DateSelector extends JPanel{
         }
         hidePanel();
         //查询数据库并刷新测量数据表
-        System.out.println(((JTextField)showDate).getText());
-        System.out.println(tree.getLastSelectedPathComponent());
+        //点击父节点时
+        if (((DefaultMutableTreeNode)tree.getLastSelectedPathComponent()).getLevel() == 1) {
+            //Do nothing
+            System.out.println("当前层级为1");
+            System.out.println(tree.getLastSelectedPathComponent());
+            System.out.println(((JTextField)showDate).getText());
+        } else
+            //点击子节点时
+            if (((DefaultMutableTreeNode)tree.getLastSelectedPathComponent()).getLevel() == 2) {
+                System.out.println("当前层级为2");
+                try {
+                    String monitorName = ((DefaultMutableTreeNode)tree.getLastSelectedPathComponent()).getParent().toString();
+                    String measureName = tree.getLastSelectedPathComponent().toString();
+                    String selectedDate = ((JTextField)showDate).getText();
+                    System.out.println(monitorName);
+                    System.out.println(measureName);
+                    System.out.println(selectedDate);
+                    ResultSet result1 = testForm.getDataOper().search(monitorName, measureName, selectedDate);
+                    // 取得数据库的表的各行数据
+                    Vector rowData = testForm.getRows(result1);
+                    // 取得数据库的表的表头数据
+                    Vector columnNames = testForm.getHead(result1);
+                    // 新建表格
+                    DefaultTableModel tableModel = new DefaultTableModel(rowData,columnNames);
+                    testForm.getDataTable().setModel(tableModel);
+                    testForm.updateUI();
+                } catch (SQLException e1) {
+                    e1.printStackTrace();
+                }
+            }
     }
 
     // control panel
