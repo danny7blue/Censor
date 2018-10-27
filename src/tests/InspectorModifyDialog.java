@@ -3,6 +3,7 @@ package tests;
    监测点的修改方法
  */
 
+import database.Test;
 import ui.Myclass;
 
 import javax.swing.*;
@@ -10,6 +11,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 
 
 public class InspectorModifyDialog extends JDialog implements ActionListener {
@@ -18,6 +20,7 @@ public class InspectorModifyDialog extends JDialog implements ActionListener {
     JTextField jtf1,jtf2,jtf3;
     JPanel jp1,jp2;
     JTree tree;
+    static Test dataOper;
     //owner代表父窗口
     //title代表窗口名
     //model指定的是模式窗口好事非模式窗口
@@ -63,10 +66,17 @@ public class InspectorModifyDialog extends JDialog implements ActionListener {
     }
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == jb1) {
-            String msg=jtf2.getText();
-            DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getSelectionPath().getLastPathComponent();
+            String id = jtf1.getText();
+            String name = jtf2.getText();
+            DefaultMutableTreeNode node = new DefaultMutableTreeNode(name);
+            try {
+                dataOper = new Test();
+                dataOper.updataMonitorInfo(Integer.parseInt(id), name, tree.getLastSelectedPathComponent().toString());
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+            }
             //改名
-            node.setUserObject(msg);
+            node.setUserObject(name);
             //刷新
             tree.updateUI();
             this.setVisible(false);
