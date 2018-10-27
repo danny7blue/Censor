@@ -171,14 +171,6 @@ public class Test {
             String selectInfo="select * from MonitorInfo ";
             System.out.println("插入监测点信息的SQL语句为："+selectInfo);
             rs = stmt.executeQuery(selectInfo);
-//            if(count>0){
-////                /* 如果有SQL语句被更新*/
-////                insflag=true;
-////            }else{
-////                /*如何没有SQL语句被更新*/
-////                insflag=false;
-////            }
-            stmt.executeQuery(selectInfo);
         } catch (SQLException e) {
             System.out.println("SQLException异常"+e.getMessage());
             e.printStackTrace();
