@@ -1,4 +1,6 @@
 package database;
+import com.sun.org.apache.regexp.internal.RE;
+
 import java.sql.*;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -17,7 +19,8 @@ public class Test {
 
     public static   Connection getConn() {
         String user = "root";
-        String password = "575615578";
+//        String password = "575615578";
+        String password = "123456";
         String url = "jdbc:mysql://localhost:3306/StationDatabase?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
         String driver = "com.mysql.cj.jdbc.Driver";
         Connection conn=null;
@@ -154,8 +157,9 @@ public class Test {
         return deflag;
     }
     //查询测量点信息的方法selectMonitorInfo.输入参数为监测点的名称，查询出的结果为编号，名称以及所在位置。
-    public void selectMonitorInfo() throws SQLException{
+    public ResultSet selectMonitorInfo() throws SQLException{
         // boolean insflag =false;
+        ResultSet rs = null;
         try {
             Statement stmt;
             Connection conn = getConn();
@@ -164,7 +168,7 @@ public class Test {
             //当mysql中监测点信息表中的属性名称发生改变时，下面的sql语句要相应的修改。
             String selectInfo="select * from MonitorInfo ";
             System.out.println("插入监测点信息的SQL语句为："+selectInfo);
-            stmt.executeQuery(selectInfo);
+            rs = stmt.executeQuery(selectInfo);
 //            if(count>0){
 ////                /* 如果有SQL语句被更新*/
 ////                insflag=true;
@@ -177,6 +181,7 @@ public class Test {
             e.printStackTrace();
         }
         // return insflag;
+        return rs;
     }
     /**功能介绍：实现用户对测量点信息表的增加，修改，删除的操作
      * 主要构建三个方法：用户对测量信息表进行数据添加的功能，修改数据的功能，删除数据的功能。
