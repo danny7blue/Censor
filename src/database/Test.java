@@ -158,7 +158,7 @@ public class Test {
             stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
 
             //当mysql中监测点信息表中的属性名称发生改变时，下面的sql语句要相应的修改。
-            String selectInfo="select * from MonitorInfo ";
+            String selectInfo="select MonitorID as  监测点编号,MonitorName as 监测点名称,MonitorPosition as 监测点位置 from MonitorInfo ";
             System.out.println("插入监测点信息的SQL语句为："+selectInfo);
             rs = stmt.executeQuery(selectInfo);
         } catch (SQLException e) {
@@ -242,15 +242,15 @@ public class Test {
         return deflag;
     }
     //(4)查询测量点信息的方法selectTestInfo.输入参数为测量点的名称，查询出的结果为编号，名称以及所属监测点的编号。
-    public void selectTestInfo() throws SQLException{
+    public void selectTestInfo(String MonitorName) throws SQLException{
         try {
             Statement stmt;
             Connection conn = getConn();
             stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
 
             //当mysql中监测点信息表中的属性名称发生改变时，下面的sql语句要相应的修改。
-            String selectInfo="select * from TestInfo ";
-            System.out.println("插入监测点信息的SQL语句为："+selectInfo);
+            String selectInfo="select tinfo.TestID as 测量点编号,tinfo.TestName as 测量点名称,tinfo.MonitorID as 所属监测点的编号 from monitorinfo as mindo,testinfo as  tinfo where mindo.MonitorID=tinfo.MonitorID and MonitorName='"+MonitorName+"'";
+            System.out.println("筛选测量点信息的SQL语句为："+selectInfo);
             stmt.executeQuery(selectInfo);
         } catch (SQLException e) {
             System.out.println("SQLException异常"+e.getMessage());
@@ -270,7 +270,7 @@ public class Test {
             /*如果监测点和测量点的编号为空，则执行查询测量点数据的SQL语句*/
             System.out.println("未正确获得监测点名称和测量点名称，查询结果为空！");
         }else{
-            selTestPointinfo="SELECT tdinfo.ID,tinfo.TestName,tdinfo.TestID,tdinfo.TestData,tdinfo.Time from monitorinfo as minfo,testinfo as tinfo,testdatainfo as tdinfo " +
+            selTestPointinfo="SELECT tdinfo.ID as ID,tinfo.TestName as 测试点名称,tdinfo.TestID as 测试点编号,tdinfo.TestData as 数据值,tdinfo.Time as 时间 from monitorinfo as minfo,testinfo as tinfo,testdatainfo as tdinfo " +
                     "WHERE minfo.MonitorID=tinfo.TestMonitorID AND tinfo.TestID=tdinfo.TestID " +
                     "AND minfo.MonitorName='"+MonitorName+"' " +
                     "AND tinfo.TestName='"+TestName+"'" +
