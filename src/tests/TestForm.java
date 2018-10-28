@@ -291,6 +291,10 @@ public class TestForm extends JPanel {
         return dateTextField;
     }
 
+    public JScrollPane getjTableScrollPane() {
+        return jTableScrollPane;
+    }
+
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
         // Generated using JFormDesigner Evaluation license - danny
@@ -425,6 +429,23 @@ public class TestForm extends JPanel {
     public JFrame getMainFrame() {
         return mainFrame;
     }
+
+    public void generateInspectorList() {
+        ResultSet result1 = null;
+        try {
+            result1 = getDataOper().selectMonitorInfo();
+        } catch (SQLException e1) {
+            e1.printStackTrace();
+        }
+        // 取得数据库的表的各行数据
+        Vector rowData = getRows(result1);
+        // 取得数据库的表的表头数据
+        Vector columnNames = getHead(result1);
+        // 新建表格
+        DefaultTableModel tableModel = new DefaultTableModel(rowData, columnNames);
+        getDataTable().setModel(tableModel);
+        updateUI();
+    }
 }
 
 /**
@@ -467,9 +488,9 @@ class TreeAddViewMenuEvent implements ActionListener {
 
     public void actionPerformed(ActionEvent e) {
         if (testForm.getLevel() == 0) {
-            InspectorAddDialog inspectorAddDialog = new InspectorAddDialog(testForm.getMainFrame(), "添加监测点", true, testForm.getTree());
+            InspectorAddDialog inspectorAddDialog = new InspectorAddDialog(testForm.getMainFrame(), "添加监测点", true, testForm);
         } else if (testForm.getLevel() == 1) {
-            MeasurePointAddDialog measurePointAddDialog = new MeasurePointAddDialog(testForm.getMainFrame(), "添加测量点", true, testForm.getTree());
+            MeasurePointAddDialog measurePointAddDialog = new MeasurePointAddDialog(testForm.getMainFrame(), "添加测量点", true, testForm);
         }
 //        String name = JOptionPane.showInputDialog("请输入分类节点名称：");
 //        DefaultMutableTreeNode treenode = new DefaultMutableTreeNode(name);
@@ -493,8 +514,14 @@ class TreeDeleteViewMenuEvent implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         int conform = JOptionPane.showConfirmDialog(null, "是否确认删除？", "删除景点确认", JOptionPane.YES_NO_OPTION);
         if (conform == JOptionPane.YES_OPTION) {
-            DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode) (((DefaultMutableTreeNode) this.testForm.getTree().getLastSelectedPathComponent()).getParent());
-            ((DefaultMutableTreeNode) this.testForm.getTree().getLastSelectedPathComponent()).removeFromParent();
+            DefaultMutableTreeNode currentNode = (DefaultMutableTreeNode) this.testForm.getTree().getLastSelectedPathComponent();
+            String name = currentNode.toString();
+            try {
+                testForm.getDataOper().deleteMonitorInfo(name);
+            } catch (SQLException e1) {
+
+            }
+            currentNode.removeFromParent();
             this.testForm.getTree().updateUI();
         }
     }
@@ -518,40 +545,28 @@ class TreePopMenuEvent implements MouseListener {
         }
         testForm.getTree().setSelectionPath(path);
         //左键点击节点时查询数据库获得该节点数据并刷新右侧table
+        DefaultMutableTreeNode currentNode = (DefaultMutableTreeNode) testForm.getTree().getLastSelectedPathComponent();
         if (e.getButton() == 1) {
             //点击根节点时
-            if (((DefaultMutableTreeNode) testForm.getTree().getLastSelectedPathComponent()).getLevel() == 0) {
+            if (currentNode.getLevel() == 0) {
                 //显示监测点列表
                 System.out.println("当前层级为0");
                 System.out.println(testForm.getTree().getLastSelectedPathComponent());
                 System.out.println(testForm.getDateTextField().getText());
-                ResultSet result1 = null;
-                try {
-                    result1 = testForm.getDataOper().selectMonitorInfo();
-                } catch (SQLException e1) {
-                    e1.printStackTrace();
-                }
-                // 取得数据库的表的各行数据
-                Vector rowData = testForm.getRows(result1);
-                // 取得数据库的表的表头数据
-                Vector columnNames = testForm.getHead(result1);
-                // 新建表格
-                DefaultTableModel tableModel = new DefaultTableModel(rowData, columnNames);
-                testForm.getDataTable().setModel(tableModel);
-                testForm.updateUI();
+                testForm.generateInspectorList();
             } else
                 //点击监测节点时
-                if (((DefaultMutableTreeNode) testForm.getTree().getLastSelectedPathComponent()).getLevel() == 1) {
+                if (currentNode.getLevel() == 1) {
                     //Do nothing
                     System.out.println("当前层级为1");
                     System.out.println(testForm.getTree().getLastSelectedPathComponent());
                     System.out.println(testForm.getDateTextField().getText());
                 } else
                     //点击测量节点时
-                    if (((DefaultMutableTreeNode) testForm.getTree().getLastSelectedPathComponent()).getLevel() == 2) {
+                    if (currentNode.getLevel() == 2) {
                         System.out.println("当前层级为2");
                         try {
-                            String monitorName = ((DefaultMutableTreeNode) testForm.getTree().getLastSelectedPathComponent()).getParent().toString();
+                            String monitorName = currentNode.getParent().toString();
                             String measureName = testForm.getTree().getLastSelectedPathComponent().toString();
                             String selectedDate = testForm.getDateTextField().getText();
                             System.out.println(monitorName);
@@ -573,7 +588,7 @@ class TreePopMenuEvent implements MouseListener {
         }
         if (e.getButton() == 3) {
             //点击根节点时
-            if (((DefaultMutableTreeNode) testForm.getTree().getLastSelectedPathComponent()).getLevel() == 0) {
+            if (currentNode.getLevel() == 0) {
                 System.out.println("当前层级为0");
                 System.out.println(testForm.getTree().getLastSelectedPathComponent());
                 System.out.println(testForm.getDateTextField().getText());
@@ -582,7 +597,7 @@ class TreePopMenuEvent implements MouseListener {
                 testForm.setLevel(0);
             }
             //点击监测节点时
-            if (((DefaultMutableTreeNode) testForm.getTree().getLastSelectedPathComponent()).getLevel() == 1) {
+            if (currentNode.getLevel() == 1) {
                 System.out.println("当前层级为1");
                 System.out.println(testForm.getTree().getLastSelectedPathComponent());
                 System.out.println(testForm.getDateTextField().getText());
@@ -591,11 +606,11 @@ class TreePopMenuEvent implements MouseListener {
                 testForm.setLevel(1);
             } else
                 //点击测量节点时
-                if (((DefaultMutableTreeNode) testForm.getTree().getLastSelectedPathComponent()).getLevel() == 2) {
+                if (currentNode.getLevel() == 2) {
                     System.out.println("当前层级为2");
                     System.out.println(testForm.getTree().getLastSelectedPathComponent());
                     System.out.println(testForm.getDateTextField().getText());
-                    System.out.println(((DefaultMutableTreeNode) testForm.getTree().getLastSelectedPathComponent()).getParent());
+                    System.out.println(currentNode.getParent());
                     testForm.getMeasureRightClickPopMenu().show(testForm.getTree(), e.getX(), e.getY());
                     //当前为测量节点
                     testForm.setLevel(2);

@@ -16,15 +16,15 @@ public class MeasurePointAddDialog extends JDialog implements ActionListener {
     JLabel jl1,jl2;
     JTextField jtf1,jtf2;
     JPanel jp1,jp2;
-    JTree tree;
+    TestForm testForm;
     static Test dataOper;
     //owner代表父窗口
     //title代表窗口名
     //model指定的是模式窗口好事非模式窗口
-    public MeasurePointAddDialog(JFrame owner, String title, boolean model, JTree tree)
+    public MeasurePointAddDialog(JFrame owner, String title, boolean model, TestForm testForm)
     {
         super(owner, title,model);//调用父类构造方法，达到模式对话框效果
-        this.tree = tree;
+        this.testForm = testForm;
         //定义组件
         jl1=new JLabel("测量点编号");
         jl2=new JLabel("测量点名称");
@@ -64,14 +64,19 @@ public class MeasurePointAddDialog extends JDialog implements ActionListener {
             DefaultMutableTreeNode treenode = new DefaultMutableTreeNode(name);
             try {
                 dataOper = new Test();
-                dataOper.insertTestInfo(Integer.parseInt(id), name, tree.getLastSelectedPathComponent().toString());
+                dataOper.insertTestInfo(Integer.parseInt(id), name, testForm.getTree().getLastSelectedPathComponent().toString());
             } catch (SQLException e1) {
                 e1.printStackTrace();
+                JOptionPane.showMessageDialog(null, "输入编号已重复，请重新输入编号.", "提示框", JOptionPane.NO_OPTION);
+                return;
+            } catch (NumberFormatException e2) {
+                e2.printStackTrace();
+                JOptionPane.showMessageDialog(null, "测量点编号只能输入数字, 请重新输入", "提示框", JOptionPane.NO_OPTION);
+                return;
             }
-            ((DefaultMutableTreeNode) tree.getLastSelectedPathComponent()).add(treenode);
-            ((DefaultMutableTreeNode)tree.getLastSelectedPathComponent()).add(treenode);
-            tree.expandPath(new TreePath(((DefaultMutableTreeNode) tree.getLastSelectedPathComponent()).getPath()));
-            tree.updateUI();
+            ((DefaultMutableTreeNode) testForm.getTree().getLastSelectedPathComponent()).add(treenode);
+            testForm.getTree().expandPath(new TreePath(((DefaultMutableTreeNode) testForm.getTree().getLastSelectedPathComponent()).getPath()));
+            testForm.getTree().updateUI();
             this.setVisible(false);
         } else if (e.getSource() == jb2) {
             this.setVisible(false);
@@ -90,10 +95,6 @@ public class MeasurePointAddDialog extends JDialog implements ActionListener {
     public static void main(String[] args)
     {
 
-    }
-
-    public void setTree(JTree tree) {
-        this.tree = tree;
     }
 
 }

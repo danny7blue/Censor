@@ -85,7 +85,6 @@ public class Test {
     public boolean insertMonitorInfo(int MonitorId, String MonitorName, String MonitorPosition) throws SQLException{
         boolean insflag =false;
 
-        try {
             Statement stmt;
             Connection conn = getConn();
             stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
@@ -101,12 +100,6 @@ public class Test {
                 /*如何没有SQL语句被更新*/
                 insflag=false;
             }
-        } catch (SQLException e) {
-            System.out.println("SQLException异常"+e.getMessage());
-            //当用户插入的监测点编号，数据库已经存在时，提示用户重新输入编号。
-            JOptionPane.showMessageDialog(null, "输入编号已重复，请重新输入编号.", "提示框", JOptionPane.NO_OPTION);
-            e.printStackTrace();
-        }
         return insflag;
     }
     //(2)实现用户对监测点信息进行更新数据的操作。更新的信息主要有监测点编号，监测点名称，监测点位置这三个信息，并保存在监测点信息表中
