@@ -430,17 +430,11 @@ public class TestForm extends JPanel {
         return mainFrame;
     }
 
-    public void generateInspectorList() {
-        ResultSet result1 = null;
-        try {
-            result1 = getDataOper().selectMonitorInfo();
-        } catch (SQLException e1) {
-            e1.printStackTrace();
-        }
+    public void generateDataTable(ResultSet rs) {
         // 取得数据库的表的各行数据
-        Vector rowData = getRows(result1);
+        Vector rowData = getRows(rs);
         // 取得数据库的表的表头数据
-        Vector columnNames = getHead(result1);
+        Vector columnNames = getHead(rs);
         // 新建表格
         DefaultTableModel tableModel = new DefaultTableModel(rowData, columnNames);
         getDataTable().setModel(tableModel);
@@ -517,7 +511,11 @@ class TreeDeleteViewMenuEvent implements ActionListener {
             DefaultMutableTreeNode currentNode = (DefaultMutableTreeNode) this.testForm.getTree().getLastSelectedPathComponent();
             String name = currentNode.toString();
             try {
-                testForm.getDataOper().deleteMonitorInfo(name);
+                if (testForm.getLevel() == 1) {
+                    testForm.getDataOper().deleteMonitorInfo(name);
+                } else if (testForm.getLevel() == 2) {
+                    testForm.getDataOper().deleteTestInfo(name, currentNode.getParent().toString());
+                }
             } catch (SQLException e1) {
 
             }
@@ -549,18 +547,31 @@ class TreePopMenuEvent implements MouseListener {
         if (e.getButton() == 1) {
             //点击根节点时
             if (currentNode.getLevel() == 0) {
-                //显示监测点列表
-                System.out.println("当前层级为0");
-                System.out.println(testForm.getTree().getLastSelectedPathComponent());
-                System.out.println(testForm.getDateTextField().getText());
-                testForm.generateInspectorList();
+                try {
+                    //显示监测点列表
+                    System.out.println("当前层级为0");
+                    System.out.println(testForm.getTree().getLastSelectedPathComponent());
+                    System.out.println(testForm.getDateTextField().getText());
+                    ResultSet result1 = testForm.getDataOper().selectMonitorInfo();
+                    testForm.generateDataTable(result1);
+                } catch (SQLException e1) {
+                    e1.printStackTrace();
+                }
             } else
                 //点击监测节点时
                 if (currentNode.getLevel() == 1) {
-                    //Do nothing
-                    System.out.println("当前层级为1");
-                    System.out.println(testForm.getTree().getLastSelectedPathComponent());
-                    System.out.println(testForm.getDateTextField().getText());
+                    try {
+                        String monitorName = currentNode.getParent().toString();
+                        String measureName = testForm.getTree().getLastSelectedPathComponent().toString();
+                        String selectedDate = testForm.getDateTextField().getText();
+                        System.out.println(monitorName);
+                        System.out.println(measureName);
+                        System.out.println(selectedDate);
+                        ResultSet result1 = testForm.getDataOper().selectTestInfo();
+                        testForm.generateDataTable(result1);
+                    } catch (SQLException e1) {
+                        e1.printStackTrace();
+                    }
                 } else
                     //点击测量节点时
                     if (currentNode.getLevel() == 2) {
@@ -573,14 +584,7 @@ class TreePopMenuEvent implements MouseListener {
                             System.out.println(measureName);
                             System.out.println(selectedDate);
                             ResultSet result1 = testForm.getDataOper().search(monitorName, measureName, selectedDate);
-                            // 取得数据库的表的各行数据
-                            Vector rowData = testForm.getRows(result1);
-                            // 取得数据库的表的表头数据
-                            Vector columnNames = testForm.getHead(result1);
-                            // 新建表格
-                            DefaultTableModel tableModel = new DefaultTableModel(rowData, columnNames);
-                            testForm.getDataTable().setModel(tableModel);
-                            testForm.updateUI();
+                            testForm.generateDataTable(result1);
                         } catch (SQLException e1) {
                             e1.printStackTrace();
                         }

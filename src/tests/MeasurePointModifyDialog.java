@@ -63,12 +63,12 @@ public class MeasurePointModifyDialog extends JDialog implements ActionListener 
             String id = jtf1.getText();
             String name = jtf2.getText();
             DefaultMutableTreeNode node = new DefaultMutableTreeNode(name);
-//            try {
-//                dataOper = new Test();
-//                dataOper.updataTestInfo(Integer.parseInt(id), name, tree.getLastSelectedPathComponent().toString());
-//            } catch (SQLException e1) {
-//                e1.printStackTrace();
-//            }
+            try {
+                dataOper = new Test();
+                dataOper.updataTestInfo(Integer.parseInt(id), name, node.getParent().toString());
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+            }
             //改名
             node.setUserObject(name);
             //刷新

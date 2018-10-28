@@ -87,7 +87,13 @@ public class InspectorAddDialog extends JDialog implements ActionListener {
             ((DefaultMutableTreeNode) testForm.getTree().getLastSelectedPathComponent()).add(treenode);
             testForm.getTree().expandPath(new TreePath(((DefaultMutableTreeNode) testForm.getTree().getLastSelectedPathComponent()).getPath()));
             testForm.getTree().updateUI();
-            testForm.generateInspectorList();
+            ResultSet result1 = null;
+            try {
+                result1 = testForm.getDataOper().selectMonitorInfo();
+            } catch (SQLException e1) {
+
+            }
+            testForm.generateDataTable(result1);
             this.setVisible(false);
         } else if (e.getSource() == jb2) {
             this.setVisible(false);
