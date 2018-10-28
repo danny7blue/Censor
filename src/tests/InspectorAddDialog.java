@@ -4,28 +4,32 @@ import database.Test;
 import ui.Myclass;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
+import java.util.Vector;
 
 public class InspectorAddDialog extends JDialog implements ActionListener {
     JButton jb1, jb2;
     JLabel jl1, jl2, jl3;
     JTextField jtf1, jtf2, jtf3;
     JPanel jp1, jp2;
-    JTree tree;
+    TestForm testForm;
     static Test dataOper;
 
     //owner代表父窗口
     //title代表窗口名
     //model指定的是模式窗口好事非模式窗口
-    public InspectorAddDialog(JFrame owner, String title, boolean model, JTree tree) {
+    public InspectorAddDialog(JFrame owner, String title, boolean model, TestForm testForm) {
         super(owner, title, model);//调用父类构造方法，达到模式对话框效果
         //定义组件
-        this.tree = tree;
+        this.testForm = testForm;
         jl1 = new JLabel("监测点编号");
         jl2 = new JLabel("监测点名称");
         jl3 = new JLabel("监测点位置");
@@ -73,11 +77,17 @@ public class InspectorAddDialog extends JDialog implements ActionListener {
                 dataOper.insertMonitorInfo(Integer.parseInt(id), name, position);
             } catch (SQLException e1) {
                 e1.printStackTrace();
+                JOptionPane.showMessageDialog(null, "输入编号已重复，请重新输入编号.", "提示框", JOptionPane.NO_OPTION);
+                return;
+            } catch (NumberFormatException e2) {
+                e2.printStackTrace();
+                JOptionPane.showMessageDialog(null, "监测点编号只能输入数字, 请重新输入", "提示框", JOptionPane.NO_OPTION);
+                return;
             }
-            ((DefaultMutableTreeNode) tree.getLastSelectedPathComponent()).add(treenode);
-            ((DefaultMutableTreeNode) tree.getLastSelectedPathComponent()).add(treenode);
-            tree.expandPath(new TreePath(((DefaultMutableTreeNode) tree.getLastSelectedPathComponent()).getPath()));
-            tree.updateUI();
+            ((DefaultMutableTreeNode) testForm.getTree().getLastSelectedPathComponent()).add(treenode);
+            testForm.getTree().expandPath(new TreePath(((DefaultMutableTreeNode) testForm.getTree().getLastSelectedPathComponent()).getPath()));
+            testForm.getTree().updateUI();
+            testForm.generateInspectorList();
             this.setVisible(false);
         } else if (e.getSource() == jb2) {
             this.setVisible(false);

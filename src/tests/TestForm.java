@@ -54,7 +54,7 @@ public class TestForm extends JPanel {
         // 取得数据库的表的表头数据
         Vector columnNames = getHead(null);
         // 新建表格
-        tableModel = new DefaultTableModel(rowData,columnNames);
+        tableModel = new DefaultTableModel(rowData, columnNames);
         dataTable.setModel(tableModel);
         //初始化树结构
         init_tree();
@@ -114,14 +114,13 @@ public class TestForm extends JPanel {
         jTreeScrollPane.getViewport().add(inspectorSelectorTree);
     }
 
-    public static Test getDataOper(){
+    public static Test getDataOper() {
         return dataOper;
     }
 
 
-
     // 得到数据库表数据
-    public static Vector getRows(ResultSet rs){
+    public static Vector getRows(ResultSet rs) {
         Vector rows = null;
         Vector columnHeads = null;
 
@@ -136,8 +135,8 @@ public class TestForm extends JPanel {
 
                 ResultSetMetaData rsmd = rs.getMetaData();
 
-                while(rs.next()){
-                    rows.addElement(getNextRow(rs,rsmd));
+                while (rs.next()) {
+                    rows.addElement(getNextRow(rs, rsmd));
                 }
             }
 
@@ -150,7 +149,7 @@ public class TestForm extends JPanel {
     }
 
     // 得到数据库表头
-    public static Vector getHead(ResultSet rs){
+    public static Vector getHead(ResultSet rs) {
         PreparedStatement preparedStatement = null;
 
         Vector columnHeads = null;
@@ -164,7 +163,7 @@ public class TestForm extends JPanel {
             columnHeads = new Vector();
             if (rs != null) {
                 ResultSetMetaData rsmd = rs.getMetaData();
-                for(int i = 1; i <= rsmd.getColumnCount(); i++)
+                for (int i = 1; i <= rsmd.getColumnCount(); i++)
                     columnHeads.addElement(rsmd.getColumnName(i));
             }
         } catch (SQLException e) {
@@ -176,17 +175,17 @@ public class TestForm extends JPanel {
     }
 
     // 得到数据库中下一行数据
-    private static Vector getNextRow(ResultSet rs,ResultSetMetaData rsmd) throws SQLException{
+    private static Vector getNextRow(ResultSet rs, ResultSetMetaData rsmd) throws SQLException {
         Vector currentRow = new Vector();
-        for(int i = 1; i <= rsmd.getColumnCount(); i++){
+        for (int i = 1; i <= rsmd.getColumnCount(); i++) {
             currentRow.addElement(rs.getString(i));
         }
         return currentRow;
     }
 
     private void setDateSelector() {
-        Date date=new Date();
-        String form=String.format("%tF",date);
+        Date date = new Date();
+        String form = String.format("%tF", date);
         dateTextField = new JTextField(form);
         //获取日期控件工具类
         ser = DateSelector.getInstance();
@@ -268,28 +267,32 @@ public class TestForm extends JPanel {
         return (node);
     }
 
-    public static JTree getTree(){
+    public static JTree getTree() {
         return inspectorSelectorTree;
     }
 
-    public JTable getDataTable(){
+    public JTable getDataTable() {
         return dataTable;
     }
 
-    public JPopupMenu getRootRightClickPopMenu(){
+    public JPopupMenu getRootRightClickPopMenu() {
         return rootRightClickPopMenu;
     }
 
-    public JPopupMenu getInspectorRightClickPopMenu(){
+    public JPopupMenu getInspectorRightClickPopMenu() {
         return inspectorRightClickPopMenu;
     }
 
-    public JPopupMenu getMeasureRightClickPopMenu(){
+    public JPopupMenu getMeasureRightClickPopMenu() {
         return measureRightClickPopMenu;
     }
 
-    public static JTextField getDateTextField(){
+    public static JTextField getDateTextField() {
         return dateTextField;
+    }
+
+    public JScrollPane getjTableScrollPane() {
+        return jTableScrollPane;
     }
 
     private void initComponents() {
@@ -311,10 +314,10 @@ public class TestForm extends JPanel {
         {
             Container mainFrameContentPane = mainFrame.getContentPane();
             mainFrameContentPane.setLayout(new GridBagLayout());
-            ((GridBagLayout)mainFrameContentPane.getLayout()).columnWidths = new int[] {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-            ((GridBagLayout)mainFrameContentPane.getLayout()).rowHeights = new int[] {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-            ((GridBagLayout)mainFrameContentPane.getLayout()).columnWeights = new double[] {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0E-4};
-            ((GridBagLayout)mainFrameContentPane.getLayout()).rowWeights = new double[] {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0E-4};
+            ((GridBagLayout) mainFrameContentPane.getLayout()).columnWidths = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+            ((GridBagLayout) mainFrameContentPane.getLayout()).rowHeights = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+            ((GridBagLayout) mainFrameContentPane.getLayout()).columnWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0E-4};
+            ((GridBagLayout) mainFrameContentPane.getLayout()).rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0E-4};
 
             //======== datePanel ========
             {
@@ -328,64 +331,64 @@ public class TestForm extends JPanel {
 //                        java.awt.Color.red), datePanel.getBorder())); datePanel.addPropertyChangeListener(new java.beans.PropertyChangeListener(){public void propertyChange(java.beans.PropertyChangeEvent e){if("border".equals(e.getPropertyName()))throw new RuntimeException();}});
 
                 datePanel.setLayout(new GridBagLayout());
-                ((GridBagLayout)datePanel.getLayout()).columnWidths = new int[] {0, 0, 0, 0, 0, 0, 0};
-                ((GridBagLayout)datePanel.getLayout()).rowHeights = new int[] {0, 0, 0, 0};
-                ((GridBagLayout)datePanel.getLayout()).columnWeights = new double[] {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0E-4};
-                ((GridBagLayout)datePanel.getLayout()).rowWeights = new double[] {0.0, 0.0, 0.0, 1.0E-4};
+                ((GridBagLayout) datePanel.getLayout()).columnWidths = new int[]{0, 0, 0, 0, 0, 0, 0};
+                ((GridBagLayout) datePanel.getLayout()).rowHeights = new int[]{0, 0, 0, 0};
+                ((GridBagLayout) datePanel.getLayout()).columnWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0E-4};
+                ((GridBagLayout) datePanel.getLayout()).rowWeights = new double[]{0.0, 0.0, 0.0, 1.0E-4};
 
                 //---- selectDateLabel ----
                 selectDateLabel.setText("\u8bf7\u9009\u62e9\u65e5\u671f:");
                 datePanel.add(selectDateLabel, new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0,
-                    GridBagConstraints.CENTER, GridBagConstraints.NONE,
-                    new Insets(0, 0, 5, 5), 0, 0));
+                        GridBagConstraints.CENTER, GridBagConstraints.NONE,
+                        new Insets(0, 0, 5, 5), 0, 0));
 
                 //---- dateTextField ----
                 dateTextField.setPreferredSize(new Dimension(75, 25));
 //                dateTextField.setText("date");
                 datePanel.add(dateTextField, new GridBagConstraints(2, 1, 1, 1, 0.0, 0.0,
-                    GridBagConstraints.CENTER, GridBagConstraints.VERTICAL,
-                    new Insets(0, 0, 5, 5), 0, 0));
+                        GridBagConstraints.CENTER, GridBagConstraints.VERTICAL,
+                        new Insets(0, 0, 5, 5), 0, 0));
             }
             mainFrameContentPane.add(datePanel, new GridBagConstraints(0, 0, 5, 3, 5.0, 3.0,
-                GridBagConstraints.CENTER, GridBagConstraints.NONE,
-                new Insets(0, 0, 5, 5), 0, 0));
+                    GridBagConstraints.CENTER, GridBagConstraints.NONE,
+                    new Insets(0, 0, 5, 5), 0, 0));
 
             //---- verticalSeparator ----
             verticalSeparator.setOrientation(SwingConstants.VERTICAL);
             mainFrameContentPane.add(verticalSeparator, new GridBagConstraints(5, 0, 1, 10, 0.0, 0.0,
-                GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-                new Insets(0, 0, 0, 5), 0, 0));
+                    GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+                    new Insets(0, 0, 0, 5), 0, 0));
             mainFrameContentPane.add(horizontalSeparator, new GridBagConstraints(0, 3, 20, 1, 0.0, 0.0,
-                GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-                new Insets(0, 0, 5, 0), 0, 0));
+                    GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+                    new Insets(0, 0, 5, 0), 0, 0));
 
             //======== jTreeScrollPane ========
             {
                 jTreeScrollPane.setViewportView(inspectorSelectorTree);
             }
             mainFrameContentPane.add(jTreeScrollPane, new GridBagConstraints(0, 3, 5, 7, 0.0, 0.0,
-                GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-                new Insets(0, 0, 0, 5), 0, 0));
+                    GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+                    new Insets(0, 0, 0, 5), 0, 0));
 
             //======== jTableScrollPane ========
             {
 
                 //---- dataTable ----
                 dataTable.setModel(new DefaultTableModel(
-                    new Object[][] {
-                        {null, null},
-                        {null, null},
-                    },
-                    new String[] {
-                        null, null
-                    }
+                        new Object[][]{
+                                {null, null},
+                                {null, null},
+                        },
+                        new String[]{
+                                null, null
+                        }
                 ));
                 dataTable.setPreferredScrollableViewportSize(new Dimension(550, 400));
                 jTableScrollPane.setViewportView(dataTable);
             }
             mainFrameContentPane.add(jTableScrollPane, new GridBagConstraints(5, 3, 15, 7, 0.0, 0.0,
-                GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-                new Insets(0, 0, 0, 0), 0, 0));
+                    GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+                    new Insets(0, 0, 0, 0), 0, 0));
             mainFrame.pack();
             mainFrame.setLocationRelativeTo(mainFrame.getOwner());
         }
@@ -409,7 +412,7 @@ public class TestForm extends JPanel {
     private JPopupMenu measureRightClickPopMenu;
     // JFormDesigner - End of variables declaration  //GEN-END:variables
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
         TestForm form = new TestForm();
         form.mainFrame.setVisible(true);
         form.mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -423,8 +426,25 @@ public class TestForm extends JPanel {
         this.level = level;
     }
 
-    public JFrame getMainFrame(){
+    public JFrame getMainFrame() {
         return mainFrame;
+    }
+
+    public void generateInspectorList() {
+        ResultSet result1 = null;
+        try {
+            result1 = getDataOper().selectMonitorInfo();
+        } catch (SQLException e1) {
+            e1.printStackTrace();
+        }
+        // 取得数据库的表的各行数据
+        Vector rowData = getRows(result1);
+        // 取得数据库的表的表头数据
+        Vector columnNames = getHead(result1);
+        // 新建表格
+        DefaultTableModel tableModel = new DefaultTableModel(rowData, columnNames);
+        getDataTable().setModel(tableModel);
+        updateUI();
     }
 }
 
@@ -440,11 +460,9 @@ class TreeModifyViewMenuEvent implements ActionListener {
     }
 
     public void actionPerformed(ActionEvent e) {
-        if(testForm.getLevel() == 1) {
+        if (testForm.getLevel() == 1) {
             InspectorModifyDialog inspectorModifyDialog = new InspectorModifyDialog(testForm.getMainFrame(), "修改监测点", true, testForm.getTree());
-        }
-        else if (testForm.getLevel() == 2)
-        {
+        } else if (testForm.getLevel() == 2) {
             MeasurePointModifyDialog measurePointModifyDialog = new MeasurePointModifyDialog(testForm.getMainFrame(), "修改测量点", true, testForm.getTree());
         }
 //        String name = JOptionPane.showInputDialog("请输入新分类节点名称：");
@@ -469,12 +487,10 @@ class TreeAddViewMenuEvent implements ActionListener {
     }
 
     public void actionPerformed(ActionEvent e) {
-        if(testForm.getLevel() == 0) {
-            InspectorAddDialog inspectorAddDialog = new InspectorAddDialog(testForm.getMainFrame(), "添加监测点", true, testForm.getTree());
-        }
-        else if (testForm.getLevel() == 1)
-        {
-            MeasurePointAddDialog measurePointAddDialog = new MeasurePointAddDialog(testForm.getMainFrame(), "添加测量点", true, testForm.getTree());
+        if (testForm.getLevel() == 0) {
+            InspectorAddDialog inspectorAddDialog = new InspectorAddDialog(testForm.getMainFrame(), "添加监测点", true, testForm);
+        } else if (testForm.getLevel() == 1) {
+            MeasurePointAddDialog measurePointAddDialog = new MeasurePointAddDialog(testForm.getMainFrame(), "添加测量点", true, testForm);
         }
 //        String name = JOptionPane.showInputDialog("请输入分类节点名称：");
 //        DefaultMutableTreeNode treenode = new DefaultMutableTreeNode(name);
@@ -498,8 +514,14 @@ class TreeDeleteViewMenuEvent implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         int conform = JOptionPane.showConfirmDialog(null, "是否确认删除？", "删除景点确认", JOptionPane.YES_NO_OPTION);
         if (conform == JOptionPane.YES_OPTION) {
-            DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode) (((DefaultMutableTreeNode) this.testForm.getTree().getLastSelectedPathComponent()).getParent());
-            ((DefaultMutableTreeNode) this.testForm.getTree().getLastSelectedPathComponent()).removeFromParent();
+            DefaultMutableTreeNode currentNode = (DefaultMutableTreeNode) this.testForm.getTree().getLastSelectedPathComponent();
+            String name = currentNode.toString();
+            try {
+                testForm.getDataOper().deleteMonitorInfo(name);
+            } catch (SQLException e1) {
+
+            }
+            currentNode.removeFromParent();
             this.testForm.getTree().updateUI();
         }
     }
@@ -523,41 +545,50 @@ class TreePopMenuEvent implements MouseListener {
         }
         testForm.getTree().setSelectionPath(path);
         //左键点击节点时查询数据库获得该节点数据并刷新右侧table
+        DefaultMutableTreeNode currentNode = (DefaultMutableTreeNode) testForm.getTree().getLastSelectedPathComponent();
         if (e.getButton() == 1) {
-            //点击监测节点时
-            if (((DefaultMutableTreeNode)testForm.getTree().getLastSelectedPathComponent()).getLevel() == 1) {
-                //Do nothing
-                System.out.println("当前层级为1");
+            //点击根节点时
+            if (currentNode.getLevel() == 0) {
+                //显示监测点列表
+                System.out.println("当前层级为0");
                 System.out.println(testForm.getTree().getLastSelectedPathComponent());
                 System.out.println(testForm.getDateTextField().getText());
+                testForm.generateInspectorList();
             } else
-                //点击测量节点时
-                if (((DefaultMutableTreeNode)testForm.getTree().getLastSelectedPathComponent()).getLevel() == 2) {
-                    System.out.println("当前层级为2");
-                    try {
-                        String monitorName = ((DefaultMutableTreeNode)testForm.getTree().getLastSelectedPathComponent()).getParent().toString();
-                        String measureName = testForm.getTree().getLastSelectedPathComponent().toString();
-                        String selectedDate = testForm.getDateTextField().getText();
-                        System.out.println(monitorName);
-                        System.out.println(measureName);
-                        System.out.println(selectedDate);
-                        ResultSet result1 = testForm.getDataOper().search(monitorName, measureName, selectedDate);
-                        // 取得数据库的表的各行数据
-                        Vector rowData = testForm.getRows(result1);
-                        // 取得数据库的表的表头数据
-                        Vector columnNames = testForm.getHead(result1);
-                        // 新建表格
-                        DefaultTableModel tableModel = new DefaultTableModel(rowData,columnNames);
-                        testForm.getDataTable().setModel(tableModel);
-                        testForm.updateUI();
-                    } catch (SQLException e1) {
-                        e1.printStackTrace();
+                //点击监测节点时
+                if (currentNode.getLevel() == 1) {
+                    //Do nothing
+                    System.out.println("当前层级为1");
+                    System.out.println(testForm.getTree().getLastSelectedPathComponent());
+                    System.out.println(testForm.getDateTextField().getText());
+                } else
+                    //点击测量节点时
+                    if (currentNode.getLevel() == 2) {
+                        System.out.println("当前层级为2");
+                        try {
+                            String monitorName = currentNode.getParent().toString();
+                            String measureName = testForm.getTree().getLastSelectedPathComponent().toString();
+                            String selectedDate = testForm.getDateTextField().getText();
+                            System.out.println(monitorName);
+                            System.out.println(measureName);
+                            System.out.println(selectedDate);
+                            ResultSet result1 = testForm.getDataOper().search(monitorName, measureName, selectedDate);
+                            // 取得数据库的表的各行数据
+                            Vector rowData = testForm.getRows(result1);
+                            // 取得数据库的表的表头数据
+                            Vector columnNames = testForm.getHead(result1);
+                            // 新建表格
+                            DefaultTableModel tableModel = new DefaultTableModel(rowData, columnNames);
+                            testForm.getDataTable().setModel(tableModel);
+                            testForm.updateUI();
+                        } catch (SQLException e1) {
+                            e1.printStackTrace();
+                        }
                     }
-                }
         }
         if (e.getButton() == 3) {
             //点击根节点时
-            if (((DefaultMutableTreeNode)testForm.getTree().getLastSelectedPathComponent()).getLevel() == 0) {
+            if (currentNode.getLevel() == 0) {
                 System.out.println("当前层级为0");
                 System.out.println(testForm.getTree().getLastSelectedPathComponent());
                 System.out.println(testForm.getDateTextField().getText());
@@ -566,7 +597,7 @@ class TreePopMenuEvent implements MouseListener {
                 testForm.setLevel(0);
             }
             //点击监测节点时
-            if (((DefaultMutableTreeNode)testForm.getTree().getLastSelectedPathComponent()).getLevel() == 1) {
+            if (currentNode.getLevel() == 1) {
                 System.out.println("当前层级为1");
                 System.out.println(testForm.getTree().getLastSelectedPathComponent());
                 System.out.println(testForm.getDateTextField().getText());
@@ -575,11 +606,11 @@ class TreePopMenuEvent implements MouseListener {
                 testForm.setLevel(1);
             } else
                 //点击测量节点时
-                if (((DefaultMutableTreeNode)testForm.getTree().getLastSelectedPathComponent()).getLevel() == 2) {
+                if (currentNode.getLevel() == 2) {
                     System.out.println("当前层级为2");
                     System.out.println(testForm.getTree().getLastSelectedPathComponent());
                     System.out.println(testForm.getDateTextField().getText());
-                    System.out.println(((DefaultMutableTreeNode)testForm.getTree().getLastSelectedPathComponent()).getParent());
+                    System.out.println(currentNode.getParent());
                     testForm.getMeasureRightClickPopMenu().show(testForm.getTree(), e.getX(), e.getY());
                     //当前为测量节点
                     testForm.setLevel(2);

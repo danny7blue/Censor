@@ -1,4 +1,5 @@
 package database;
+import javax.swing.*;
 import java.sql.*;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -17,7 +18,8 @@ public class Test {
 
     public static   Connection getConn() {
         String user = "root";
-        String password = "575615578";
+//        String password = "575615578";
+        String password = "123456";
         String url = "jdbc:mysql://localhost:3306/StationDatabase?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
         String driver = "com.mysql.cj.jdbc.Driver";
         Connection conn=null;
@@ -83,7 +85,6 @@ public class Test {
     public boolean insertMonitorInfo(int MonitorId, String MonitorName, String MonitorPosition) throws SQLException{
         boolean insflag =false;
 
-        try {
             Statement stmt;
             Connection conn = getConn();
             stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
@@ -99,10 +100,6 @@ public class Test {
                 /*如何没有SQL语句被更新*/
                 insflag=false;
             }
-        } catch (SQLException e) {
-            System.out.println("SQLException异常"+e.getMessage());
-            e.printStackTrace();
-        }
         return insflag;
     }
     //(2)实现用户对监测点信息进行更新数据的操作。更新的信息主要有监测点编号，监测点名称，监测点位置这三个信息，并保存在监测点信息表中
@@ -131,13 +128,14 @@ public class Test {
     }
     //(3)实现用户对监测点信息进行删除数据的操作。以监测点信息表的监测点编号，删除的信息主要有监测点名称，监测点位置这两个信息。
     // 输入参数为监测点编号，调用此方法，实现监测点信息的删除功能。
-    public boolean deleteMonitorInfo(int MonitorId)throws SQLException{
+    //删除监测点的记录信息。
+    public boolean deleteMonitorInfo(String MonitorName)throws SQLException{
         boolean deflag=false;
         try{
             Connection conn = getConn();
             Statement stmt;
             stmt =conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_UPDATABLE);
-            String deleteInfo ="DELETE FROM MonitorInfo "+" WHERE MonitorID ='"+MonitorId+"'";
+            String deleteInfo ="DELETE FROM MonitorInfo "+" WHERE MonitorID ='"+MonitorName+"'";
             System.out.println("删除监测点信息的SQl语句为"+deleteInfo);
             int count = stmt.executeUpdate(deleteInfo);
             if(count>0){
@@ -154,8 +152,9 @@ public class Test {
         return deflag;
     }
     //查询测量点信息的方法selectMonitorInfo.输入参数为监测点的名称，查询出的结果为编号，名称以及所在位置。
-    public void selectMonitorInfo() throws SQLException{
+    public ResultSet selectMonitorInfo() throws SQLException{
         // boolean insflag =false;
+        ResultSet rs = null;
         try {
             Statement stmt;
             Connection conn = getConn();
@@ -164,19 +163,13 @@ public class Test {
             //当mysql中监测点信息表中的属性名称发生改变时，下面的sql语句要相应的修改。
             String selectInfo="select * from MonitorInfo ";
             System.out.println("插入监测点信息的SQL语句为："+selectInfo);
-            stmt.executeQuery(selectInfo);
-//            if(count>0){
-////                /* 如果有SQL语句被更新*/
-////                insflag=true;
-////            }else{
-////                /*如何没有SQL语句被更新*/
-////                insflag=false;
-////            }
+            rs = stmt.executeQuery(selectInfo);
         } catch (SQLException e) {
             System.out.println("SQLException异常"+e.getMessage());
             e.printStackTrace();
         }
         // return insflag;
+        return rs;
     }
     /**功能介绍：实现用户对测量点信息表的增加，修改，删除的操作
      * 主要构建三个方法：用户对测量信息表进行数据添加的功能，修改数据的功能，删除数据的功能。
