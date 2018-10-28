@@ -1,5 +1,4 @@
 package database;
-import javax.swing.*;
 import java.sql.*;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -9,7 +8,6 @@ import java.sql.SQLException;
 /**
  * Created by 305027244 on 2018/9/28.
  */
-
 public class Test {
     /**
      *   获取数据库的连接的方法getConn();
@@ -18,9 +16,9 @@ public class Test {
 
     public static   Connection getConn() {
         String user = "root";
-//        String password = "575615578";
-        String password = "123456";
-        String url = "jdbc:mysql://localhost:3306/StationDatabase?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
+        String password = "575615578";
+//        String password = "123456";
+        String url = "jdbc:mysql://localhost:3306/StationDatabase?useSSL=false&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
         String driver = "com.mysql.cj.jdbc.Driver";
         Connection conn=null;
         try {
@@ -73,9 +71,8 @@ public class Test {
         }
         return num;
     }
-
     /**功能介绍如下：实现监测点信息表，用户实现增加，删除，修改的功能。
-     * 主要构建三个方法，分别为用户向监测点信息表中添加相关信息，删除相关信息，修改相关信息。
+     * 主要构建四个方法，分别为用户向监测点信息表中添加相关信息，删除相关信息，修改相关信息，显示相关信息。
      * @param MonitorId,MonitorName,MonitorPosition;
      * @return
      * @throws SQLException
@@ -110,7 +107,7 @@ public class Test {
             Connection conn = getConn();
             Statement stmt;
             stmt =conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_UPDATABLE);
-            String updataInfo ="UPDATE MonitorInfo SET MonitorName ='"+MonitorName+"',MonitorPosition ='"+MonitorPosition+"'WHERE MonitorID ='"+MonitorId+"'";
+            String updataInfo ="UPDATE MonitorInfo SET  MonitorID ='"+MonitorId+"', MonitorName ='"+MonitorName+"',MonitorPosition ='"+MonitorPosition+"'WHERE MonitorName ='"+MonitorName+"'";
             System.out.println("更新监测点信息的SQL语句为："+updataInfo);
             int count =stmt.executeUpdate(updataInfo);
             if(count>0){
@@ -135,7 +132,7 @@ public class Test {
             Connection conn = getConn();
             Statement stmt;
             stmt =conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_UPDATABLE);
-            String deleteInfo ="DELETE FROM MonitorInfo "+" WHERE MonitorID ='"+MonitorName+"'";
+            String deleteInfo ="DELETE FROM MonitorInfo "+" WHERE MonitorName ='"+MonitorName+"'";
             System.out.println("删除监测点信息的SQl语句为"+deleteInfo);
             int count = stmt.executeUpdate(deleteInfo);
             if(count>0){
@@ -151,7 +148,7 @@ public class Test {
         }
         return deflag;
     }
-    //查询测量点信息的方法selectMonitorInfo.输入参数为监测点的名称，查询出的结果为编号，名称以及所在位置。
+    //(4)查询测量点信息的方法selectMonitorInfo.输入参数为监测点的名称，查询出的结果为编号，名称以及所在位置。
     public ResultSet selectMonitorInfo() throws SQLException{
         // boolean insflag =false;
         ResultSet rs = null;
@@ -171,21 +168,19 @@ public class Test {
         // return insflag;
         return rs;
     }
-    /**功能介绍：实现用户对测量点信息表的增加，修改，删除的操作
-     * 主要构建三个方法：用户对测量信息表进行数据添加的功能，修改数据的功能，删除数据的功能。
+    /**功能介绍：实现用户对测量点信息表的增加，修改，删除,显示的操作
+     * 主要构建三个方法：用户对测量信息表进行数据添加的功能，修改数据的功能，删除数据的功能以及显示数据的功能。
      *@param TestId,TestName,TestMonitorId;
      */
     //(1)实现用户对测量点信息进行增加数据的操作。添加的信息主要有测量点编号，测量点名称，所属的监测点编号这三个信息，并保存在测量点信息表中
     //输入参数为测量点编号，测量点名称，所属监测点的编号，调用此方法，实现测量点信息的增添功能。
     public boolean insertTestInfo(int TestId, String TestName, String MonitorName) throws SQLException{
         boolean insflag =false;
-
-        try {
             Connection conn = getConn();
             Statement stmt;
             stmt=conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_UPDATABLE);
             //当mysql中测量点信息表中的属性名称发生改变时，下面的sql语句要相应的修改。
-            String insertInfo="INSERT INTO testinfo(TestID,TestName,TestMonitorID) VALUES('"+TestId+"','"+TestName+"',(SELECT MonitorID FROM monitorinfo WHERE MonitorName='"+MonitorName+"'))";
+            String insertInfo="INSERT INTO testinfo(TestID,TestName,MonitorID) VALUES('"+TestId+"','"+TestName+"',(SELECT MonitorID FROM monitorinfo WHERE MonitorName='"+MonitorName+"'))";
             System.out.println("插入测量点信息的SQL语句为："+insertInfo);
             int count =stmt.executeUpdate(insertInfo);
             if(count>0){
@@ -195,21 +190,17 @@ public class Test {
                 /*如何没有SQL语句被更新*/
                 insflag=false;
             }
-        } catch (SQLException e) {
-            System.out.println("SQLException异常"+e.getMessage());
-            e.printStackTrace();
-        }
         return insflag;
     }
     //(2)实现用户对测量点信息进行更新数据的操作。更新的信息主要有测量点编号，测量点名称，所属监测点的编号这三个信息，并保存在监测点信息表中
     //输入参数为测量点编号，测量点名称，所属监测点的编号，调用此方法，实现测量点信息的更新功能。
-    public boolean updataTestInfo(int TestId, String TestName, int TestMonitorId)throws SQLException{
+    public boolean updataTestInfo(int TestId, String TestName, String MonitorName)throws SQLException{
         boolean upflag =false;
         try {
             Connection conn = getConn();
             Statement stmt;
             stmt =conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_UPDATABLE);
-            String updataInfo ="UPDATE TestInfo SET TestName ='"+TestName+"',TestMonitorID ='"+TestMonitorId+"'where TestID='"+TestId+"'";
+            String updataInfo ="UPDATE TestInfo SET TestID='"+TestId+"' ,TestName ='"+TestName+"'where MonitorID=(select MonitorID FROM MonitorInfo where  MonitorName='"+MonitorName+"')";
             System.out.println("更新测量点信息的SQL语句为："+updataInfo);
             int count =stmt.executeUpdate(updataInfo);
             if(count>0){
@@ -227,14 +218,14 @@ public class Test {
     }
     //(3)实现用户对测量点信息进行删除数据的操作。以测量点信息表的测量点编号，删除的信息主要有测量点名称，所属监测点的编号这两个信息。
     //输入参数为测量点编号调用此方法，实现测量点信息的删除功能。
-    public boolean deleteTestInfo(int TestId)throws SQLException{
+    public boolean deleteTestInfo(String TestName)throws SQLException{
         boolean deflag=false;
         try{
             Connection conn = getConn();
             int i=0;
             Statement stmt;
             stmt =conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_UPDATABLE);
-            String deleteInfo ="DELETE FROM TestInfo "+" WHERE TestID ='"+TestId+"'";
+            String deleteInfo ="DELETE FROM TestInfo "+" WHERE TestName ='"+TestName+"'";
             System.out.println("删除测量点信息的SQl语句为"+deleteInfo);
             int count = stmt.executeUpdate(deleteInfo);
             if(count>0){
@@ -250,8 +241,24 @@ public class Test {
         }
         return deflag;
     }
+    //(4)查询测量点信息的方法selectTestInfo.输入参数为测量点的名称，查询出的结果为编号，名称以及所属监测点的编号。
+    public void selectTestInfo() throws SQLException{
+        try {
+            Statement stmt;
+            Connection conn = getConn();
+            stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
+
+            //当mysql中监测点信息表中的属性名称发生改变时，下面的sql语句要相应的修改。
+            String selectInfo="select * from TestInfo ";
+            System.out.println("插入监测点信息的SQL语句为："+selectInfo);
+            stmt.executeQuery(selectInfo);
+        } catch (SQLException e) {
+            System.out.println("SQLException异常"+e.getMessage());
+            e.printStackTrace();
+        }
+    }
     /**功能介绍：实现用户对测量数据表的操作：主要有查询某个测试点的数据.
-     *此方法的输入参数为MonitorName,TestName,time即测试点的编号，返回结果为查询的数据，时间和变比值。
+     *此方法的输入参数为MonitorName,TestName,time即监测点名称，测试点名称，以及时间。
      */
     public ResultSet search(String MonitorName,String TestName,String time)throws SQLException{
         ResultSet rs =null;
@@ -275,15 +282,14 @@ public class Test {
             Statement stmt;
             stmt =conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_UPDATABLE);
             rs=stmt.executeQuery(selTestPointinfo);//执行查询语句
-//            rs.last();//将结果集位置移到最后。
-//
-//            rowcount =rs.getRow();//获得当前的行编号
-//            System.out.println("检索出的记录为"+rowcount);
-//            if(rowcount>0){
-//                return rs;//返回取得的结果集。
-//            }else{
-//                rs=null;
-//            }
+            rs.last();//将结果集位置移到最后。
+            rowcount =rs.getRow();//获得当前的行编号
+            System.out.println("检索出的记录为"+rowcount);
+            if(rowcount>0){
+                return rs;//返回取得的结果集。
+            }else{
+                rs=null;
+            }
         }catch (SQLException e){
             System.out.println("SQLException异常"+e.getMessage());//打印输出异常信息
             e.printStackTrace();
