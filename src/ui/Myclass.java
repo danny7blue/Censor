@@ -76,11 +76,10 @@ public class Myclass extends JFrame implements ActionListener{
         this.jTreeScrollPanel= jScrollPane1;
     }
     //创建根节点的popmenu的get和set方法
-    public JPopupMenu rootpopMenu() {
+    public JPopupMenu getRootpopMenu() {
         return rootpopMenu;
 
     }
-
     //创建父节点的popmenu的get和set方法
     public JPopupMenu inspectorpopMenu() {
         return inspectorpopMenu;
@@ -599,7 +598,7 @@ class TreePopMenuEvent implements MouseListener {
                 //判断是否点击当前节点
                 if (e.getButton() == 3) //鼠标单击右键时
                 {
-                    adaptee.rootpopMenu().show(adaptee.getTree(), e.getX(), e.getY()); //显示菜单栏
+                    adaptee.getRootpopMenu().show(adaptee.getTree(), e.getX(), e.getY()); //显示菜单栏
                     adaptee.setJudge(0);
 
                 }
@@ -623,9 +622,9 @@ class TreePopMenuEvent implements MouseListener {
                         String monitorName = ((DefaultMutableTreeNode)adaptee.getTree().getLastSelectedPathComponent()).getParent().toString();
                         String measureName = adaptee.getTree().getLastSelectedPathComponent().toString();
                         String selectedDate = adaptee.getDateTextField().getText();
-                        System.out.println(monitorName);
-                        System.out.println(measureName);
-                        System.out.println(selectedDate);
+//                        System.out.println(monitorName);
+//                        System.out.println(measureName);
+//                        System.out.println(selectedDate);
                         ResultSet result1 = adaptee.getDataOper().search(monitorName, measureName, selectedDate);
                         // 取得数据库的表的各行数据
                         Vector rowData = adaptee.getRows(result1);
@@ -668,7 +667,7 @@ class TreePopMenuEvent implements MouseListener {
         try {
             JFrame.setDefaultLookAndFeelDecorated(true);
             UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
-            Myclass  userframe = new Myclass ();
+            Myclass  m1 = new Myclass ();
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(Myclass .class.getName()).log(Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
