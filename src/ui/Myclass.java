@@ -416,7 +416,31 @@ public class Myclass extends JFrame implements ActionListener{
 
     }
 
+    // 得到数据库表头
+    public static Vector getHead(ResultSet rs){
+        PreparedStatement preparedStatement = null;
 
+        Vector columnHeads = null;
+
+        try {
+//            preparedStatement = con.prepareStatement("select * from price_data");
+//            ResultSet result1 = preparedStatement.executeQuery();
+
+//            ResultSet result1 = dataOper.search(((DefaultMutableTreeNode)getTree().getLastSelectedPathComponent()).getParent().toString(), getTree().getLastSelectedPathComponent().toString(), getDateTextField().toString());
+
+            columnHeads = new Vector();
+            if (rs != null) {
+                ResultSetMetaData rsmd = rs.getMetaData();
+                for(int i = 1; i <= rsmd.getColumnCount(); i++)
+                    columnHeads.addElement(rsmd.getColumnName(i));
+            }
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            System.out.println("未成功打开数据库。");
+            e.printStackTrace();
+        }
+        return columnHeads;
+    }
     // 得到数据库表数据
     public static Vector getRows(ResultSet rs){
         Vector rows = null;
@@ -446,32 +470,6 @@ public class Myclass extends JFrame implements ActionListener{
         return rows;
     }
 
-    // 得到数据库表头
-    public static Vector getHead(ResultSet rs){
-        PreparedStatement preparedStatement = null;
-
-        Vector columnHeads = null;
-
-        try {
-//            preparedStatement = con.prepareStatement("select * from price_data");
-//            ResultSet result1 = preparedStatement.executeQuery();
-
-//            ResultSet result1 = dataOper.search(((DefaultMutableTreeNode)getTree().getLastSelectedPathComponent()).getParent().toString(), getTree().getLastSelectedPathComponent().toString(), getDateTextField().toString());
-
-            columnHeads = new Vector();
-            if (rs != null) {
-                ResultSetMetaData rsmd = rs.getMetaData();
-                for(int i = 1; i <= rsmd.getColumnCount(); i++)
-                    columnHeads.addElement(rsmd.getColumnName(i));
-            }
-        } catch (SQLException e) {
-            // TODO Auto-generated catch block
-            System.out.println("未成功打开数据库。");
-            e.printStackTrace();
-        }
-        return columnHeads;
-    }
-
     // 得到数据库中下一行数据
     private static Vector getNextRow(ResultSet rs,ResultSetMetaData rsmd) throws SQLException{
         Vector currentRow = new Vector();
@@ -480,7 +478,23 @@ public class Myclass extends JFrame implements ActionListener{
         }
         return currentRow;
     }
-
+    //从数据库获得监测点信息,并填入树结构中
+    public void generateInspectorList() {
+        ResultSet result1 = null;
+        try {
+            result1 = getDataOper().selectMonitorInfo();
+        } catch (SQLException e1) {
+            e1.printStackTrace();
+        }
+        // 取得数据库的表的各行数据
+        Vector rowData = getRows(result1);
+        // 取得数据库的表的表头数据
+        Vector columnNames = getHead(result1);
+        // 新建表格
+        DefaultTableModel tableModel = new DefaultTableModel(rowData, columnNames);
+        getDataTable().setModel(tableModel);
+        this.getDataTable().updateUI();
+    }
 
 
 }
@@ -600,6 +614,9 @@ class TreePopMenuEvent implements MouseListener {
                     adaptee.getRootpopMenu().show(adaptee.getTree(), e.getX(), e.getY()); //显示菜单栏
                     adaptee.setJudge(0);
 
+                }else if (e.getButton() == 1) //鼠标单击左键时
+                {
+                    adaptee.generateInspectorList();
                 }
             }else if(currentNode.getLevel() == 1){
                 if (e.getButton() == 3) //鼠标单击右键时
@@ -608,7 +625,7 @@ class TreePopMenuEvent implements MouseListener {
                     adaptee.setJudge(1);
                 }else if (e.getButton() == 1) //鼠标单击左键时
                 {
-
+                    adaptee.generateInspectorList();
                 }
 
             }else if (currentNode.getLevel() ==2)
