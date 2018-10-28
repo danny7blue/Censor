@@ -218,14 +218,14 @@ public class Test {
     }
     //(3)实现用户对测量点信息进行删除数据的操作。以测量点信息表的测量点编号，删除的信息主要有测量点名称，所属监测点的编号这两个信息。
     //输入参数为测量点编号调用此方法，实现测量点信息的删除功能。
-    public boolean deleteTestInfo(String TestName)throws SQLException{
+    public boolean deleteTestInfo(String TestName,String MonitorName)throws SQLException{
         boolean deflag=false;
         try{
             Connection conn = getConn();
             int i=0;
             Statement stmt;
             stmt =conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_UPDATABLE);
-            String deleteInfo ="DELETE FROM TestInfo "+" WHERE TestName ='"+TestName+"'";
+            String deleteInfo ="DELETE FROM TestInfo  WHERE TestName ='"+TestName+"' AND MonitorID=(SELECT MonitorID FROM MonitorInfo WHERE MonitorName='"+MonitorName+"')" ;
             System.out.println("删除测量点信息的SQl语句为"+deleteInfo);
             int count = stmt.executeUpdate(deleteInfo);
             if(count>0){
