@@ -16,7 +16,7 @@ public class Test {
 
     public static   Connection getConn() {
         String user = "root";
-//        String password = "575615578";
+//       String password = "575615578";
         String password = "123456";
         String url = "jdbc:mysql://localhost:3306/StationDatabase?useSSL=false&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
         String driver = "com.mysql.cj.jdbc.Driver";
@@ -101,13 +101,13 @@ public class Test {
     }
     //(2)实现用户对监测点信息进行更新数据的操作。更新的信息主要有监测点编号，监测点名称，监测点位置这三个信息，并保存在监测点信息表中
     //输入参数为监测点编号，监测点名称，监测点所在的位置，调用此方法，实现监测点信息的更新功能。
-    public boolean updataMonitorInfo(int MonitorId, String MonitorName, String MonitorPosition)throws SQLException{
+    public boolean updataMonitorInfo(int MonitorId, String MonitorName_new, String MonitorPosition,String MonitorName_old)throws SQLException{
         boolean upflag =false;
         try {
             Connection conn = getConn();
             Statement stmt;
             stmt =conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_UPDATABLE);
-            String updataInfo ="UPDATE MonitorInfo SET  MonitorID ='"+MonitorId+"', MonitorName ='"+MonitorName+"',MonitorPosition ='"+MonitorPosition+"'WHERE MonitorName ='"+MonitorName+"'";
+            String updataInfo ="UPDATE MonitorInfo SET  MonitorID ='"+MonitorId+"', MonitorName ='"+MonitorName_new+"',MonitorPosition ='"+MonitorPosition+"'WHERE MonitorName ='"+MonitorName_old+"'";
             System.out.println("更新监测点信息的SQL语句为："+updataInfo);
             int count =stmt.executeUpdate(updataInfo);
             if(count>0){
@@ -194,13 +194,14 @@ public class Test {
     }
     //(2)实现用户对测量点信息进行更新数据的操作。更新的信息主要有测量点编号，测量点名称，所属监测点的编号这三个信息，并保存在监测点信息表中
     //输入参数为测量点编号，测量点名称，所属监测点的编号，调用此方法，实现测量点信息的更新功能。
-    public boolean updataTestInfo(int TestId, String TestName, String MonitorName)throws SQLException{
+    public boolean updataTestInfo(int TestId, String TestName_new, String MonitorName,String TestName_old)throws SQLException{
         boolean upflag =false;
         try {
             Connection conn = getConn();
             Statement stmt;
             stmt =conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_UPDATABLE);
-            String updataInfo ="UPDATE TestInfo SET TestID='"+TestId+"' ,TestName ='"+TestName+"'where MonitorID=(select MonitorID FROM MonitorInfo where  MonitorName='"+MonitorName+"')";
+            String updataInfo ="UPDATE TestInfo SET TestID='"+TestId+"' ,TestName ='"+TestName_new+"'WHERE" +
+                    " TestName='"+TestName_old+"' AND MonitorID=(select MonitorID FROM MonitorInfo where  MonitorName='"+MonitorName+"')";
             System.out.println("更新测量点信息的SQL语句为："+updataInfo);
             int count =stmt.executeUpdate(updataInfo);
             if(count>0){
