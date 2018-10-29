@@ -170,7 +170,7 @@ public class Test {
     }
     /**功能介绍：实现用户对测量点信息表的增加，修改，删除,显示的操作
      * 主要构建三个方法：用户对测量信息表进行数据添加的功能，修改数据的功能，删除数据的功能以及显示数据的功能。
-     *@param TestId,TestName,TestMonitorId;
+     *@param TestId,TestName,MonitorId;
      */
     //(1)实现用户对测量点信息进行增加数据的操作。添加的信息主要有测量点编号，测量点名称，所属的监测点编号这三个信息，并保存在测量点信息表中
     //输入参数为测量点编号，测量点名称，所属监测点的编号，调用此方法，实现测量点信息的增添功能。
@@ -242,7 +242,8 @@ public class Test {
         return deflag;
     }
     //(4)查询测量点信息的方法selectTestInfo.输入参数为测量点的名称，查询出的结果为编号，名称以及所属监测点的编号。
-    public void selectTestInfo(String MonitorName) throws SQLException{
+    public ResultSet selectTestInfo(String MonitorName) throws SQLException{
+        ResultSet rs = null;
         try {
             Statement stmt;
             Connection conn = getConn();
@@ -251,11 +252,12 @@ public class Test {
             //当mysql中监测点信息表中的属性名称发生改变时，下面的sql语句要相应的修改。
             String selectInfo="select tinfo.TestID as 测量点编号,tinfo.TestName as 测量点名称,tinfo.MonitorID as 所属监测点的编号 from monitorinfo as mindo,testinfo as  tinfo where mindo.MonitorID=tinfo.MonitorID and MonitorName='"+MonitorName+"'";
             System.out.println("筛选测量点信息的SQL语句为："+selectInfo);
-            stmt.executeQuery(selectInfo);
+            rs = stmt.executeQuery(selectInfo);
         } catch (SQLException e) {
             System.out.println("SQLException异常"+e.getMessage());
             e.printStackTrace();
         }
+        return rs;
     }
     /**功能介绍：实现用户对测量数据表的操作：主要有查询某个测试点的数据.
      *此方法的输入参数为MonitorName,TestName,time即监测点名称，测试点名称，以及时间。
@@ -271,7 +273,7 @@ public class Test {
             System.out.println("未正确获得监测点名称和测量点名称，查询结果为空！");
         }else{
             selTestPointinfo="SELECT tdinfo.ID as ID,tinfo.TestName as 测试点名称,tdinfo.TestID as 测试点编号,tdinfo.TestData as 数据值,tdinfo.Time as 时间 from monitorinfo as minfo,testinfo as tinfo,testdatainfo as tdinfo " +
-                    "WHERE minfo.MonitorID=tinfo.TestMonitorID AND tinfo.TestID=tdinfo.TestID " +
+                    "WHERE minfo.MonitorID=tinfo.MonitorID AND tinfo.TestID=tdinfo.TestID " +
                     "AND minfo.MonitorName='"+MonitorName+"' " +
                     "AND tinfo.TestName='"+TestName+"'" +
                     "AND tdinfo.Time like '"+time_new+"'";
@@ -282,14 +284,14 @@ public class Test {
             Statement stmt;
             stmt =conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_UPDATABLE);
             rs=stmt.executeQuery(selTestPointinfo);//执行查询语句
-            rs.last();//将结果集位置移到最后。
-            rowcount =rs.getRow();//获得当前的行编号
-            System.out.println("检索出的记录为"+rowcount);
-            if(rowcount>0){
-                return rs;//返回取得的结果集。
-            }else{
-                rs=null;
-            }
+//            rs.last();//将结果集位置移到最后。
+//            rowcount =rs.getRow();//获得当前的行编号
+//            System.out.println("检索出的记录为"+rowcount);
+//            if(rowcount>0){
+//                return rs;//返回取得的结果集。
+//            }else{
+//                rs=null;
+//            }
         }catch (SQLException e){
             System.out.println("SQLException异常"+e.getMessage());//打印输出异常信息
             e.printStackTrace();

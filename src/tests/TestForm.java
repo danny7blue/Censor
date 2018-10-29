@@ -249,7 +249,7 @@ public class TestForm extends JPanel {
                 for (int childIndex = 0; childIndex < L1Nam.length; childIndex++) {
                     child = new DefaultMutableTreeNode(L1Nam[childIndex]);
                     node.add(child);//add each created child to root
-                    String sql2 = "SELECT TestName from testinfo where TestMonitorID= '" + L1Id[childIndex] + "' ";
+                    String sql2 = "SELECT TestName from testinfo where MonitorID= '" + L1Id[childIndex] + "' ";
                     ResultSet rs3 = stm.executeQuery(sql2);
                     while (rs3.next()) {
                         grandchild = new DefaultMutableTreeNode(rs3.getString("TestName"));
@@ -512,7 +512,12 @@ class TreeDeleteViewMenuEvent implements ActionListener {
             String name = currentNode.toString();
             try {
                 if (testForm.getLevel() == 1) {
-                    testForm.getDataOper().deleteMonitorInfo(name);
+                    ResultSet rs = testForm.getDataOper().selectTestInfo(name);
+                    if (rs == null)
+                        testForm.getDataOper().deleteMonitorInfo(name);
+                    else {
+                        JOptionPane.showMessageDialog(null,"该检测点下还有测量点, 请先删除所有测量点!","提示框",JOptionPane.NO_OPTION);
+                    }
                 } else if (testForm.getLevel() == 2) {
                     testForm.getDataOper().deleteTestInfo(name, currentNode.getParent().toString());
                 }
@@ -561,13 +566,8 @@ class TreePopMenuEvent implements MouseListener {
                 //点击监测节点时
                 if (currentNode.getLevel() == 1) {
                     try {
-                        String monitorName = currentNode.getParent().toString();
-                        String measureName = testForm.getTree().getLastSelectedPathComponent().toString();
-                        String selectedDate = testForm.getDateTextField().getText();
-                        System.out.println(monitorName);
-                        System.out.println(measureName);
-                        System.out.println(selectedDate);
-                        ResultSet result1 = testForm.getDataOper().selectTestInfo();
+                        String monitorName = currentNode.toString();
+                        ResultSet result1 = testForm.getDataOper().selectTestInfo(monitorName);
                         testForm.generateDataTable(result1);
                     } catch (SQLException e1) {
                         e1.printStackTrace();

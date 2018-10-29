@@ -68,10 +68,11 @@ public class InspectorModifyDialog extends JDialog implements ActionListener {
         if (e.getSource() == jb1) {
             String id = jtf1.getText();
             String name = jtf2.getText();
-            DefaultMutableTreeNode node = new DefaultMutableTreeNode(name);
+            String position = jtf3.getText();
+            DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
             try {
                 dataOper = new Test();
-                dataOper.updataMonitorInfo(Integer.parseInt(id), name, tree.getLastSelectedPathComponent().toString());
+                dataOper.updataMonitorInfo(Integer.parseInt(id), name, position);
             } catch (SQLException e1) {
                 e1.printStackTrace();
             }

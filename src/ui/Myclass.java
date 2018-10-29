@@ -260,7 +260,7 @@ public class Myclass extends JFrame implements ActionListener{
                 for (int childIndex = 0; childIndex < L1Nam.length; childIndex++) {
                     child = new DefaultMutableTreeNode(L1Nam[childIndex]);
                     node.add(child);//add each created child to root
-                    String sql2 = "SELECT TestName from testinfo where TestMonitorID= '" + L1Id[childIndex] + "' ";
+                    String sql2 = "SELECT TestName from testinfo where MonitorID= '" + L1Id[childIndex] + "' ";
                     ResultSet rs3 = stm.executeQuery(sql2);
                     while (rs3.next()) {
                         grandchild = new DefaultMutableTreeNode(rs3.getString("TestName"));
