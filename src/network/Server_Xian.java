@@ -32,9 +32,8 @@ public class Server_Xian {
             String[] lip_split=lip.split("\\.");//去掉IP地址的间隔“.”
             for(String c:lip_split){
                 System.out.print(c+" ");  //输出以空格间隔的ip
-
             }
-            LOGGER.debug("获取本地IP地址成功");
+            LOGGER.debug("获取本地IP地址成功:"+lip);
             System.out.println();//隔一行
             //建立连接
             serverSocket = new ServerSocket(port);
@@ -46,7 +45,7 @@ public class Server_Xian {
             LOGGER.info("已经建立连接并开始发送数据...");
             lipp=sendData(lip_split);//送到方法处理发送的数据
             os.write(lipp);
-            LOGGER.info("发送数据成功。");
+            LOGGER.info("发送数据成功:");
             //接收数据
             LOGGER.info("开始接收数据...");
             is = socket.getInputStream();//得到输入流

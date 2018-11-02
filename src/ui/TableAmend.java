@@ -65,7 +65,7 @@ public class TableAmend extends JDialog implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == jb1) {
             String msg=jtf2.getText();
-            LOGGER.debug("获得输入的监测点名称");
+            LOGGER.debug("获得输入的监测点名称"+msg);
             DefaultMutableTreeNode node = (DefaultMutableTreeNode) this.owner.getTree().getSelectionPath().getLastPathComponent();
             //改名
             node.setUserObject(msg);
