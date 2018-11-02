@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 80012
 File Encoding         : 65001
 
-Date: 2018-11-01 21:43:36
+Date: 2018-11-02 14:24:57
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -40,9 +40,9 @@ CREATE TABLE `measurepointinfo` (
   `MeasurePointID` int(255) unsigned NOT NULL AUTO_INCREMENT,
   `MeasurePointNo` int(255) DEFAULT NULL,
   `MeasurePointName` varchar(255) DEFAULT NULL,
-  `Parameter` int(255) DEFAULT NULL,
+  `Parameter` float(255,2) DEFAULT NULL,
   `MonitorID` int(255) NOT NULL,
-  `IsDeleted` tinyint(3) unsigned zerofill NOT NULL DEFAULT '000',
+  `IsDeleted` tinyint(1) unsigned zerofill NOT NULL DEFAULT '0',
   PRIMARY KEY (`MeasurePointID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
