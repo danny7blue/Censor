@@ -18,8 +18,8 @@ public class Test {
 
     public static   Connection getConn() {
         String user = "root";
-       String password = "575615578";
-//        String password = "123456";
+//       String password = "575615578";
+        String password = "123456";
         String url = "jdbc:mysql://localhost:3306/StationDatabase?useSSL=false&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
         String driver = "com.mysql.cj.jdbc.Driver";
         Connection conn=null;

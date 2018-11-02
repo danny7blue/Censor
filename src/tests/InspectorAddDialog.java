@@ -63,18 +63,18 @@ public class InspectorAddDialog extends JDialog implements ActionListener {
             String name = inspectorNameTextField.getText();
             String position = inspectorPositionTextField.getText();
             DefaultMutableTreeNode treenode = new DefaultMutableTreeNode(name);
-//            try {
-//                dataOper = new Test();
-//                dataOper.insertMonitorInfo(Integer.parseInt(id), name, position);
-//            } catch (SQLException e1) {
-//                e1.printStackTrace();
-//                JOptionPane.showMessageDialog(null, "输入编号已重复，请重新输入编号.", "提示框", JOptionPane.NO_OPTION);
-//                return;
-//            } catch (NumberFormatException e2) {
-//                e2.printStackTrace();
-//                JOptionPane.showMessageDialog(null, "监测点编号只能输入数字, 请重新输入", "提示框", JOptionPane.NO_OPTION);
-//                return;
-//            }
+            try {
+                dataOper = new Test();
+                dataOper.insertMonitorInfo(name, position);
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+                JOptionPane.showMessageDialog(null, "输入编号已重复，请重新输入编号.", "提示框", JOptionPane.NO_OPTION);
+                return;
+            } catch (NumberFormatException e2) {
+                e2.printStackTrace();
+                JOptionPane.showMessageDialog(null, "监测点编号只能输入数字, 请重新输入", "提示框", JOptionPane.NO_OPTION);
+                return;
+            }
             ((DefaultMutableTreeNode) testForm.getTree().getLastSelectedPathComponent()).add(treenode);
             testForm.getTree().expandPath(new TreePath(((DefaultMutableTreeNode) testForm.getTree().getLastSelectedPathComponent()).getPath()));
             testForm.getTree().updateUI();

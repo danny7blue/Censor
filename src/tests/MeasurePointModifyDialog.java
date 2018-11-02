@@ -65,10 +65,11 @@ public class MeasurePointModifyDialog extends JDialog implements ActionListener 
         if (e.getSource() == addBtn) {
             String id = measurePointNoTextField.getText();
             String name = measurePointNameTextField.getText();
+            String parameter = parameterTextField.getText();
             DefaultMutableTreeNode node = ((DefaultMutableTreeNode)tree.getLastSelectedPathComponent());
             try {
                 dataOper = new Test();
-                dataOper.updataTestInfo(Integer.parseInt(id), name, node.getParent().toString(), node.toString());
+                dataOper.updateMeasurePointInfo(Integer.parseInt(id), name, Float.parseFloat(parameter), node.getParent().toString(), node.toString());
             } catch (SQLException e1) {
                 e1.printStackTrace();
             }

@@ -8,6 +8,7 @@ import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class MeasurePointAddDialog extends JDialog implements ActionListener {
@@ -65,22 +66,30 @@ public class MeasurePointAddDialog extends JDialog implements ActionListener {
             String id = measurePointNoTextField.getText();
             String name = measurePointNameTextField.getText();
             String parameter = parameterTextField.getText();
+            String monitorName = testForm.getTree().getLastSelectedPathComponent().toString();
             DefaultMutableTreeNode treenode = new DefaultMutableTreeNode(name);
             try {
                 dataOper = new Test();
-                dataOper.insertTestInfo(Integer.parseInt(id), name, testForm.getTree().getLastSelectedPathComponent().toString());
+                dataOper.insertMeasurePointInfo(Integer.parseInt(id), name, Float.parseFloat(parameter), monitorName);
             } catch (SQLException e1) {
                 e1.printStackTrace();
                 JOptionPane.showMessageDialog(null, "输入编号已重复，请重新输入编号.", "提示框", JOptionPane.NO_OPTION);
                 return;
             } catch (NumberFormatException e2) {
                 e2.printStackTrace();
-                JOptionPane.showMessageDialog(null, "测量点编号只能输入数字, 请重新输入", "提示框", JOptionPane.NO_OPTION);
+                JOptionPane.showMessageDialog(null, "测量点编号或变比输入格式有误, 请重新输入", "提示框", JOptionPane.NO_OPTION);
                 return;
             }
             ((DefaultMutableTreeNode) testForm.getTree().getLastSelectedPathComponent()).add(treenode);
             testForm.getTree().expandPath(new TreePath(((DefaultMutableTreeNode) testForm.getTree().getLastSelectedPathComponent()).getPath()));
             testForm.getTree().updateUI();
+            ResultSet result1 = null;
+            try {
+                result1 = testForm.getDataOper().selectMeasurePointInfo(monitorName);
+            } catch (SQLException e1) {
+
+            }
+            testForm.generateDataTable(result1);
             this.setVisible(false);
         } else if (e.getSource() == cancelBtn) {
             this.setVisible(false);
