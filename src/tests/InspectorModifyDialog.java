@@ -64,12 +64,12 @@ public class InspectorModifyDialog extends JDialog implements ActionListener {
             String name = inspectorNameTextField.getText();
             String position = inspectorPositionTextField.getText();
             DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
-//            try {
-//                dataOper = new Test();
-//                dataOper.updataMonitorInfo(Integer.parseInt(id), name, position, node.toString());
-//            } catch (SQLException e1) {
-//                e1.printStackTrace();
-//            }
+            try {
+                dataOper = new Test();
+                dataOper.updateMonitorInfo(name, position, node.toString());
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+            }
             //改名
             node.setUserObject(name);
             //刷新

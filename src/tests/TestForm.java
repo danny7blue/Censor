@@ -249,10 +249,10 @@ public class TestForm extends JPanel {
                 for (int childIndex = 0; childIndex < L1Nam.length; childIndex++) {
                     child = new DefaultMutableTreeNode(L1Nam[childIndex]);
                     node.add(child);//add each created child to root
-                    String sql2 = "SELECT TestName from testinfo where MonitorID= '" + L1Id[childIndex] + "' ";
+                    String sql2 = "SELECT MeasurePointName from measurepointinfo where MonitorID= '" + L1Id[childIndex] + "' ";
                     ResultSet rs3 = stm.executeQuery(sql2);
                     while (rs3.next()) {
-                        grandchild = new DefaultMutableTreeNode(rs3.getString("TestName"));
+                        grandchild = new DefaultMutableTreeNode(rs3.getString("MeasurePointName"));
                         child.add(grandchild);//add each grandchild to each child
                     }
                 }
@@ -512,20 +512,23 @@ class TreeDeleteViewMenuEvent implements ActionListener {
             String name = currentNode.toString();
             try {
                 if (testForm.getLevel() == 1) {
-                    ResultSet rs = testForm.getDataOper().selectTestInfo(name);
-                    if (rs == null)
+                    ResultSet rs = testForm.getDataOper().selectMeasurePointInfo(name);
+                    if (rs == null) {
                         testForm.getDataOper().deleteMonitorInfo(name);
+                        currentNode.removeFromParent();
+                        this.testForm.getTree().updateUI();
+                    }
                     else {
                         JOptionPane.showMessageDialog(null,"该检测点下还有测量点, 请先删除所有测量点!","提示框",JOptionPane.NO_OPTION);
                     }
                 } else if (testForm.getLevel() == 2) {
-                    testForm.getDataOper().deleteTestInfo(name, currentNode.getParent().toString());
+                    testForm.getDataOper().deleteMeasurePointInfo(currentNode.getParent().toString(), name);
+                    currentNode.removeFromParent();
+                    this.testForm.getTree().updateUI();
                 }
             } catch (SQLException e1) {
 
             }
-            currentNode.removeFromParent();
-            this.testForm.getTree().updateUI();
         }
     }
 }
@@ -567,7 +570,7 @@ class TreePopMenuEvent implements MouseListener {
                 if (currentNode.getLevel() == 1) {
                     try {
                         String monitorName = currentNode.toString();
-                        ResultSet result1 = testForm.getDataOper().selectTestInfo(monitorName);
+                        ResultSet result1 = testForm.getDataOper().selectMeasurePointInfo(monitorName);
                         testForm.generateDataTable(result1);
                     } catch (SQLException e1) {
                         e1.printStackTrace();

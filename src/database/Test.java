@@ -18,8 +18,8 @@ public class Test {
 
     public static   Connection getConn() {
         String user = "root";
-       String password = "575615578";
-//        String password = "123456";
+//       String password = "575615578";
+        String password = "123456";
         String url = "jdbc:mysql://localhost:3306/StationDatabase?useSSL=false&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
         String driver = "com.mysql.cj.jdbc.Driver";
         Connection conn=null;
@@ -177,7 +177,7 @@ public class Test {
     //(1)实现用户对测量点信息进行增加数据的操作。添加的信息主要有测量点编号，测量点名称，所属的监测点编号这三个信息，并保存在测量点信息表中
     //输入参数为测量点编号，测量点名称，所属监测点的编号，调用此方法，实现测量点信息的增添功能。
     //方法名为insertMeasurePointInfo();
-    public boolean insertMeasurePointInfo(int MeasurePointNo,String MeasurePointName,int Parameter,String MonitorName) throws SQLException{
+    public boolean insertMeasurePointInfo(int MeasurePointNo,String MeasurePointName,float Parameter,String MonitorName) throws SQLException{
         boolean insflag =false;
             Connection conn = getConn();
             Statement stmt;
@@ -200,7 +200,7 @@ public class Test {
     //(2)实现用户对测量点信息进行更新数据的操作。更新的信息主要有测量点编号，测量点名称，所属监测点的编号这三个信息，并保存在监测点信息表中
     //输入参数为测量点编号，测量点名称，所属监测点的编号，调用此方法，实现测量点信息的更新功能。
    // 方法名为updateMeasurePointInfo();
-    public boolean updateMeasurePointInfo(int MeasurePointNo_new, String MeasurePointName_new,int Parameter_new, String MonitorName,String MeasurePointName_old)throws SQLException{
+    public boolean updateMeasurePointInfo(int MeasurePointNo_new, String MeasurePointName_new,float Parameter_new, String MonitorName,String MeasurePointName_old)throws SQLException{
         boolean upflag =false;
         try {
             Connection conn = getConn();
