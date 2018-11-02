@@ -10,9 +10,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-//import java.sql.SQLIntegrityConstraintViolationException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
@@ -76,10 +75,9 @@ public class TableAdd extends JDialog implements ActionListener {
     public void actionPerformed(ActionEvent e) {
 
         if (e.getSource() == jb1) {
-            String name = jtf2.getText();//获得输入的监测点名称
-            String position = jtf3.getText(); //获得输入监测点位置
-            LOGGER.debug("获得输入的监测点名称"+name);
-            DefaultMutableTreeNode treenode = new DefaultMutableTreeNode(name);
+            String msg = jtf2.getText();//获得输入的监测点名称
+            LOGGER.debug("获得输入的监测点名称"+msg);
+            DefaultMutableTreeNode treenode = new DefaultMutableTreeNode(msg);
             ((DefaultMutableTreeNode) owner.getTree().getLastSelectedPathComponent()).add(treenode);
             LOGGER.debug("将新建的测量点名称添加到树模型中");
             owner.getTree().expandPath(new TreePath(((DefaultMutableTreeNode) this.owner.getTree().getLastSelectedPathComponent()).getPath()));
@@ -90,24 +88,15 @@ public class TableAdd extends JDialog implements ActionListener {
 
                 t1 = new Test();
                 //调用监测点信息添加的方法
-                t1.insertMonitorInfo(name, position);
+                t1.insertMonitorInfo(Integer.parseInt(jtf1.getText()), msg, jtf3.getText());
 
-            } catch (SQLException e1) {
+            } catch (NumberFormatException e1){
                 e1.printStackTrace();
-                JOptionPane.showMessageDialog(null, "输入编号已重复，请重新输入编号.", "提示框", JOptionPane.NO_OPTION);
-                return;
-            } catch (NumberFormatException e2) {
-                e2.printStackTrace();
-                JOptionPane.showMessageDialog(null, "监测点编号只能输入数字, 请重新输入", "提示框", JOptionPane.NO_OPTION);
-                return;
+                JOptionPane.showMessageDialog(null, "输入编号非法，输入编号应该为整数，请重新输入编号.", "提示框", JOptionPane.NO_OPTION);
+//
+            }catch (SQLException e2) {
+                //e2.printStackTrace();
             }
-            ResultSet result1 = null;
-            try {
-                result1 = owner.getDataOper().selectMonitorInfo();
-            } catch (SQLException e1) {
-
-            }
-            owner.generateDataTable(result1);
 
         } else if (e.getSource() == jb2) {
             this.setVisible(false);
