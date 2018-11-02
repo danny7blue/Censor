@@ -88,7 +88,7 @@ public class TableAdd extends JDialog implements ActionListener {
 
                 t1 = new Test();
                 //调用监测点信息添加的方法
-                t1.insertMonitorInfo(Integer.parseInt(jtf1.getText()), msg, jtf3.getText());
+                t1.insertMonitorInfo( msg, jtf3.getText());
 
             } catch (NumberFormatException e1){
                 e1.printStackTrace();
