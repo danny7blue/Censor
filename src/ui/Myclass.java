@@ -16,6 +16,7 @@ import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+
 public class Myclass extends JFrame implements ActionListener{
 
 
@@ -479,25 +480,21 @@ public class Myclass extends JFrame implements ActionListener{
         return currentRow;
     }
     //从数据库获得监测点信息,并填入树结构中
-    public void generateInspectorList() {
-        ResultSet result1 = null;
-        try {
-            result1 = getDataOper().selectMonitorInfo();
-        } catch (SQLException e1) {
-            e1.printStackTrace();
+        public void generateDataTable(ResultSet rs) {
+            // 取得数据库的表的各行数据
+            Vector rowData = getRows(rs);
+            // 取得数据库的表的表头数据
+            Vector columnNames = getHead(rs);
+            // 新建表格
+            DefaultTableModel tableModel = new DefaultTableModel(rowData, columnNames);
+            getDataTable().setModel(tableModel);
+            this.getDataTable().updateUI();
         }
-        // 取得数据库的表的各行数据
-        Vector rowData = getRows(result1);
-        // 取得数据库的表的表头数据
-        Vector columnNames = getHead(result1);
-        // 新建表格
-        DefaultTableModel tableModel = new DefaultTableModel(rowData, columnNames);
-        getDataTable().setModel(tableModel);
-        this.getDataTable().updateUI();
+
     }
 
 
-}
+
 
 
 /**
@@ -537,21 +534,32 @@ class TreeDeleteViewMenuEvent implements ActionListener {
     }
 
     public void actionPerformed(ActionEvent e) {
-        //全局变量x为真时，父节点下还有未删除的子节点，弹出“不能删除”的提示框
-        if (adaptee.x==true) {
-            JOptionPane.showMessageDialog(null,"不能删除该节点!","提示框",JOptionPane.NO_OPTION);
 
-        }else {
-            //弹出是否确认删除提示框
-            int conform = JOptionPane.showConfirmDialog(null, "是否确认删除？", "删除节点确认", JOptionPane.YES_NO_OPTION);
-            //点击删除按钮，删除该节点
-            if (conform == JOptionPane.YES_OPTION) {
-                ((DefaultMutableTreeNode) this.adaptee.getTree().getLastSelectedPathComponent()).removeFromParent();
-                this.adaptee.getTree().updateUI();
+        int conform = JOptionPane.showConfirmDialog(null, "是否确认删除？", "删除景点确认", JOptionPane.YES_NO_OPTION);
+        if (conform == JOptionPane.YES_OPTION) {
+            DefaultMutableTreeNode currentNode = (DefaultMutableTreeNode) this.adaptee.getTree().getLastSelectedPathComponent();
+            String name = currentNode.toString();
+            try {
+                if (adaptee.getJudge()== 1) {
+//                    ResultSet rs = adaptee.getDataOper().selectMeasurePointInfo(name);
+                    if (adaptee.x==false) {
+                        adaptee.getDataOper().deleteMonitorInfo(name);
+                        currentNode.removeFromParent();
+                        this.adaptee.getTree().updateUI();
+                    }
+                    else {
+                        //父节点下还有未删除的子节点，弹出“不能删除”的提示框
+                        JOptionPane.showMessageDialog(null,"该检测点下还有测量点, 请先删除所有测量点!","提示框",JOptionPane.NO_OPTION);
+                    }
+                } else if (adaptee.getJudge()== 2) {
+                    adaptee.getDataOper().deleteMeasurePointInfo(currentNode.getParent().toString(), name);
+                    currentNode.removeFromParent();
+                    this.adaptee.getTree().updateUI();
+                }
+            } catch (SQLException e1) {
 
             }
         }
-
     }
 }
 
@@ -602,7 +610,7 @@ class TreePopMenuEvent implements MouseListener {
         }
         adaptee.getTree().setSelectionPath(path);
         //判断当前节点
-        DefaultMutableTreeNode currentNode=((DefaultMutableTreeNode)path.getLastPathComponent());
+        DefaultMutableTreeNode currentNode=((DefaultMutableTreeNode)adaptee.getTree().getLastSelectedPathComponent());
 
         //判断右键点击的是父节点还是子节点，点击根节点时能添加但不能修改，点击父节点时能添加能修改
         //点击子节点时能修改但不能添加
@@ -616,7 +624,15 @@ class TreePopMenuEvent implements MouseListener {
 
                 }else if (e.getButton() == 1) //鼠标单击左键时
                 {
-                    adaptee.generateInspectorList();
+                    try {
+                        //显示监测点列表
+                        ResultSet result1 = adaptee.getDataOper().selectMonitorInfo();
+                        adaptee.generateDataTable(result1);
+                    }catch (SQLException e1)
+                    {
+                        e1.printStackTrace();
+                    }
+
                 }
             }else if(currentNode.getLevel() == 1){
                 if (e.getButton() == 3) //鼠标单击右键时
@@ -625,7 +641,14 @@ class TreePopMenuEvent implements MouseListener {
                     adaptee.setJudge(1);
                 }else if (e.getButton() == 1) //鼠标单击左键时
                 {
-                    adaptee.generateInspectorList();
+                    String monitorName = currentNode.toString();
+                    try {
+                        ResultSet result1 = adaptee.getDataOper().selectMeasurePointInfo(monitorName);
+                        adaptee.generateDataTable(result1);
+                    } catch (SQLException e1) {
+                        e1.printStackTrace();
+                    }
+
                 }
 
             }else if (currentNode.getLevel() ==2)
@@ -635,24 +658,16 @@ class TreePopMenuEvent implements MouseListener {
                     adaptee.setJudge(2);
                 }else if (e.getButton() == 1) {
                     try {
-                        String monitorName = ((DefaultMutableTreeNode)adaptee.getTree().getLastSelectedPathComponent()).getParent().toString();
+                        String monitorName = currentNode.getParent().toString();
                         String measureName = adaptee.getTree().getLastSelectedPathComponent().toString();
                         String selectedDate = adaptee.getDateTextField().getText();
-//                        System.out.println(monitorName);
-//                        System.out.println(measureName);
-//                        System.out.println(selectedDate);
-                        ResultSet result1 = adaptee.getDataOper().search(monitorName, measureName, selectedDate);
-                        // 取得数据库的表的各行数据
-                        Vector rowData = adaptee.getRows(result1);
-                        // 取得数据库的表的表头数据
-                        Vector columnNames = adaptee.getHead(result1);
-                        // 新建表格
-                        DefaultTableModel tableModel = new DefaultTableModel(rowData,columnNames);
-                        adaptee.getDataTable().setModel(tableModel);
-                        adaptee.jTableScrollPane.updateUI();
-                    } catch (SQLException e1) {
+                        ResultSet result1 = adaptee.dataOper.search(monitorName,measureName,selectedDate);
+                        adaptee.generateDataTable(result1);
+                    }catch (SQLException e1)
+                    {
                         e1.printStackTrace();
                     }
+
 
             }
 

@@ -2,25 +2,28 @@ package ui;
 /*
    监测点的修改方法
  */
+import database.Test;
 import org.apache.log4j.Logger;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 
 public class TableAmend extends JDialog implements ActionListener {
     private static  final Logger LOGGER = Logger.getLogger(TableAmend.class);
     JButton jb1,jb2;
-    JLabel jl1,jl2,jl3;
-    JTextField jtf1,jtf2,jtf3;
+    JLabel jl1,jl2;
+    JTextField jtf1,jtf2;
     JPanel jp1,jp2;
     Myclass owner;
     //owner代表父窗口
     //title代表窗口名
     //model指定的是模式窗口好事非模式窗口
+    static Test dataOper;
     public  TableAmend(Frame owner,String title,boolean model)
     {
         super(owner, title,model);//调用父类构造方法，达到模式对话框效果
@@ -29,11 +32,11 @@ public class TableAmend extends JDialog implements ActionListener {
         this.owner = (Myclass)owner;
         jl1=new JLabel("监测点编号");
         jl2=new JLabel("监测点名称");
-        jl3=new JLabel("监测点位置");
+
 
         jtf1=new JTextField(10);
         jtf2=new JTextField(10);
-        jtf3=new JTextField(10);
+
         jb1=new JButton("修改");
         jb1.addActionListener(this);
         jb2=new JButton("取消");
@@ -45,8 +48,7 @@ public class TableAmend extends JDialog implements ActionListener {
         jp1.add(jtf1);
         jp1.add(jl2);
         jp1.add(jtf2);
-        jp1.add(jl3);
-        jp1.add(jtf3);
+
 
 
         jp2.add(jb1);
@@ -64,11 +66,19 @@ public class TableAmend extends JDialog implements ActionListener {
     }
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == jb1) {
-            String msg=jtf2.getText();
-            LOGGER.debug("获得输入的监测点名称"+msg);
+            String name = jtf1.getText();
+            LOGGER.debug("获得输入的监测点名称"+name);
+            String position = jtf2.getText();
+
             DefaultMutableTreeNode node = (DefaultMutableTreeNode) this.owner.getTree().getSelectionPath().getLastPathComponent();
-            //改名
-            node.setUserObject(msg);
+
+            try {
+                dataOper = new Test();
+                dataOper.updateMonitorInfo(name, position, node.toString());
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+            }//改名
+            node.setUserObject(name);
             LOGGER.debug("更改监测点名称成功");
             //刷新
             this.owner.getTree().updateUI();

@@ -2,20 +2,24 @@ package ui;
 /*
    测量点的修改方法
  */
+import database.Test;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 
 public class PointAmend extends JDialog implements ActionListener {
     private static  final org.apache.log4j.Logger LOGGER = org.apache.log4j.Logger.getLogger(PointAmend.class);
     JButton jb1,jb2;
-    JLabel jl1,jl2;
-    JTextField jtf1,jtf2;
+    JLabel jl1,jl2,jl3;
+    JTextField jtf1,jtf2,jtf3;
     JPanel jp1,jp2;
     Myclass owner;
+    static Test dataOper;
     //owner代表父窗口
     //title代表窗口名
     //model指定的是模式窗口好事非模式窗口
@@ -27,11 +31,11 @@ public class PointAmend extends JDialog implements ActionListener {
         this.owner = (Myclass)owner;
         jl1=new JLabel("测量点编号");
         jl2=new JLabel("测量点名称");
-
+        jl3=new JLabel("测量点变比");
 
         jtf1=new JTextField(10);
         jtf2=new JTextField(10);
-
+        jtf3=new JTextField(10);
         jb1=new JButton("修改");
         jb1.addActionListener(this);
         jb2=new JButton("取消");
@@ -43,7 +47,8 @@ public class PointAmend extends JDialog implements ActionListener {
         jp1.add(jtf1);
         jp1.add(jl2);
         jp1.add(jtf2);
-
+        jp1.add(jtf3);
+        jp1.add(jl3);
 
         jp2.add(jb1);
         jp2.add(jb2);
@@ -60,13 +65,21 @@ public class PointAmend extends JDialog implements ActionListener {
     }
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == jb1) {
-            String msg=jtf2.getText();   //获得输入的测量点名称
-            LOGGER.debug("获得输入的测量点名称"+msg);
+            String id = jtf1.getText();
+            String name = jtf2.getText();
+            LOGGER.debug("获得输入的测量点名称"+name);
+            String parameter = jtf3.getText();
             DefaultMutableTreeNode node = (DefaultMutableTreeNode) this.owner.getTree().getSelectionPath().getLastPathComponent();
 
             //改名
-            node.setUserObject(msg);
+            node.setUserObject(name);
             LOGGER.debug("更改测量点名称成功");
+            try {
+                dataOper = new Test();
+                dataOper.updateMeasurePointInfo(Integer.parseInt(id), name, Float.parseFloat(parameter), node.getParent().toString(), node.toString());
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+            }
             //刷新
             this.owner.getTree().updateUI();
             owner.getTree().updateUI();
