@@ -3,6 +3,8 @@ package ui;
 /*
    测量点的增加方法
  */
+import org.apache.log4j.Logger;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -11,6 +13,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
 public class PointAdd extends JDialog implements ActionListener {
+    private static final Logger LOGGER = Logger.getLogger(PointAdd.class);
     JButton jb1,jb2;
     JLabel jl1,jl2,jl3;
     JTextField jtf1,jtf2,jtf3;
@@ -22,6 +25,7 @@ public class PointAdd extends JDialog implements ActionListener {
     public  PointAdd(Frame owner,String title,boolean model)
     {
         super(owner, title,model);//调用父类构造方法，达到模式对话框效果
+        LOGGER.info("进入添加测量点模式...");
         //定义组件
         this.owner = (Myclass)owner;
         jl1=new JLabel("测量点编号");
@@ -54,7 +58,7 @@ public class PointAdd extends JDialog implements ActionListener {
         this.setLocation(500,200);
         this.setSize(300,200);
         this.setVisible(true);
-
+        LOGGER.info("显示窗体...");
 //        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 
@@ -62,12 +66,15 @@ public class PointAdd extends JDialog implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == jb1) {
             String msg=jtf2.getText();   //获得输入的测量点名称
+            LOGGER.debug("获得输入的测量点名称"+msg);
             DefaultMutableTreeNode treenode = new DefaultMutableTreeNode(msg);  //新建树节点存放测量点名称
             ((DefaultMutableTreeNode) owner.getTree().getLastSelectedPathComponent()).add(treenode);//添加该树节点到树模型中
             owner.getTree().expandPath(new TreePath(((DefaultMutableTreeNode)
                     this.owner.getTree().getLastSelectedPathComponent()).getPath()));
             owner.getTree().updateUI();    //刷新以显示该树模型
+            LOGGER.debug("将新建的测量点名称添加到树模型中");
             this.setVisible(false);
+            LOGGER.debug("刷新显示树模型");
         } else if (e.getSource() == jb2) {
             this.setVisible(false);
         }

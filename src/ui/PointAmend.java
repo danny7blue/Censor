@@ -61,7 +61,7 @@ public class PointAmend extends JDialog implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == jb1) {
             String msg=jtf2.getText();   //获得输入的测量点名称
-            LOGGER.debug("获得输入的测量点名称");
+            LOGGER.debug("获得输入的测量点名称"+msg);
             DefaultMutableTreeNode node = (DefaultMutableTreeNode) this.owner.getTree().getSelectionPath().getLastPathComponent();
 
             //改名

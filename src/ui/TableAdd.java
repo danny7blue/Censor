@@ -76,7 +76,7 @@ public class TableAdd extends JDialog implements ActionListener {
 
         if (e.getSource() == jb1) {
             String msg = jtf2.getText();//获得输入的监测点名称
-            LOGGER.debug("获得输入的监测点名称");
+            LOGGER.debug("获得输入的监测点名称"+msg);
             DefaultMutableTreeNode treenode = new DefaultMutableTreeNode(msg);
             ((DefaultMutableTreeNode) owner.getTree().getLastSelectedPathComponent()).add(treenode);
             LOGGER.debug("将新建的测量点名称添加到树模型中");
@@ -95,7 +95,7 @@ public class TableAdd extends JDialog implements ActionListener {
                 JOptionPane.showMessageDialog(null, "输入编号非法，输入编号应该为整数，请重新输入编号.", "提示框", JOptionPane.NO_OPTION);
 //
             }catch (SQLException e2) {
-                e2.printStackTrace();
+                //e2.printStackTrace();
             }
 
         } else if (e.getSource() == jb2) {
@@ -114,10 +114,10 @@ public class TableAdd extends JDialog implements ActionListener {
 //        }
 //    }
 
-    public static void main(String[] args)
-    {
-
-    }
+//    public static void main(String[] args)
+//    {
+//
+//    }
 
 
 }
