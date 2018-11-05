@@ -67,11 +67,24 @@ public class MeasurePointModifyDialog extends JDialog implements ActionListener 
             String name = measurePointNameTextField.getText();
             String parameter = parameterTextField.getText();
             DefaultMutableTreeNode node = ((DefaultMutableTreeNode)tree.getLastSelectedPathComponent());
+            String monitorName = node.getParent().toString();
             try {
                 dataOper = new Test();
-                dataOper.updateMeasurePointInfo(Integer.parseInt(id), name, Float.parseFloat(parameter), node.getParent().toString(), node.toString());
+                boolean containMeasurePoint = dataOper.containMeasurePoint(monitorName, Integer.parseInt(id));
+                if (!containMeasurePoint) {
+                    dataOper.updateMeasurePointInfo(Integer.parseInt(id), name, Float.parseFloat(parameter), node.getParent().toString(), node.toString());
+                }
+                else {
+                    JOptionPane.showMessageDialog(null, "此监测点下已包含该测量点编号，请重新输入编号.", "提示框", JOptionPane.NO_OPTION);
+                    return;
+                }
+
             } catch (SQLException e1) {
                 e1.printStackTrace();
+            }catch (NumberFormatException e2) {
+                e2.printStackTrace();
+                JOptionPane.showMessageDialog(null, "测量点编号或变比输入格式有误, 请重新输入", "提示框", JOptionPane.NO_OPTION);
+                return;
             }
             //改名
             node.setUserObject(name);
