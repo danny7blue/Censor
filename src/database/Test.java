@@ -289,7 +289,6 @@ public class Test {
      */
     public ResultSet search(String MonitorName, String MeasurePointName, String time) throws SQLException {
         ResultSet rs = null;
-        int rowcount = 0;
         String pdemo = "%";//定义一个字符%
         String time_new = time.concat(pdemo);//将传入的日期转换为 "yy-mm-dd %"，便于在mysql中进行模糊查询当前日期的所有数据。
         String selTestPointinfo = "";
@@ -308,14 +307,6 @@ public class Test {
             Statement stmt;
             stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
             rs = stmt.executeQuery(selTestPointinfo);//执行查询语句
-            rs.last();//将结果集位置移到最后。
-            rowcount = rs.getRow();//获得当前的行编号
-            System.out.println("检索出的记录为" + rowcount);
-            if (rowcount > 0) {
-                return rs;//返回取得的结果集。
-            } else {
-                rs = null;
-            }
         } catch (SQLException e) {
             System.out.println("SQLException异常" + e.getMessage());//打印输出异常信息
             e.printStackTrace();
