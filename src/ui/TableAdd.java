@@ -5,18 +5,15 @@ package ui;
 
 import database.Test;
 import org.apache.log4j.Logger;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.SQLIntegrityConstraintViolationException;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
-import static javax.swing.JOptionPane.showMessageDialog;
 
 public class TableAdd extends JDialog implements ActionListener {
     private static final Logger LOGGER = Logger.getLogger(TableAdd.class);
@@ -112,22 +109,6 @@ public class TableAdd extends JDialog implements ActionListener {
             this.setVisible(false);
         }
     }
-
-
-
-
-//    public void updateInspector(String name, String  ){
-//        if (name.contains("监测")) {
-//            sql.up
-//        } else if(name.contains("测量")){
-//
-//        }
-//    }
-
-//    public static void main(String[] args)
-//    {
-//
-//    }
 
 
 }

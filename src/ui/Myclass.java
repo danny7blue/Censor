@@ -98,16 +98,13 @@ public class Myclass extends JFrame implements ActionListener{
         Vector columnNames = getHead(null);
         // 新建表格
         tableModel = new DefaultTableModel(rowData,columnNames);
+        dataTable=new JTable();
         dataTable.setModel(tableModel);
-//        try {
             treeInit();  //初始化树结构
             //初始化右键菜单
             rootpopMenuInit();
             inspectorpopMenuInit2();
             measurePointpopMenuInt();
-//        } catch (Exception exception) {
-//            exception.printStackTrace();
-//        }
 
         //把按钮加入JFrame界面
         jp1.add(label);
@@ -115,11 +112,23 @@ public class Myclass extends JFrame implements ActionListener{
         jp1 = new JPanel(new FlowLayout(FlowLayout.RIGHT, 20, 10));
         this.add(jp1, BorderLayout.NORTH);
         //对树的滚动面板进行设置
+        inspectorSelectorTree=new JTree();
+        jTreeScrollPanel=new JScrollPane();
         jTreeScrollPanel.setViewportView(inspectorSelectorTree);
         jTreeScrollPanel.setPreferredSize(new Dimension(120,100));
         this.add(jTreeScrollPanel,BorderLayout.WEST);
         //对数据表格进行格式设置和元素添加
+        dataTable.setModel(new DefaultTableModel(
+                new Object[][]{
+                        {null, null},
+                        {null, null},
+                },
+                new String[]{
+                        null, null
+                }
+        ));
         dataTable.setPreferredScrollableViewportSize(new Dimension(550, 400));
+        jTableScrollPane=new JScrollPane();
         jTableScrollPane.setViewportView(dataTable);
         this.add(jTableScrollPane,BorderLayout.CENTER);
         this.pack();
@@ -131,6 +140,8 @@ public class Myclass extends JFrame implements ActionListener{
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setVisible(true);
     }
+
+
     //创建日期显示
     private void setDateSelector()
     {
@@ -236,48 +247,8 @@ public class Myclass extends JFrame implements ActionListener{
         } catch (Exception e) {
         }
     }
-    //
-    public DefaultMutableTreeNode processHierarchy(Object[] hierarchy) {
-        DefaultMutableTreeNode node = new DefaultMutableTreeNode(hierarchy[0]);
-        try {
-            int ctrow = 0;
-            int i = 0;
-            try {
-                String sql = "SELECT MonitorID, MonitorName from monitorinfo";
-                ResultSet rs = stm.executeQuery(sql);
 
-                while (rs.next()) {
-                    ctrow = rs.getRow();
-                }
-                String L1Nam[] = new String[ctrow];
-                String L1Id[] = new String[ctrow];
-                ResultSet rs1 = stm.executeQuery(sql);
-                while (rs1.next()) {
-                    L1Nam[i] = rs1.getString("MonitorName");
-                    L1Id[i] = rs1.getString("MonitorID");
-                    i++;
-                }
-                DefaultMutableTreeNode child, grandchild;
-                for (int childIndex = 0; childIndex < L1Nam.length; childIndex++) {
-                    child = new DefaultMutableTreeNode(L1Nam[childIndex]);
-                    node.add(child);//add each created child to root
-                    String sql2 = "SELECT TestName from testinfo where MonitorID= '" + L1Id[childIndex] + "' ";
-                    ResultSet rs3 = stm.executeQuery(sql2);
-                    while (rs3.next()) {
-                        grandchild = new DefaultMutableTreeNode(rs3.getString("TestName"));
-                        child.add(grandchild);//add each grandchild to each child
-                    }
-                }
 
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-
-        } catch (Exception e) {
-        }
-
-        return (node);
-    }
 
     public  JTree getTree(){
         return inspectorSelectorTree;
@@ -289,7 +260,9 @@ public class Myclass extends JFrame implements ActionListener{
     public  JTextField getDateTextField(){
         return dateTextField;
     }
-
+    public static Test getDataOper(){
+        return dataOper;
+    }
     //调用数据表的函数
 //    private void initComponents() {
 
@@ -401,7 +374,7 @@ public class Myclass extends JFrame implements ActionListener{
 
         inspectorSelectorTree.addTreeSelectionListener(new TreeSelectionListener() {
 
-            public void valueChanged(TreeSelectionEvent e) { //选中菜单节点的事件
+    public void valueChanged(TreeSelectionEvent e) { //选中菜单节点的事件
                 DefaultMutableTreeNode node = (DefaultMutableTreeNode) inspectorSelectorTree.getLastSelectedPathComponent();
             }
         });
@@ -409,38 +382,10 @@ public class Myclass extends JFrame implements ActionListener{
         jTreeScrollPanel.getViewport().add(inspectorSelectorTree);
     }
 
-    public static Test getDataOper(){
-        return dataOper;
-    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
 
-    }
-
-    // 得到数据库表头
-    public static Vector getHead(ResultSet rs){
-        PreparedStatement preparedStatement = null;
-
-        Vector columnHeads = null;
-
-        try {
-//            preparedStatement = con.prepareStatement("select * from price_data");
-//            ResultSet result1 = preparedStatement.executeQuery();
-
-//            ResultSet result1 = dataOper.search(((DefaultMutableTreeNode)getTree().getLastSelectedPathComponent()).getParent().toString(), getTree().getLastSelectedPathComponent().toString(), getDateTextField().toString());
-
-            columnHeads = new Vector();
-            if (rs != null) {
-                ResultSetMetaData rsmd = rs.getMetaData();
-                for(int i = 1; i <= rsmd.getColumnCount(); i++)
-                    columnHeads.addElement(rsmd.getColumnName(i));
-            }
-        } catch (SQLException e) {
-            // TODO Auto-generated catch block
-            System.out.println("未成功打开数据库。");
-            e.printStackTrace();
-        }
-        return columnHeads;
     }
     // 得到数据库表数据
     public static Vector getRows(ResultSet rs){
@@ -471,6 +416,33 @@ public class Myclass extends JFrame implements ActionListener{
         return rows;
     }
 
+
+    // 得到数据库表头
+    public static Vector getHead(ResultSet rs){
+        PreparedStatement preparedStatement = null;
+
+        Vector columnHeads = null;
+
+        try {
+//            preparedStatement = con.prepareStatement("select * from price_data");
+//            ResultSet result1 = preparedStatement.executeQuery();
+
+//            ResultSet result1 = dataOper.search(((DefaultMutableTreeNode)getTree().getLastSelectedPathComponent()).getParent().toString(), getTree().getLastSelectedPathComponent().toString(), getDateTextField().toString());
+
+            columnHeads = new Vector();
+            if (rs != null) {
+                ResultSetMetaData rsmd = rs.getMetaData();
+                for(int i = 1; i <= rsmd.getColumnCount(); i++)
+                    columnHeads.addElement(rsmd.getColumnName(i));
+            }
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            System.out.println("未成功打开数据库。");
+            e.printStackTrace();
+        }
+        return columnHeads;
+    }
+
     // 得到数据库中下一行数据
     private static Vector getNextRow(ResultSet rs,ResultSetMetaData rsmd) throws SQLException{
         Vector currentRow = new Vector();
@@ -490,6 +462,51 @@ public class Myclass extends JFrame implements ActionListener{
             getDataTable().setModel(tableModel);
             this.getDataTable().updateUI();
         }
+
+
+
+    @SuppressWarnings("CallToThreadDumpStack")
+    public DefaultMutableTreeNode processHierarchy(Object[] hierarchy) {
+        DefaultMutableTreeNode node = new DefaultMutableTreeNode(hierarchy[0]);
+        try {
+            int ctrow = 0;
+            int i = 0;
+            try {
+                String sql = "SELECT MonitorID, MonitorName from monitorinfo";
+                ResultSet rs = stm.executeQuery(sql);
+
+                while (rs.next()) {
+                    ctrow = rs.getRow();
+                }
+                String L1Nam[] = new String[ctrow];
+                String L1Id[] = new String[ctrow];
+                ResultSet rs1 = stm.executeQuery(sql);
+                while (rs1.next()) {
+                    L1Nam[i] = rs1.getString("MonitorName");
+                    L1Id[i] = rs1.getString("MonitorID");
+                    i++;
+                }
+                DefaultMutableTreeNode child, grandchild;
+                for (int childIndex = 0; childIndex < L1Nam.length; childIndex++) {
+                    child = new DefaultMutableTreeNode(L1Nam[childIndex]);
+                    node.add(child);//add each created child to root
+                    String sql2 = "SELECT MeasurePointName from measurepointinfo where MonitorID= '" + L1Id[childIndex] + "' ";
+                    ResultSet rs3 = stm.executeQuery(sql2);
+                    while (rs3.next()) {
+                        grandchild = new DefaultMutableTreeNode(rs3.getString("MeasurePointName"));
+                        child.add(grandchild);//add each grandchild to each child
+                    }
+                }
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+
+        } catch (Exception e) {
+        }
+
+        return (node);
+    }
 
     }
 
