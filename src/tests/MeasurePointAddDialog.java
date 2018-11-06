@@ -70,10 +70,16 @@ public class MeasurePointAddDialog extends JDialog implements ActionListener {
             DefaultMutableTreeNode treenode = new DefaultMutableTreeNode(name);
             try {
                 dataOper = new Test();
-                dataOper.insertMeasurePointInfo(Integer.parseInt(id), name, Float.parseFloat(parameter), monitorName);
+                boolean containMeasurePoint = dataOper.containMeasurePoint(monitorName, Integer.parseInt(id));
+                if (!containMeasurePoint) {
+                    dataOper.insertMeasurePointInfo(Integer.parseInt(id), name, Float.parseFloat(parameter), monitorName);
+                }
+                else {
+                    JOptionPane.showMessageDialog(null, "此监测点下已包含该测量点编号，请重新输入编号.", "提示框", JOptionPane.NO_OPTION);
+                    return;
+                }
             } catch (SQLException e1) {
                 e1.printStackTrace();
-                JOptionPane.showMessageDialog(null, "输入编号已重复，请重新输入编号.", "提示框", JOptionPane.NO_OPTION);
                 return;
             } catch (NumberFormatException e2) {
                 e2.printStackTrace();

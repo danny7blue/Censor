@@ -249,7 +249,7 @@ public class TestForm extends JPanel {
                 for (int childIndex = 0; childIndex < L1Nam.length; childIndex++) {
                     child = new DefaultMutableTreeNode(L1Nam[childIndex]);
                     node.add(child);//add each created child to root
-                    String sql2 = "SELECT MeasurePointName from measurepointinfo where MonitorID= '" + L1Id[childIndex] + "' ";
+                    String sql2 = "SELECT MeasurePointName from measurepointinfo where MonitorID= '" + L1Id[childIndex] + "' AND IsDeleted = 0";
                     ResultSet rs3 = stm.executeQuery(sql2);
                     while (rs3.next()) {
                         grandchild = new DefaultMutableTreeNode(rs3.getString("MeasurePointName"));
@@ -513,18 +513,26 @@ class TreeDeleteViewMenuEvent implements ActionListener {
             try {
                 if (testForm.getLevel() == 1) {
                     ResultSet rs = testForm.getDataOper().selectMeasurePointInfo(name);
-                    if (rs == null) {
-                        testForm.getDataOper().deleteMonitorInfo(name);
-                        currentNode.removeFromParent();
-                        this.testForm.getTree().updateUI();
+                    rs.last();
+                    if (rs.getRow() == 0) {
+                        boolean isDeletedSuccess = testForm.getDataOper().deleteMonitorInfo(name);
+                        if (isDeletedSuccess) {
+                            currentNode.removeFromParent();
+                            this.testForm.getTree().updateUI();
+                        } else
+                            JOptionPane.showMessageDialog(null,"监测点删除失败, 请联系管理员","提示框",JOptionPane.NO_OPTION);
                     }
                     else {
                         JOptionPane.showMessageDialog(null,"该检测点下还有测量点, 请先删除所有测量点!","提示框",JOptionPane.NO_OPTION);
                     }
                 } else if (testForm.getLevel() == 2) {
-                    testForm.getDataOper().deleteMeasurePointInfo(currentNode.getParent().toString(), name);
-                    currentNode.removeFromParent();
-                    this.testForm.getTree().updateUI();
+                    boolean isDeletedSuccess = testForm.getDataOper().deleteMeasurePointInfo(currentNode.getParent().toString(), name);
+                    if (isDeletedSuccess) {
+                        currentNode.removeFromParent();
+                        this.testForm.getTree().updateUI();
+                    } else {
+                        JOptionPane.showMessageDialog(null,"测量点删除失败, 请联系管理员","提示框",JOptionPane.NO_OPTION);
+                    }
                 }
             } catch (SQLException e1) {
 
