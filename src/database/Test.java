@@ -296,7 +296,7 @@ public class Test {
             /*如果监测点和测量点的编号为空，则执行查询测量点数据的SQL语句*/
             System.out.println("未正确获得监测点名称和测量点名称，查询结果为空！");
         } else {
-            selTestPointinfo = "SELECT tinfo.MeasurePointName as 测试点名称,tinfo.MeasurePointNo as 测试点编号,tdinfo.MeasureData as 数据值,tdinfo.ReceivedTime as 时间" +
+            selTestPointinfo = "SELECT tinfo.MeasurePointName as 测试点名称,tinfo.MeasurePointNo as 测试点编号,tdinfo.MeasureData * tinfo.Parameter as 数据值,tdinfo.ReceivedTime as 时间" +
                     " from monitorinfo as minfo,MeasurePointinfo as tinfo,MeasureDataInfo as tdinfo " + "WHERE minfo.MonitorID=tinfo.MonitorID AND tinfo.MeasurePointID=tdinfo.MeasurePointID " +
                     "AND minfo.MonitorName='" + MonitorName + "' " + "AND tinfo.MeasurePointName='" + MeasurePointName + "'" + "AND tdinfo.ReceivedTime like '" + time_new + "'" +
                     " AND tinfo.IsDeleted =0 AND tdinfo.IsDeleted=0";
