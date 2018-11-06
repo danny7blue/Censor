@@ -32,14 +32,13 @@ public class Myclass extends JFrame implements ActionListener{
     JScrollPane jTreeScrollPanel;
 
     //中部区域
-//    JPanel datePanel;
-//    JLabel selectDateLabel;
-//    JSeparator verticalSeparator;
-//    JSeparator horizontalSeparator ;
     JScrollPane jTableScrollPane ;
     JTable dataTable ;
+    Vector rowData,columnNames;
     //定义三组菜单栏，分别对应根节点，监测点节点和测量点节点
-    JPopupMenu rootpopMenu,inspectorpopMenu,measurePointpopMenu;
+    private JPopupMenu rootpopMenu;
+    private JPopupMenu inspectorpopMenu;
+    private JPopupMenu measurePointpopMenu;
     int judge=1;   //设置一个全局变量
     boolean  x=true;  //设置全局变量x判断父节点下子节点数是否为0
     private static Connection con = null;
@@ -93,31 +92,69 @@ public class Myclass extends JFrame implements ActionListener{
          */
 //        initComponents(); //初始化
         // 取得数据库的表的各行数据
-        Vector rowData = getRows(null);
+        rowData=new Vector();
+        columnNames=new Vector();
+        rowData = getRows(null);
         // 取得数据库的表的表头数据
-        Vector columnNames = getHead(null);
+        columnNames = getHead(null);
         // 新建表格
         tableModel = new DefaultTableModel(rowData,columnNames);
         dataTable=new JTable();
         dataTable.setModel(tableModel);
-            treeInit();  //初始化树结构
+        //初始化树结构
+             init_tree();
+
             //初始化右键菜单
             rootpopMenuInit();
-            inspectorpopMenuInit2();
-            measurePointpopMenuInt();
+            inspectorpopMenuInit();
+            measurePointpopMenuInit();
 
         //把按钮加入JFrame界面
+        // 创建日期显示
+        Date date=new Date();
+        String form=String.format("%tF",date);  //设置日期显示为xxxx-xx-xx型
+        dateTextField = new JTextField(form);   //新建显示当前日期的文本框
+        jp1 = new JPanel(new FlowLayout(FlowLayout.RIGHT, 20, 10));
+        label=new JLabel("日期");    //日期显示标签
+        //获取日期控件工具类
+        Chooser ser = Chooser.getInstance();
+        //使用日期控件工具
+        ser.register(dateTextField);
+
+        dateTextField.setColumns(10);
+        GroupLayout gl_contentPane = new GroupLayout(jp1);
+        gl_contentPane.setHorizontalGroup(
+                gl_contentPane.createParallelGroup(GroupLayout.Alignment.LEADING)
+                        .addGroup(gl_contentPane.createSequentialGroup()
+                                .addGap(200)  //水平距离
+                                .addComponent(label)
+                                .addGap(15)   //label和textfield之间的距离
+                                .addComponent(dateTextField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                                .addContainerGap(10, Short.MAX_VALUE)
+                        )
+        );
+        gl_contentPane.setVerticalGroup(
+                gl_contentPane.createParallelGroup(GroupLayout.Alignment.LEADING)
+                        .addGroup(gl_contentPane.createSequentialGroup()
+                                .addGap(5)   //垂直距离
+                                .addGroup(gl_contentPane.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                                        .addComponent(label)
+                                        .addComponent(dateTextField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                                .addContainerGap(10, Short.MAX_VALUE)  //高度
+                        )
+        );
         jp1.add(label);
         jp1.add(dateTextField);
-        jp1 = new JPanel(new FlowLayout(FlowLayout.RIGHT, 20, 10));
         this.add(jp1, BorderLayout.NORTH);
         //对树的滚动面板进行设置
-        inspectorSelectorTree=new JTree();
+
         jTreeScrollPanel=new JScrollPane();
+
+
         jTreeScrollPanel.setViewportView(inspectorSelectorTree);
         jTreeScrollPanel.setPreferredSize(new Dimension(120,100));
         this.add(jTreeScrollPanel,BorderLayout.WEST);
-        //对数据表格进行格式设置和元素添加
+       // 对数据表格进行格式设置和元素添加
         dataTable.setModel(new DefaultTableModel(
                 new Object[][]{
                         {null, null},
@@ -142,43 +179,40 @@ public class Myclass extends JFrame implements ActionListener{
     }
 
 
-    //创建日期显示
-    private void setDateSelector()
-    {
-
-
-        Date date=new Date();
-        String form=String.format("%tF",date);  //设置日期显示为xxxx-xx-xx型
-        dateTextField = new JTextField(form);   //新建显示当前日期的文本框
-        label=new JLabel("日期");    //日期显示标签
-        //获取日期控件工具类
-        Chooser ser = Chooser.getInstance();
-        //使用日期控件工具
-        ser.register(dateTextField);
-
-        dateTextField.setColumns(12);   //设置文本框宽度
-        GroupLayout gl_contentPane = new GroupLayout(jp1);
-        gl_contentPane.setHorizontalGroup(
-                gl_contentPane.createParallelGroup(GroupLayout.Alignment.LEADING)
-                        .addGroup(gl_contentPane.createSequentialGroup()
-                                .addGap(200)  //水平距离
-                                .addComponent(label)
-                                .addGap(15)   //label和textfield之间的距离
-                                .addComponent(dateTextField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                                .addContainerGap(10, Short.MAX_VALUE)
-                        )
-        );
-        gl_contentPane.setVerticalGroup(
-                gl_contentPane.createParallelGroup(GroupLayout.Alignment.LEADING)
-                        .addGroup(gl_contentPane.createSequentialGroup()
-                                .addGap(5)   //垂直距离
-                                .addGroup(gl_contentPane.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                                        .addComponent(label)
-                                        .addComponent(dateTextField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-                                .addContainerGap(10, Short.MAX_VALUE)  //高度
-                        )
-        );
-    }
+//    //创建日期显示
+//    private void setDateSelector()
+//    {
+//
+//
+//
+//        //获取日期控件工具类
+//        Chooser ser = Chooser.getInstance();
+//        //使用日期控件工具
+//        ser.register(dateTextField);
+//
+//        dateTextField.setColumns(12);   //设置文本框宽度
+//        GroupLayout gl_contentPane = new GroupLayout(jp1);
+//        gl_contentPane.setHorizontalGroup(
+//                gl_contentPane.createParallelGroup(GroupLayout.Alignment.LEADING)
+//                        .addGroup(gl_contentPane.createSequentialGroup()
+//                                .addGap(200)  //水平距离
+//                                .addComponent(label)
+//                                .addGap(15)   //label和textfield之间的距离
+//                                .addComponent(dateTextField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+//                                .addContainerGap(10, Short.MAX_VALUE)
+//                        )
+//        );
+//        gl_contentPane.setVerticalGroup(
+//                gl_contentPane.createParallelGroup(GroupLayout.Alignment.LEADING)
+//                        .addGroup(gl_contentPane.createSequentialGroup()
+//                                .addGap(5)   //垂直距离
+//                                .addGroup(gl_contentPane.createParallelGroup(GroupLayout.Alignment.BASELINE)
+//                                        .addComponent(label)
+//                                        .addComponent(dateTextField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+//                                .addContainerGap(10, Short.MAX_VALUE)  //高度
+//                        )
+//        );
+//    }
 
     //右键点击根节点导航树的菜单
     private void rootpopMenuInit(){
@@ -188,7 +222,7 @@ public class Myclass extends JFrame implements ActionListener{
         rootpopMenu.add(addItem);
     }
     //右键点击监测点导航树的菜单
-    private void inspectorpopMenuInit2(){
+    private void inspectorpopMenuInit(){
         inspectorpopMenu = new JPopupMenu();
         JMenuItem addItem = new JMenuItem("添加");
         addItem.addActionListener(new TreeAddViewMenuEvent(this));
@@ -201,7 +235,7 @@ public class Myclass extends JFrame implements ActionListener{
         inspectorpopMenu.add(modifyItem);
     }
     //右键点击测量点导航树的菜单
-    private void measurePointpopMenuInt(){
+    private void measurePointpopMenuInit(){
         measurePointpopMenu= new JPopupMenu();
 //        JMenuItem addItem = new JMenuItem("添加");
 //        addItem.addActionListener(new TreeAddViewMenuEvent(this));
@@ -214,18 +248,10 @@ public class Myclass extends JFrame implements ActionListener{
     }
 
     //初始化景点分类树
-    public void treeInit() {
-//        if (jScrollPanel != null) {
-//            this.remove(jScrollPanel);
-//        }
-//        //设置滚动面板的位置和大小
-//        jScrollPanel.setBounds(new Rectangle(0, 0, 400, 600));
-//        jScrollPanel.setAutoscrolls(true);    //设置面板为可见
-//        this.getContentPane().add(jScrollPanel);
-//        expandTree();
-//        tree.addMouseListener(new TreePopMenuEvent(this));  //给树设置监听事件
-//        this.repaint();   //当树的添加命令执行时，刷新面板
+    public final void init_tree() {
+
         try {
+            expandTree();
             ArrayList list = new ArrayList();
             list.add("监测点列表");
             String sql = "SELECT * from monitorinfo";
@@ -237,10 +263,11 @@ public class Myclass extends JFrame implements ActionListener{
                 list.add(value);
             }
             Object hierarchy[] = list.toArray();
-            DefaultMutableTreeNode root = processHierarchy(hierarchy);
+            DefaultMutableTreeNode root = processHierarchy(hierarchy);     //调用processHierarchy方法
 
             DefaultTreeModel treeModel = new DefaultTreeModel(root);
             inspectorSelectorTree.setModel(treeModel);
+
             //添加树的右键监听事件
             inspectorSelectorTree.addMouseListener(new TreePopMenuEvent(this));
             this.repaint();
@@ -368,13 +395,11 @@ public class Myclass extends JFrame implements ActionListener{
      * 完全展开一个JTree
      */
     public void expandTree(){
-        jTreeScrollPanel=new JScrollPane();
         DefaultMutableTreeNode root = new DefaultMutableTreeNode("");
         inspectorSelectorTree = new JTree(root);
-
         inspectorSelectorTree.addTreeSelectionListener(new TreeSelectionListener() {
 
-    public void valueChanged(TreeSelectionEvent e) { //选中菜单节点的事件
+         public void valueChanged(TreeSelectionEvent e) { //选中菜单节点的事件
                 DefaultMutableTreeNode node = (DefaultMutableTreeNode) inspectorSelectorTree.getLastSelectedPathComponent();
             }
         });
@@ -460,7 +485,7 @@ public class Myclass extends JFrame implements ActionListener{
             // 新建表格
             DefaultTableModel tableModel = new DefaultTableModel(rowData, columnNames);
             getDataTable().setModel(tableModel);
-            this.getDataTable().updateUI();
+            this.getTree().updateUI();
         }
 
 
@@ -489,7 +514,7 @@ public class Myclass extends JFrame implements ActionListener{
                 DefaultMutableTreeNode child, grandchild;
                 for (int childIndex = 0; childIndex < L1Nam.length; childIndex++) {
                     child = new DefaultMutableTreeNode(L1Nam[childIndex]);
-                    node.add(child);//add each created child to root
+                    node.add(child);      //add each created child to root
                     String sql2 = "SELECT MeasurePointName from measurepointinfo where MonitorID= '" + L1Id[childIndex] + "' ";
                     ResultSet rs3 = stm.executeQuery(sql2);
                     while (rs3.next()) {
