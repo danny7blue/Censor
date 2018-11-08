@@ -101,14 +101,17 @@ public class Myclass extends JFrame implements ActionListener{
         tableModel = new DefaultTableModel(rowData,columnNames);
         dataTable=new JTable();
         dataTable.setModel(tableModel);
-        //初始化树结构
-             init_tree();
-
+        try {
+            //初始化树结构
+            init_tree();
             //初始化右键菜单
             rootpopMenuInit();
             inspectorpopMenuInit();
             measurePointpopMenuInit();
-
+        }catch (Exception exception)
+        {
+            exception.printStackTrace();
+        }
         //把按钮加入JFrame界面
         // 创建日期显示
         Date date=new Date();
@@ -149,8 +152,6 @@ public class Myclass extends JFrame implements ActionListener{
         //对树的滚动面板进行设置
 
         jTreeScrollPanel=new JScrollPane();
-
-
         jTreeScrollPanel.setViewportView(inspectorSelectorTree);
         jTreeScrollPanel.setPreferredSize(new Dimension(120,100));
         this.add(jTreeScrollPanel,BorderLayout.WEST);
@@ -179,40 +180,7 @@ public class Myclass extends JFrame implements ActionListener{
     }
 
 
-//    //创建日期显示
-//    private void setDateSelector()
-//    {
-//
-//
-//
-//        //获取日期控件工具类
-//        Chooser ser = Chooser.getInstance();
-//        //使用日期控件工具
-//        ser.register(dateTextField);
-//
-//        dateTextField.setColumns(12);   //设置文本框宽度
-//        GroupLayout gl_contentPane = new GroupLayout(jp1);
-//        gl_contentPane.setHorizontalGroup(
-//                gl_contentPane.createParallelGroup(GroupLayout.Alignment.LEADING)
-//                        .addGroup(gl_contentPane.createSequentialGroup()
-//                                .addGap(200)  //水平距离
-//                                .addComponent(label)
-//                                .addGap(15)   //label和textfield之间的距离
-//                                .addComponent(dateTextField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-//                                .addContainerGap(10, Short.MAX_VALUE)
-//                        )
-//        );
-//        gl_contentPane.setVerticalGroup(
-//                gl_contentPane.createParallelGroup(GroupLayout.Alignment.LEADING)
-//                        .addGroup(gl_contentPane.createSequentialGroup()
-//                                .addGap(5)   //垂直距离
-//                                .addGroup(gl_contentPane.createParallelGroup(GroupLayout.Alignment.BASELINE)
-//                                        .addComponent(label)
-//                                        .addComponent(dateTextField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-//                                .addContainerGap(10, Short.MAX_VALUE)  //高度
-//                        )
-//        );
-//    }
+
 
     //右键点击根节点导航树的菜单
     private void rootpopMenuInit(){
@@ -251,7 +219,7 @@ public class Myclass extends JFrame implements ActionListener{
     public final void init_tree() {
 
         try {
-            expandTree();
+//            expandTree();
             ArrayList list = new ArrayList();
             list.add("监测点列表");
             String sql = "SELECT * from monitorinfo";
@@ -273,6 +241,52 @@ public class Myclass extends JFrame implements ActionListener{
             this.repaint();
         } catch (Exception e) {
         }
+    }
+
+    @SuppressWarnings("CallToThreadDumpStack")
+    public DefaultMutableTreeNode processHierarchy(Object[] hierarchy) {
+        DefaultMutableTreeNode node = new DefaultMutableTreeNode(hierarchy[0]);
+        try {
+
+            int ctrow = 0;
+            int i = 0;
+            try {
+                String sql = "SELECT MonitorID, MonitorName from monitorinfo";
+                ResultSet rs = stm.executeQuery(sql);
+
+                while (rs.next()) {
+                    ctrow = rs.getRow();
+                }
+                String L1Nam[] = new String[ctrow];
+                String L1Id[] = new String[ctrow];
+                ResultSet rs1 = stm.executeQuery(sql);
+                while (rs1.next()) {
+                    L1Nam[i] = rs1.getString("MonitorName");
+                    L1Id[i] = rs1.getString("MonitorID");
+                    i++;
+                }
+                DefaultMutableTreeNode child, grandchild;
+                for (int childIndex = 0; childIndex < L1Nam.length; childIndex++) {
+                    child = new DefaultMutableTreeNode(L1Nam[childIndex]);
+                    node.add(child);      //add each created child to root
+                    String sql2 = "SELECT MeasurePointName from measurepointinfo where MonitorID= '" + L1Id[childIndex] + "' ";
+                    ResultSet rs3 = stm.executeQuery(sql2);
+                    while (rs3.next()) {
+                        grandchild = new DefaultMutableTreeNode(rs3.getString("MeasurePointName"));
+                        child.add(grandchild);//add each grandchild to each child
+
+                    }
+                }
+                expandTree(); //显示树结构，若缺少该语句，将不能返回以显示树结构
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+
+        } catch (Exception e) {
+        }
+
+        return (node);
     }
 
 
@@ -487,51 +501,6 @@ public class Myclass extends JFrame implements ActionListener{
             getDataTable().setModel(tableModel);
             this.getTree().updateUI();
         }
-
-
-
-    @SuppressWarnings("CallToThreadDumpStack")
-    public DefaultMutableTreeNode processHierarchy(Object[] hierarchy) {
-        DefaultMutableTreeNode node = new DefaultMutableTreeNode(hierarchy[0]);
-        try {
-            int ctrow = 0;
-            int i = 0;
-            try {
-                String sql = "SELECT MonitorID, MonitorName from monitorinfo";
-                ResultSet rs = stm.executeQuery(sql);
-
-                while (rs.next()) {
-                    ctrow = rs.getRow();
-                }
-                String L1Nam[] = new String[ctrow];
-                String L1Id[] = new String[ctrow];
-                ResultSet rs1 = stm.executeQuery(sql);
-                while (rs1.next()) {
-                    L1Nam[i] = rs1.getString("MonitorName");
-                    L1Id[i] = rs1.getString("MonitorID");
-                    i++;
-                }
-                DefaultMutableTreeNode child, grandchild;
-                for (int childIndex = 0; childIndex < L1Nam.length; childIndex++) {
-                    child = new DefaultMutableTreeNode(L1Nam[childIndex]);
-                    node.add(child);      //add each created child to root
-                    String sql2 = "SELECT MeasurePointName from measurepointinfo where MonitorID= '" + L1Id[childIndex] + "' ";
-                    ResultSet rs3 = stm.executeQuery(sql2);
-                    while (rs3.next()) {
-                        grandchild = new DefaultMutableTreeNode(rs3.getString("MeasurePointName"));
-                        child.add(grandchild);//add each grandchild to each child
-                    }
-                }
-
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-
-        } catch (Exception e) {
-        }
-
-        return (node);
-    }
 
     }
 

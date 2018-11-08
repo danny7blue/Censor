@@ -47,9 +47,8 @@ public class PointAmend extends JDialog implements ActionListener {
         jp1.add(jtf1);
         jp1.add(jl2);
         jp1.add(jtf2);
-        jp1.add(jtf3);
         jp1.add(jl3);
-
+        jp1.add(jtf3);
         jp2.add(jb1);
         jp2.add(jb2);
         this.add(jp1,BorderLayout.NORTH);
