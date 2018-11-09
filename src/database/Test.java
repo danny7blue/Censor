@@ -19,8 +19,8 @@ public class Test {
 
     public static Connection getConn() {
         String user = "root";
-//        String password = "575615578";
-        String password = "123456";
+      String password = "575615578";
+//        String password = "123456";
         String url = "jdbc:mysql://localhost:3306/StationDatabase?useSSL=false&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
         String driver = "com.mysql.cj.jdbc.Driver";
         Connection conn = null;
@@ -245,21 +245,20 @@ public class Test {
             int i = 0;
             Statement stmt;
             stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
-            String deleteInfo = "UPDATE MeasurePointInfo AS mpinfo,MeasureDataInfo AS mdinfo SET mpinfo.IsDeleted=1,mdinfo.IsDeleted=1" +
-                    " WHERE mpinfo.MeasurePointID=mdinfo.MeasurePointID AND MeasurePointName ='" + MeasurePointName + "'" +
-                    " AND MonitorID=(SELECT MonitorID FROM MonitorInfo WHERE MonitorName='" + MonitorName + "')";
-            System.out.println("删除测量点信息的SQl语句为" + deleteInfo);
-            int count = stmt.executeUpdate(deleteInfo);
-            if (count > 0) {
-                /*如果有SQL语句被更新*/
-                deflag = true;
-            } else {
-                /*如果没有SQL语句被更新*/
-                deflag = false;
-            }
+            String deleteInfo01 = "UPDATE monitorinfo AS minfo,measurepointinfo AS mpinfo,measuredatainfo AS mdinfo " +
+                    "SET mdinfo.IsDeleted=1 " + "WHERE minfo.MonitorID=mpinfo.MonitorID AND mpinfo.MeasurePointID=mdinfo.MeasurePointID " +
+                    "AND minfo.MonitorName='"+MonitorName+"' AND mpinfo.MeasurePointName='"+MeasurePointName+"'";
+            String deleteInfo02="UPDATE measurepointinfo SET IsDeleted=1 WHERE MeasurePointName='"+MeasurePointName+"'" +
+                    "AND MonitorID=(select MonitorID FROM monitorinfo WHERE MonitorName='"+MonitorName+"')";
+            System.out.println("删除测量点信息的SQl语句为" + deleteInfo01);
+            System.out.println("删除测量点信息的SQl语句为" + deleteInfo02);
+            stmt.executeUpdate(deleteInfo01);
+            stmt.executeUpdate(deleteInfo02);
         } catch (SQLException e) {
             System.out.println("SQLException异常" + e.getMessage());
             e.printStackTrace();
+        }finally {
+
         }
         return deflag;
     }
