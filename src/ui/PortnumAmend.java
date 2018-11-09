@@ -1,5 +1,8 @@
 package ui;
 
+import database.Test;
+import database.TestMain;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -10,6 +13,7 @@ public class PortnumAmend extends JDialog implements ActionListener {
     JTextField Amendtext;
     JButton jb1,jb2;
     JPanel jp1,jp2;
+    static TestMain dataOper;
     public  PortnumAmend(Frame owner, String title, boolean model)
     {
         Amendlabel=new JLabel("修改端口号为");
@@ -37,7 +41,9 @@ public class PortnumAmend extends JDialog implements ActionListener {
     public void actionPerformed(ActionEvent e) {
      if(e.getSource()==jb1)
      {
-
+         dataOper = new TestMain();
+         dataOper.WriteProperties("Port",Amendtext.getText());
+         this.setVisible(false);
      }else if (e.getSource()==jb2)
      {
          this.setVisible(false);
