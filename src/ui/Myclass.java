@@ -1,5 +1,7 @@
 package ui;
+
 import database.Test;
+
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
@@ -8,7 +10,10 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Date;
@@ -25,6 +30,7 @@ public class Myclass extends JFrame implements ActionListener{
     JLabel label;
     JPanel jp1;
     JTextField dateTextField;
+    JButton  portnumAmend;
     //    JButton jb3;
     //西部区域
     JTree inspectorSelectorTree ;
@@ -119,6 +125,8 @@ public class Myclass extends JFrame implements ActionListener{
         dateTextField = new JTextField(form);   //新建显示当前日期的文本框
         jp1 = new JPanel(new FlowLayout(FlowLayout.RIGHT, 20, 10));
         label=new JLabel("日期");    //日期显示标签
+        portnumAmend=new JButton("修改端口号");    //修改端口号按钮
+        portnumAmend.addActionListener(this);
         //获取日期控件工具类
         Chooser ser = Chooser.getInstance();
         //使用日期控件工具
@@ -148,6 +156,7 @@ public class Myclass extends JFrame implements ActionListener{
         );
         jp1.add(label);
         jp1.add(dateTextField);
+        jp1.add(portnumAmend);
         this.add(jp1, BorderLayout.NORTH);
         //对树的滚动面板进行设置
 
@@ -304,104 +313,6 @@ public class Myclass extends JFrame implements ActionListener{
     public static Test getDataOper(){
         return dataOper;
     }
-    //调用数据表的函数
-//    private void initComponents() {
-
-
-//        datePanel = new JPanel();
-//        selectDateLabel = new JLabel();
-//        verticalSeparator = new JSeparator();
-//        horizontalSeparator = new JSeparator();
-
-//        inspectorSelectorTree = new JTree();
-//
-//        dataTable = new JTable();
-
-//        setDateSelector();
-
-//        //======== mainFrame ========
-//        {
-//            Container mainFrameContentPane = this.getContentPane();
-//            mainFrameContentPane.setLayout(new GridBagLayout());
-//            ((GridBagLayout)mainFrameContentPane.getLayout()).columnWidths = new int[] {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-//            ((GridBagLayout)mainFrameContentPane.getLayout()).rowHeights = new int[] {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-//            ((GridBagLayout)mainFrameContentPane.getLayout()).columnWeights = new double[] {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0E-4};
-//            ((GridBagLayout)mainFrameContentPane.getLayout()).rowWeights = new double[] {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0E-4};
-//
-//            //======== datePanel ========
-//            {
-//                datePanel.setPreferredSize(new Dimension(161, 67));
-//
-//                // JFormDesigner evaluation mark
-////                datePanel.setBorder(new javax.swing.border.CompoundBorder(
-////                    new javax.swing.border.TitledBorder(new javax.swing.border.EmptyBorder(0, 0, 0, 0),
-////                        "JFormDesigner Evaluation", javax.swing.border.TitledBorder.CENTER,
-////                        javax.swing.border.TitledBorder.BOTTOM, new java.awt.Font("Dialog", java.awt.Font.BOLD, 12),
-////                        java.awt.Color.red), datePanel.getBorder())); datePanel.addPropertyChangeListener(new java.beans.PropertyChangeListener(){public void propertyChange(java.beans.PropertyChangeEvent e){if("border".equals(e.getPropertyName()))throw new RuntimeException();}});
-//
-//                datePanel.setLayout(new GridBagLayout());
-//                ((GridBagLayout)datePanel.getLayout()).columnWidths = new int[] {0, 0, 0, 0, 0, 0, 0};
-//                ((GridBagLayout)datePanel.getLayout()).rowHeights = new int[] {0, 0, 0, 0};
-//                ((GridBagLayout)datePanel.getLayout()).columnWeights = new double[] {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0E-4};
-//                ((GridBagLayout)datePanel.getLayout()).rowWeights = new double[] {0.0, 0.0, 0.0, 1.0E-4};
-//
-//                //---- selectDateLabel ----
-//                selectDateLabel.setText("\u8bf7\u9009\u62e9\u65e5\u671f:");
-//                datePanel.add(selectDateLabel, new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0,
-//                        GridBagConstraints.CENTER, GridBagConstraints.NONE,
-//                        new Insets(0, 0, 5, 5), 0, 0));
-//
-//                //---- dateTextField ----
-//                dateTextField.setPreferredSize(new Dimension(75, 25));
-////                dateTextField.setText("date");
-//                datePanel.add(dateTextField, new GridBagConstraints(2, 1, 1, 1, 0.0, 0.0,
-//                        GridBagConstraints.CENTER, GridBagConstraints.VERTICAL,
-//                        new Insets(0, 0, 5, 5), 0, 0));
-//            }
-//            mainFrameContentPane.add(datePanel, new GridBagConstraints(0, 0, 5, 3, 5.0, 3.0,
-//                    GridBagConstraints.CENTER, GridBagConstraints.NONE,
-//                    new Insets(0, 0, 5, 5), 0, 0));
-
-        //---- verticalSeparator ----
-//            verticalSeparator.setOrientation(SwingConstants.VERTICAL);
-//            mainFrameContentPane.add(verticalSeparator, new GridBagConstraints(5, 0, 1, 10, 0.0, 0.0,
-//                    GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-//                    new Insets(0, 0, 0, 5), 0, 0));
-//            mainFrameContentPane.add(horizontalSeparator, new GridBagConstraints(0, 3, 20, 1, 0.0, 0.0,
-//                    GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-//                    new Insets(0, 0, 5, 0), 0, 0));
-//
-//            //======== jTreeScrollPane ========
-//            {
-//                jTreeScrollPanel.setViewportView(inspectorSelectorTree);
-//            }
-//            mainFrameContentPane.add(jTreeScrollPanel, new GridBagConstraints(0, 3, 5, 7, 0.0, 0.0,
-//                    GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-//                    new Insets(0, 0, 0, 5), 0, 0));
-        //======== jTableScrollPane ========
-        {
-
-            //---- dataTable ----
-//                dataTable.setModel(new DefaultTableModel(
-//                        new Object[][] {
-//                                {null, null},
-//                                {null, null},
-//                        },
-//                        new String[] {
-//                                null, null
-//                        }
-//                ));
-//                dataTable.setPreferredScrollableViewportSize(new Dimension(550, 400));
-//                jTableScrollPane.setViewportView(dataTable);
-//            }
-//            mainFrameContentPane.add(jTableScrollPane, new GridBagConstraints(5, 3, 15, 7, 0.0, 0.0,
-//                    GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-//                    new Insets(0, 0, 0, 0), 0, 0));
-//            this.pack();
-//            this.setLocationRelativeTo(this.getOwner());
-//        }
-   }
-        // JFormDesigner - End of component initialization  //GEN-END:initComponents
 
 
 
@@ -421,10 +332,14 @@ public class Myclass extends JFrame implements ActionListener{
         jTreeScrollPanel.getViewport().add(inspectorSelectorTree);
     }
 
-
+//添加端口号的修改事件
     @Override
     public void actionPerformed(ActionEvent e) {
 
+        if(e.getSource()==portnumAmend)
+        {
+            PortnumAmend pa=new PortnumAmend(this,"修改端口号",true);
+        }
     }
     // 得到数据库表数据
     public static Vector getRows(ResultSet rs){
