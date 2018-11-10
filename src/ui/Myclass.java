@@ -125,7 +125,9 @@ public class Myclass extends JFrame implements ActionListener{
         dateTextField = new JTextField(form);   //新建显示当前日期的文本框
         jp1 = new JPanel(new FlowLayout(FlowLayout.RIGHT, 20, 10));
         label=new JLabel("日期");    //日期显示标签
-        titlelabel=new JLabel("数据采集终端");   //设置标题
+        titlelabel=new JLabel("电 研 所 数 据 采 集 终 端");   //设置标题
+        titlelabel.setFont(new Font("宋体",Font.PLAIN,30));
+        titlelabel.setLocation(50,10);
         portnumAmend=new JButton("修改端口号");    //修改端口号按钮
         portnumAmend.addActionListener(this);
         //获取日期控件工具类
