@@ -19,6 +19,7 @@ import java.util.Vector;
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
@@ -55,6 +56,9 @@ public class TestForm extends JPanel {
         Vector columnNames = getHead(null);
         // 新建表格
         tableModel = new DefaultTableModel(rowData, columnNames);
+        DefaultTableCellRenderer r   =   new   DefaultTableCellRenderer();
+        r.setHorizontalAlignment(JLabel.CENTER);
+        dataTable.setDefaultRenderer(Object.class,   r);
         dataTable.setModel(tableModel);
         //初始化树结构
         init_tree();
@@ -164,7 +168,7 @@ public class TestForm extends JPanel {
             if (rs != null) {
                 ResultSetMetaData rsmd = rs.getMetaData();
                 for (int i = 1; i <= rsmd.getColumnCount(); i++)
-                    columnHeads.addElement(rsmd.getColumnName(i));
+                    columnHeads.addElement(rsmd.getColumnLabel(i));
             }
         } catch (SQLException e) {
             // TODO Auto-generated catch block
@@ -527,12 +531,12 @@ class TreeDeleteViewMenuEvent implements ActionListener {
                     }
                 } else if (testForm.getLevel() == 2) {
                     boolean isDeletedSuccess = testForm.getDataOper().deleteMeasurePointInfo(currentNode.getParent().toString(), name);
-                    if (isDeletedSuccess) {
+//                    if (isDeletedSuccess) {
                         currentNode.removeFromParent();
                         this.testForm.getTree().updateUI();
-                    } else {
-                        JOptionPane.showMessageDialog(null,"测量点删除失败, 请联系管理员","提示框",JOptionPane.NO_OPTION);
-                    }
+//                    } else {
+//                        JOptionPane.showMessageDialog(null,"测量点删除失败, 请联系管理员","提示框",JOptionPane.NO_OPTION);
+//                    }
                 }
             } catch (SQLException e1) {
 
