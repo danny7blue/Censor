@@ -26,7 +26,7 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
 /**
- * @author 305027244
+ * @author Danny Blue
  */
 public class TestForm extends JPanel {
     private static Connection con = null;
@@ -97,8 +97,11 @@ public class TestForm extends JPanel {
         delItem.addActionListener(new TreeDeleteViewMenuEvent(this));
         JMenuItem modifyItem = new JMenuItem("修改本测量点");
         modifyItem.addActionListener(new TreeModifyViewMenuEvent(this));
+        JMenuItem refreshItem = new JMenuItem("刷新");
+        refreshItem.addActionListener(new TreeRefreshViewMenuEvent(this));
         measureRightClickPopMenu.add(delItem);
         measureRightClickPopMenu.add(modifyItem);
+        measureRightClickPopMenu.add(refreshItem);
     }
 
     /**
@@ -461,7 +464,7 @@ class TreeModifyViewMenuEvent implements ActionListener {
         if (testForm.getLevel() == 1) {
             InspectorModifyDialog inspectorModifyDialog = new InspectorModifyDialog(testForm.getMainFrame(), "修改监测点", true, testForm.getTree());
         } else if (testForm.getLevel() == 2) {
-            MeasurePointModifyDialog measurePointModifyDialog = new MeasurePointModifyDialog(testForm.getMainFrame(), "修改测量点", true, testForm.getTree());
+            MeasurePointModifyDialog measurePointModifyDialog = new MeasurePointModifyDialog(testForm.getMainFrame(), "修改测量点", true, testForm);
         }
 //        String name = JOptionPane.showInputDialog("请输入新分类节点名称：");
 //
@@ -470,6 +473,31 @@ class TreeModifyViewMenuEvent implements ActionListener {
 //        node.setUserObject(name);
 //        //刷新
 //        this.adaptee.getTree().updateUI();
+    }
+}
+
+/**
+ * popmenu点击右键的刷新处理
+ */
+class TreeRefreshViewMenuEvent implements ActionListener {
+
+    private TestForm testForm;
+
+    public TreeRefreshViewMenuEvent(TestForm testForm) {
+        this.testForm = testForm;
+    }
+
+    public void actionPerformed(ActionEvent e) {
+        DefaultMutableTreeNode currentNode = (DefaultMutableTreeNode) this.testForm.getTree().getLastSelectedPathComponent();
+        String monitorName = currentNode.getParent().toString();
+        String measurePointName = currentNode.toString();
+        ResultSet result1 = null;
+        try {
+            result1 = testForm.getDataOper().search(monitorName, measurePointName, testForm.getDateTextField().getText());
+        } catch (SQLException e1) {
+
+        }
+        testForm.generateDataTable(result1);
     }
 }
 
