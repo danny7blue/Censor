@@ -321,6 +321,7 @@ public class Myclass extends JFrame implements ActionListener{
      */
     public void expandTree(){
         DefaultMutableTreeNode root = new DefaultMutableTreeNode("");
+//        root.se
         inspectorSelectorTree = new JTree(root);
         inspectorSelectorTree.addTreeSelectionListener(new TreeSelectionListener() {
 
@@ -508,7 +509,7 @@ class TreeModifyViewMenuEvent implements ActionListener {
         }
         else if(adaptee.getJudge()==2)
         {
-           PointAmend ta1 = new  PointAmend (adaptee, "修改测量点信息", true);
+           PointAmend ta1 = new  PointAmend (adaptee, "修改测量点信息", true,adaptee.getTree());
         }
     }
 

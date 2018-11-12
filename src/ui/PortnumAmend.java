@@ -31,7 +31,7 @@ public class PortnumAmend extends JDialog implements ActionListener {
         this.add(jp1,BorderLayout.NORTH);
         this.add(jp2,BorderLayout.SOUTH);
         //设置窗体
-        this.setLocation(500,200);
+        this.setLocation(600,300);
         this.setSize(200,100);
         this.setVisible(true);
 

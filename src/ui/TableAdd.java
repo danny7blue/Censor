@@ -34,8 +34,8 @@ public class TableAdd extends JDialog implements ActionListener {
         LOGGER.info("进入添加监测点模式...");
         //定义组件
         this.owner = (Myclass) owner;
-        jl1 = new JLabel("监测点编号");
-        jl2 = new JLabel("监测点名称");
+        jl1 = new JLabel("监测点名称");
+        jl2 = new JLabel("监测点位置");
 
 
         jtf1 = new JTextField(10);
@@ -104,7 +104,7 @@ public class TableAdd extends JDialog implements ActionListener {
 
             }
             owner.generateDataTable(result1);
-
+            this.setVisible(false);
         } else if (e.getSource() == jb2) {
             this.setVisible(false);
         }

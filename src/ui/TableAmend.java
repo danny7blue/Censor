@@ -30,11 +30,12 @@ public class TableAmend extends JDialog implements ActionListener {
         LOGGER.info("进入修改监测点模式...");
         //定义组件
         this.owner = (Myclass)owner;
-        jl1=new JLabel("监测点编号");
-        jl2=new JLabel("监测点名称");
-
-
-        jtf1=new JTextField(10);
+        jl1=new JLabel("监测点名称");
+        jl2=new JLabel("监测点位置");
+        //定义当前节点
+        DefaultMutableTreeNode currentNode=((DefaultMutableTreeNode)this.owner.getTree().getLastSelectedPathComponent());
+        jtf1=new JTextField((String) currentNode.getUserObject(),10);//获得文本框中监测点名称的原始值
+//        String moniterPosition=currentNode.
         jtf2=new JTextField(10);
 
         jb1=new JButton("修改");
