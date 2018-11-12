@@ -1,9 +1,9 @@
 package database;
 //测试test里面的方法
 import java.sql.SQLException;
-
+import java.sql.PreparedStatement;
 public class TestMethod {
-    public static void main(String[] args) {
+    public static void main(String[] args)throws SQLException {
         //(1)测试MeasurePointData数据的插入
 
         /** Test t =new Test();
@@ -78,15 +78,16 @@ public class TestMethod {
         }
         **/
        //(8)测试MeasurePointInfo表中信息的删除
-      /** Test t = new Test();
-        String MonitorName="M1";
-        String MeasurePointName="T1";
-        try{
-            t.deleteMeasurePointInfo(MonitorName,MeasurePointName);
-        }catch (SQLException e){
-            e.printStackTrace();
-        }
-       **/
+//        Test t = new Test();
+//        String MonitorName="M1";
+//       float temp;
+//      String MeasurePointName="T1";
+//        try{
+////         temp=t.returnMeasurePointParameter(MonitorName,MeasurePointName);
+//         System.out.println(temp);
+//        }catch (SQLException e){
+//            e.printStackTrace();
+//        }
         //(9)测试MeasurePointInfo表中信息的显示
        /** Test t = new Test();
         String MonitorName="M1";
@@ -97,14 +98,21 @@ public class TestMethod {
         }
         **/
        //(10)测试MeasureDataInfo表中数据的显示
-        Test t = new Test();
-        String MonitorName="M1";
-        String MeasurePointName="T1";
-        String time="2018-11-01";
-        try{
-            t.search(MonitorName,MeasurePointName,time);
-        }catch (SQLException e){
-            e.printStackTrace();
-        }
+//        Test t = new Test();
+//        String MonitorName="M1";
+//        String MeasurePointName="T1";
+//        String time="2018-11-01";
+//        try{
+//            t.search(MonitorName,MeasurePointName,time);
+//        }catch (SQLException e){
+//            e.printStackTrace();
+//        }
+        //(11)测试查询语句
+//        Test t = new Test();
+//        String MonitorName="M1";
+//        int MeasurePointNo=5;
+//        t.selectMeasurePoint(MonitorName,MeasurePointNo);
+
     }
+
 }
