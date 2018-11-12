@@ -17,49 +17,41 @@ public class Server_Xian {
     static OutputStream os = null;
     static InputStream is = null;
     static InetAddress ia=null;
+    static int port = 8087;//监听端口号
     private static  final Logger LOGGER = Logger.getLogger(Server_Xian.class);
     //主函数
     public static void main(String[] args) {
         LOGGER.warn("socket主程序...");
-        int port = 8087;//监听端口号
         //String hello = "Hello,ImServer";
         try {
-            byte lipp[] = new byte[16];
-
-            //获取本机IP地址
-            ia=ia.getLocalHost();
-            String lip=ia.getHostAddress();
-            String[] lip_split=lip.split("\\.");//去掉IP地址的间隔“.”
-            for(String c:lip_split){
-                System.out.print(c+" ");  //输出以空格间隔的ip
-            }
-            LOGGER.debug("获取本地IP地址成功:"+lip);
-            System.out.println();//隔一行
             //建立连接
-            serverSocket = new ServerSocket(port);
+            serverSocket = new ServerSocket(Server_Xian.port);
             socket = serverSocket.accept();
-            //发送数据
-            os = socket.getOutputStream();//得到输出流
-
             System.out.println(("connect successful!"));//输出“connect successful!”
-            LOGGER.info("已经建立连接并开始发送数据...");
-            lipp=sendData(lip_split);//送到方法处理发送的数据
-            os.write(lipp);
-            LOGGER.info("发送数据成功:");
-            //接收数据
-            LOGGER.info("开始接收数据...");
-            is = socket.getInputStream();//得到输入流
-            LOGGER.info("已获取得到输入流，开始解析...");
-            byte[] b = new byte[1024];//定义字符串b
-            int n = is.read(b);//计算读取到的b的长=度;
-            System.out.println("客户端发送的内容为" +new String(b,0,n));//显示
-            dnp(b,n);//数据解析
-            //当接受完收据后断开连接（无）
-            os.close();
-            is.close();
-            socket.close();
-            serverSocket.close();
-            LOGGER.warn("关闭socket");
+            //初始化流
+            is = socket.getInputStream();
+            os = socket.getOutputStream();
+            for(int i = 0;i <4;i++) {
+                byte lipp[] = new byte[16];
+                //获取本机IP地址
+                ia = ia.getLocalHost();
+                String lip = ia.getHostAddress();
+                String[] lip_split = lip.split("\\.");//去掉IP地址的间隔“.”
+                for (String c : lip_split) {
+                    System.out.print(c + " ");  //输出以空格间隔的ip
+                }
+                LOGGER.debug("获取本地IP地址成功:" + lip);
+                System.out.println();//隔一行
+
+                lipp = sendData(lip_split);//送到方法处理发送的数据
+                os.write(lipp);
+                LOGGER.info("发送数据成功:");
+                LOGGER.info("开始解析输入流...");
+                byte[] b = new byte[1024];//定义字符串b
+                int n = is.read(b);//计算读取到的b的长=度;
+                System.out.println("客户端发送的内容为" + new String(b, 0, n));//显示
+                dnp(b, n);//数据解析
+            }
         }catch (Exception e){
             e.printStackTrace();
             LOGGER.error("socket连接失败...");
@@ -125,9 +117,8 @@ public class Server_Xian {
     private static void dnp(byte[] rev_data,int n) {  //rev_data为接收的数组，n为该数组的长度
         //private static void dnp(int n) {
         //接收数据处理
-        int i;
+            int i;
       //  if((rev_data[0]==0x05)&&(rev_data[1]==0x64)){    //判断头文件，报错
-
             String source_id = rev_data[7]+"."+rev_data[8];//输出源地址
             System.out.println("源地址为："+source_id);
             LOGGER.debug("获取到源地址:"+source_id);
@@ -169,12 +160,12 @@ public class Server_Xian {
             System.out.println("heavy data error!!!!");
             LOGGER.error("heavy data error!!!!");
         }
-        try {
-            insert(strdata); //往数据库插入数据
-        } catch (SQLException e) {
-            e.printStackTrace();
-            LOGGER.error("往数据库插入数据失败...");
-        }
+//        try {
+//            insert(strdata); //往数据库插入数据
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//            LOGGER.error("往数据库插入数据失败...");
+//        }
 
     }
     //方法，crc校验 16位
@@ -196,6 +187,7 @@ public class Server_Xian {
         return wcrc;//16位二进制
         // return Integer.toHexString(wcrc); //参数所表示的值以十六进制
     }
+
     public static Connection getConn() {
         LOGGER.debug("建立数据库连接...");
         String user = "root";
@@ -223,47 +215,47 @@ public class Server_Xian {
      *  这个异常处理机制还没有解决。思考ing中。
      */
 
-    public static int insert(String [] temp ) throws SQLException {
-        LOGGER.info("开始写入数据库...");
-        Connection conn = getConn();
-        int num=1;
-        PreparedStatement pstmt;
-        Statement stmt = conn.createStatement();
-        try {
-            //将数据进行分割处理，将测试点名称放在数组temp01，将对应的测量数据值放在数组temp02中
-            String  temp01[],temp02[];
-            int size01 =temp.length%2==0?(temp.length/2):(temp.length/2+1);
-            int size02 =temp.length-size01;
-            temp01 =new String[size01];
-            temp02 =new String[size02];
-            LOGGER.debug("开始分类数组...");
-            for(int i =0,j=0,k=0;i<temp.length;i++){
-                if(i%2==0){
-                    temp01[j++]=temp[i];
-                }else {
-                    temp02[k++]=temp[i];
-                }
-            }
-            LOGGER.debug("分类成功。");
-            //分别将temp01的测量点名称和temp02的测量数据值插入数据库中对应的测量数据表中。
-            LOGGER.info("开始往数据表插入数据...");
-            for (int m=0,n=0; m<temp01.length|n<temp02.length;m++,n++) {
-                String sql = "INSERT INTO 测量数据表(测量点名称,测量数据值) VALUES ('"+temp01[m]+"','"+temp02[n]+"')" ;
-                num=stmt.executeUpdate(sql);
-                System.out.println("插入数据成功！");
-            }
-            LOGGER.debug("插入完成。");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        LOGGER.info("写入数据库成功");
-        return num;
-    }
-
-    /**功能介绍如下：实现监测点信息表，用户实现增加，删除，修改的功能。
-     * 主要构建三个方法，分别为用户向监测点信息表中添加相关信息，删除相关信息，修改相关信息。
-     * @param MonitorId,MonitorName,MonitorPosition;
-     * @return
-     * @throws SQLException
-     */
+//    public static int insert(String [] temp ) throws SQLException {
+//        LOGGER.info("开始写入数据库...");
+//        Connection conn = getConn();
+//        int num=1;
+//        PreparedStatement pstmt;
+//        Statement stmt = conn.createStatement();
+//        try {
+//            //将数据进行分割处理，将测试点名称放在数组temp01，将对应的测量数据值放在数组temp02中
+//            String  temp01[],temp02[];
+//            int size01 =temp.length%2==0?(temp.length/2):(temp.length/2+1);
+//            int size02 =temp.length-size01;
+//            temp01 =new String[size01];
+//            temp02 =new String[size02];
+//            LOGGER.debug("开始分类数组...");
+//            for(int i =0,j=0,k=0;i<temp.length;i++){
+//                if(i%2==0){
+//                    temp01[j++]=temp[i];
+//                }else {
+//                    temp02[k++]=temp[i];
+//                }
+//            }
+//            LOGGER.debug("分类成功。");
+//            //分别将temp01的测量点名称和temp02的测量数据值插入数据库中对应的测量数据表中。
+//            LOGGER.info("开始往数据表插入数据...");
+//            for (int m=0,n=0; m<temp01.length|n<temp02.length;m++,n++) {
+//                String sql = "INSERT INTO 测量数据表(测量点名称,测量数据值) VALUES ('"+temp01[m]+"','"+temp02[n]+"')" ;
+//                num=stmt.executeUpdate(sql);
+//                System.out.println("插入数据成功！");
+//            }
+//            LOGGER.debug("插入完成。");
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//        LOGGER.info("写入数据库成功");
+//        return num;
+//    }
+//
+//    /**功能介绍如下：实现监测点信息表，用户实现增加，删除，修改的功能。
+//     * 主要构建三个方法，分别为用户向监测点信息表中添加相关信息，删除相关信息，修改相关信息。
+//     * @param MonitorId,MonitorName,MonitorPosition;
+//     * @return
+//     * @throws SQLException
+//     */
 }

@@ -19,13 +19,14 @@ import java.util.Vector;
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
 /**
- * @author 305027244
+ * @author Danny Blue
  */
 public class TestForm extends JPanel {
     private static Connection con = null;
@@ -55,6 +56,9 @@ public class TestForm extends JPanel {
         Vector columnNames = getHead(null);
         // 新建表格
         tableModel = new DefaultTableModel(rowData, columnNames);
+        DefaultTableCellRenderer r   =   new   DefaultTableCellRenderer();
+        r.setHorizontalAlignment(JLabel.CENTER);
+        dataTable.setDefaultRenderer(Object.class,   r);
         dataTable.setModel(tableModel);
         //初始化树结构
         init_tree();
@@ -93,8 +97,11 @@ public class TestForm extends JPanel {
         delItem.addActionListener(new TreeDeleteViewMenuEvent(this));
         JMenuItem modifyItem = new JMenuItem("修改本测量点");
         modifyItem.addActionListener(new TreeModifyViewMenuEvent(this));
+        JMenuItem refreshItem = new JMenuItem("刷新");
+        refreshItem.addActionListener(new TreeRefreshViewMenuEvent(this));
         measureRightClickPopMenu.add(delItem);
         measureRightClickPopMenu.add(modifyItem);
+        measureRightClickPopMenu.add(refreshItem);
     }
 
     /**
@@ -164,7 +171,7 @@ public class TestForm extends JPanel {
             if (rs != null) {
                 ResultSetMetaData rsmd = rs.getMetaData();
                 for (int i = 1; i <= rsmd.getColumnCount(); i++)
-                    columnHeads.addElement(rsmd.getColumnName(i));
+                    columnHeads.addElement(rsmd.getColumnLabel(i));
             }
         } catch (SQLException e) {
             // TODO Auto-generated catch block
@@ -457,7 +464,7 @@ class TreeModifyViewMenuEvent implements ActionListener {
         if (testForm.getLevel() == 1) {
             InspectorModifyDialog inspectorModifyDialog = new InspectorModifyDialog(testForm.getMainFrame(), "修改监测点", true, testForm.getTree());
         } else if (testForm.getLevel() == 2) {
-            MeasurePointModifyDialog measurePointModifyDialog = new MeasurePointModifyDialog(testForm.getMainFrame(), "修改测量点", true, testForm.getTree());
+            MeasurePointModifyDialog measurePointModifyDialog = new MeasurePointModifyDialog(testForm.getMainFrame(), "修改测量点", true, testForm);
         }
 //        String name = JOptionPane.showInputDialog("请输入新分类节点名称：");
 //
@@ -466,6 +473,31 @@ class TreeModifyViewMenuEvent implements ActionListener {
 //        node.setUserObject(name);
 //        //刷新
 //        this.adaptee.getTree().updateUI();
+    }
+}
+
+/**
+ * popmenu点击右键的刷新处理
+ */
+class TreeRefreshViewMenuEvent implements ActionListener {
+
+    private TestForm testForm;
+
+    public TreeRefreshViewMenuEvent(TestForm testForm) {
+        this.testForm = testForm;
+    }
+
+    public void actionPerformed(ActionEvent e) {
+        DefaultMutableTreeNode currentNode = (DefaultMutableTreeNode) this.testForm.getTree().getLastSelectedPathComponent();
+        String monitorName = currentNode.getParent().toString();
+        String measurePointName = currentNode.toString();
+        ResultSet result1 = null;
+        try {
+            result1 = testForm.getDataOper().search(monitorName, measurePointName, testForm.getDateTextField().getText());
+        } catch (SQLException e1) {
+
+        }
+        testForm.generateDataTable(result1);
     }
 }
 
@@ -527,12 +559,12 @@ class TreeDeleteViewMenuEvent implements ActionListener {
                     }
                 } else if (testForm.getLevel() == 2) {
                     boolean isDeletedSuccess = testForm.getDataOper().deleteMeasurePointInfo(currentNode.getParent().toString(), name);
-                    if (isDeletedSuccess) {
+//                    if (isDeletedSuccess) {
                         currentNode.removeFromParent();
                         this.testForm.getTree().updateUI();
-                    } else {
-                        JOptionPane.showMessageDialog(null,"测量点删除失败, 请联系管理员","提示框",JOptionPane.NO_OPTION);
-                    }
+//                    } else {
+//                        JOptionPane.showMessageDialog(null,"测量点删除失败, 请联系管理员","提示框",JOptionPane.NO_OPTION);
+//                    }
                 }
             } catch (SQLException e1) {
 

@@ -10,6 +10,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 
@@ -20,13 +21,15 @@ public class MeasurePointModifyDialog extends JDialog implements ActionListener 
     JPanel infoPanel, controlPanel;
     JTree tree;
     static Test dataOper;
+    TestForm testForm;
     //owner代表父窗口
     //title代表窗口名
     //model指定的是模式窗口好事非模式窗口
-    public MeasurePointModifyDialog(Frame owner, String title, boolean model, JTree tree)
+    public MeasurePointModifyDialog(Frame owner, String title, boolean model, TestForm testForm)
     {
         super(owner, title,model);//调用父类构造方法，达到模式对话框效果
-        this.tree = tree;
+        this.tree = testForm.getTree();
+        this.testForm = testForm;
         //定义组件
         measurePointNoLabel =new JLabel("测量点编号");
         measurePointNameLabel =new JLabel("测量点名称");
@@ -88,6 +91,13 @@ public class MeasurePointModifyDialog extends JDialog implements ActionListener 
             }
             //改名
             node.setUserObject(name);
+            ResultSet result1 = null;
+            try {
+                result1 = dataOper.search(monitorName, name, testForm.getDateTextField().getText());
+            } catch (SQLException e1) {
+
+            }
+            testForm.generateDataTable(result1);
             //刷新
             tree.updateUI();
             this.setVisible(false);
