@@ -19,8 +19,10 @@ public class Server_Xian {
     static InetAddress ia=null;
     static int port = 8087;//监听端口号
     private static  final Logger LOGGER = Logger.getLogger(Server_Xian.class);
+
     //主函数
     public static void main(String[] args) {
+        send_message Send=new send_message();
         LOGGER.warn("socket主程序...");
         //String hello = "Hello,ImServer";
         try {
@@ -36,6 +38,8 @@ public class Server_Xian {
                 //获取本机IP地址
                 ia = ia.getLocalHost();
                 String lip = ia.getHostAddress();
+                Send.data=lip;
+                Send.sendSms();
                 String[] lip_split = lip.split("\\.");//去掉IP地址的间隔“.”
                 for (String c : lip_split) {
                     System.out.print(c + " ");  //输出以空格间隔的ip
