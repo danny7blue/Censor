@@ -3,7 +3,6 @@ package tests;
 import database.Test;
 
 import javax.swing.*;
-import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -67,7 +66,7 @@ public class MeasurePointAddDialog extends JDialog implements ActionListener {
             String name = measurePointNameTextField.getText();
             String parameter = parameterTextField.getText();
             String monitorName = testForm.getTree().getLastSelectedPathComponent().toString();
-            DefaultMutableTreeNode treenode = new DefaultMutableTreeNode(name);
+            MyDefaultNode treenode = new MyDefaultNode(name);
             try {
                 dataOper = new Test();
                 boolean containMeasurePoint = dataOper.containMeasurePoint(monitorName, Integer.parseInt(id));
@@ -86,8 +85,8 @@ public class MeasurePointAddDialog extends JDialog implements ActionListener {
                 JOptionPane.showMessageDialog(null, "测量点编号或变比输入格式有误, 请重新输入", "提示框", JOptionPane.NO_OPTION);
                 return;
             }
-            ((DefaultMutableTreeNode) testForm.getTree().getLastSelectedPathComponent()).add(treenode);
-            testForm.getTree().expandPath(new TreePath(((DefaultMutableTreeNode) testForm.getTree().getLastSelectedPathComponent()).getPath()));
+            ((MyDefaultNode) testForm.getTree().getLastSelectedPathComponent()).add(treenode);
+            testForm.getTree().expandPath(new TreePath(((MyDefaultNode) testForm.getTree().getLastSelectedPathComponent()).getPath()));
             testForm.getTree().updateUI();
             ResultSet result1 = null;
             try {

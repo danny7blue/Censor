@@ -10,22 +10,31 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.*;
-
+import database.TestMain;
 public class Server_Xian {
     static ServerSocket serverSocket = null;
     static Socket socket = null;
     static OutputStream os = null;
     static InputStream is = null;
     static InetAddress ia=null;
-    static int port = 8087;//监听端口号
+    static int port = 800;//监听端口号8087
     private static  final Logger LOGGER = Logger.getLogger(Server_Xian.class);
+
     //主函数
     public static void main(String[] args) {
+        send_message Send=new send_message();//实例发送短信
         LOGGER.warn("socket主程序...");
         //String hello = "Hello,ImServer";
         try {
+            //获取本机IP地址,并发送短信
+            ia = ia.getLocalHost();
+            String lip = ia.getHostAddress();
+            Send.data=lip;
+            Send.sendSms();
             //建立连接
-            serverSocket = new ServerSocket(Server_Xian.port);
+            port=(int)Short.parseShort(send_message.ports);
+            //port=(int)Short.parseShort(TestMain.GetValueBykey(send_message.ports));//获取数据库的端口
+            serverSocket = new ServerSocket(port);
             socket = serverSocket.accept();
             System.out.println(("connect successful!"));//输出“connect successful!”
             //初始化流
@@ -33,9 +42,7 @@ public class Server_Xian {
             os = socket.getOutputStream();
             for(int i = 0;i <4;i++) {
                 byte lipp[] = new byte[16];
-                //获取本机IP地址
-                ia = ia.getLocalHost();
-                String lip = ia.getHostAddress();
+
                 String[] lip_split = lip.split("\\.");//去掉IP地址的间隔“.”
                 for (String c : lip_split) {
                     System.out.print(c + " ");  //输出以空格间隔的ip
