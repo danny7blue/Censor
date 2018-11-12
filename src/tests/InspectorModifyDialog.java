@@ -6,7 +6,6 @@ package tests;
 import database.Test;
 
 import javax.swing.*;
-import javax.swing.tree.DefaultMutableTreeNode;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -63,7 +62,7 @@ public class InspectorModifyDialog extends JDialog implements ActionListener {
         if (e.getSource() == addBtn) {
             String name = inspectorNameTextField.getText();
             String position = inspectorPositionTextField.getText();
-            DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
+            MyDefaultNode node = (MyDefaultNode) tree.getLastSelectedPathComponent();
             try {
                 dataOper = new Test();
                 dataOper.updateMonitorInfo(name, position, node.toString());

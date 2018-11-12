@@ -21,7 +21,7 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
@@ -108,13 +108,13 @@ public class TestForm extends JPanel {
      * 完全展开一个JTree
      */
     public void expandTree() {
-        DefaultMutableTreeNode root = new DefaultMutableTreeNode("根节点");
+        MyDefaultNode root = new MyDefaultNode("根节点");
         inspectorSelectorTree = new JTree(root);
 
         inspectorSelectorTree.addTreeSelectionListener(new TreeSelectionListener() {
 
             public void valueChanged(TreeSelectionEvent e) { //选中菜单节点的事件
-                DefaultMutableTreeNode node = (DefaultMutableTreeNode) inspectorSelectorTree.getLastSelectedPathComponent();
+                MyDefaultNode node = (MyDefaultNode) inspectorSelectorTree.getLastSelectedPathComponent();
             }
         });
         inspectorSelectorTree.updateUI();
@@ -136,7 +136,7 @@ public class TestForm extends JPanel {
 //            preparedStatement = con.prepareStatement("select * from price_data");
 //            ResultSet result1 = preparedStatement.executeQuery();
 
-//            ResultSet result1 = dataOper.search(((DefaultMutableTreeNode)getTree().getLastSelectedPathComponent()).getParent().toString(), getTree().getLastSelectedPathComponent().toString(), getDateTextField().toString());
+//            ResultSet result1 = dataOper.search(((MyDefaultNode)getTree().getLastSelectedPathComponent()).getParent().toString(), getTree().getLastSelectedPathComponent().toString(), getDateTextField().toString());
             rows = new Vector();
             if (rs != null) {
 
@@ -165,7 +165,7 @@ public class TestForm extends JPanel {
 //            preparedStatement = con.prepareStatement("select * from price_data");
 //            ResultSet result1 = preparedStatement.executeQuery();
 
-//            ResultSet result1 = dataOper.search(((DefaultMutableTreeNode)getTree().getLastSelectedPathComponent()).getParent().toString(), getTree().getLastSelectedPathComponent().toString(), getDateTextField().toString());
+//            ResultSet result1 = dataOper.search(((MyDefaultNode)getTree().getLastSelectedPathComponent()).getParent().toString(), getTree().getLastSelectedPathComponent().toString(), getDateTextField().toString());
 
             columnHeads = new Vector();
             if (rs != null) {
@@ -219,10 +219,15 @@ public class TestForm extends JPanel {
                 list.add(value);
             }
             Object hierarchy[] = list.toArray();
-            DefaultMutableTreeNode root = processHierarchy(hierarchy);
+            MyDefaultNode root = processHierarchy(hierarchy);
 
             DefaultTreeModel treeModel = new DefaultTreeModel(root);
             inspectorSelectorTree.setModel(treeModel);
+            inspectorSelectorTree.setCellRenderer(new MyDefaultTreeCellRenderer());
+//            ImageIcon icon = new ImageIcon("resources/connected_small.png");
+//            setNodeIcon(icon);
+//            renderer.setLeafIcon(new ImageIcon("resources/connected_small.png"));
+//            renderer.setIcon(new ImageIcon("resources/connected_small.png"));
             //添加树的右键监听事件
             inspectorSelectorTree.addMouseListener(new TreePopMenuEvent(this));
             this.repaint();
@@ -231,9 +236,15 @@ public class TestForm extends JPanel {
 
     }
 
+//    public void setNodeIcon(ImageIcon icon) {
+//        DefaultTreeCellRenderer renderer = (DefaultTreeCellRenderer) inspectorSelectorTree.getCellRenderer();
+//        renderer.setOpenIcon(icon);
+//        renderer.setClosedIcon(icon);
+//    }
+
     @SuppressWarnings("CallToThreadDumpStack")
-    public DefaultMutableTreeNode processHierarchy(Object[] hierarchy) {
-        DefaultMutableTreeNode node = new DefaultMutableTreeNode(hierarchy[0]);
+    public MyDefaultNode processHierarchy(Object[] hierarchy) {
+        MyDefaultNode node = new MyDefaultNode(hierarchy[0]);
         try {
             int ctrow = 0;
             int i = 0;
@@ -252,14 +263,14 @@ public class TestForm extends JPanel {
                     L1Id[i] = rs1.getString("MonitorID");
                     i++;
                 }
-                DefaultMutableTreeNode child, grandchild;
+                MyDefaultNode child, grandchild;
                 for (int childIndex = 0; childIndex < L1Nam.length; childIndex++) {
-                    child = new DefaultMutableTreeNode(L1Nam[childIndex]);
+                    child = new MyDefaultNode(L1Nam[childIndex]);
                     node.add(child);//add each created child to root
                     String sql2 = "SELECT MeasurePointName from measurepointinfo where MonitorID= '" + L1Id[childIndex] + "' AND IsDeleted = 0";
                     ResultSet rs3 = stm.executeQuery(sql2);
                     while (rs3.next()) {
-                        grandchild = new DefaultMutableTreeNode(rs3.getString("MeasurePointName"));
+                        grandchild = new MyDefaultNode(rs3.getString("MeasurePointName"));
                         child.add(grandchild);//add each grandchild to each child
                     }
                 }
@@ -422,6 +433,7 @@ public class TestForm extends JPanel {
     public static void main(String[] args) {
         TestForm form = new TestForm();
         form.mainFrame.setVisible(true);
+        form.mainFrame.setResizable(false);
         form.mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
@@ -468,7 +480,7 @@ class TreeModifyViewMenuEvent implements ActionListener {
         }
 //        String name = JOptionPane.showInputDialog("请输入新分类节点名称：");
 //
-//        DefaultMutableTreeNode node = (DefaultMutableTreeNode) this.adaptee.getTree().getSelectionPath().getLastPathComponent();
+//        MyDefaultNode node = (MyDefaultNode) this.adaptee.getTree().getSelectionPath().getLastPathComponent();
 //        //改名
 //        node.setUserObject(name);
 //        //刷新
@@ -488,7 +500,7 @@ class TreeRefreshViewMenuEvent implements ActionListener {
     }
 
     public void actionPerformed(ActionEvent e) {
-        DefaultMutableTreeNode currentNode = (DefaultMutableTreeNode) this.testForm.getTree().getLastSelectedPathComponent();
+        MyDefaultNode currentNode = (MyDefaultNode) this.testForm.getTree().getLastSelectedPathComponent();
         String monitorName = currentNode.getParent().toString();
         String measurePointName = currentNode.toString();
         ResultSet result1 = null;
@@ -519,9 +531,9 @@ class TreeAddViewMenuEvent implements ActionListener {
             MeasurePointAddDialog measurePointAddDialog = new MeasurePointAddDialog(testForm.getMainFrame(), "添加测量点", true, testForm);
         }
 //        String name = JOptionPane.showInputDialog("请输入分类节点名称：");
-//        DefaultMutableTreeNode treenode = new DefaultMutableTreeNode(name);
-//        ((DefaultMutableTreeNode) this.adaptee.getTree().getLastSelectedPathComponent()).add(treenode);
-//        this.adaptee.getTree().expandPath(new TreePath(((DefaultMutableTreeNode) this.adaptee.getTree().getLastSelectedPathComponent()).getPath()));
+//        MyDefaultNode treenode = new MyDefaultNode(name);
+//        ((MyDefaultNode) this.adaptee.getTree().getLastSelectedPathComponent()).add(treenode);
+//        this.adaptee.getTree().expandPath(new TreePath(((MyDefaultNode) this.adaptee.getTree().getLastSelectedPathComponent()).getPath()));
 //        this.adaptee.getTree().updateUI();
     }
 }
@@ -540,7 +552,7 @@ class TreeDeleteViewMenuEvent implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         int conform = JOptionPane.showConfirmDialog(null, "是否确认删除？", "删除景点确认", JOptionPane.YES_NO_OPTION);
         if (conform == JOptionPane.YES_OPTION) {
-            DefaultMutableTreeNode currentNode = (DefaultMutableTreeNode) this.testForm.getTree().getLastSelectedPathComponent();
+            MyDefaultNode currentNode = (MyDefaultNode) this.testForm.getTree().getLastSelectedPathComponent();
             String name = currentNode.toString();
             try {
                 if (testForm.getLevel() == 1) {
@@ -591,7 +603,7 @@ class TreePopMenuEvent implements MouseListener {
         }
         testForm.getTree().setSelectionPath(path);
         //左键点击节点时查询数据库获得该节点数据并刷新右侧table
-        DefaultMutableTreeNode currentNode = (DefaultMutableTreeNode) testForm.getTree().getLastSelectedPathComponent();
+        MyDefaultNode currentNode = (MyDefaultNode) testForm.getTree().getLastSelectedPathComponent();
         if (e.getButton() == 1) {
             //点击根节点时
             if (currentNode.getLevel() == 0) {
