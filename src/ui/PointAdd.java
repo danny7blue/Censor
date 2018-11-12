@@ -34,24 +34,24 @@ public class PointAdd extends JDialog implements ActionListener {
         this.owner = (Myclass)owner;
         jl1=new JLabel("测量点编号");
         jl2=new JLabel("测量点名称");
-//        jl3=new JLabel("所属监测点编号");
+        jl3=new JLabel("测量点变比");
 
         jtf1=new JTextField(10);
         jtf2=new JTextField(10);
-//        jtf3=new JTextField(10);
+        jtf3=new JTextField(10);
         jb1=new JButton("新建");
         jb1.addActionListener(this);
         jb2=new JButton("取消");
         jb2.addActionListener(this);
-        jp1=new JPanel(new GridLayout(2,2,20,20));
+        jp1=new JPanel(new GridLayout(3,2,20,20));
         jp2=new JPanel();
 
         jp1.add(jl1);
         jp1.add(jtf1);
         jp1.add(jl2);
         jp1.add(jtf2);
-//        jp1.add(jl3);
-//        jp1.add(jtf3);
+        jp1.add(jl3);
+        jp1.add(jtf3);
 
 
         jp2.add(jb1);
