@@ -14,7 +14,7 @@ public class TestMain{
               return  value;
           }catch (IOException e){
               e.printStackTrace();
-              return  null;
+              return  "8307";//返回一个默认端口
           }
       }
         //根据端口名称写入端口号

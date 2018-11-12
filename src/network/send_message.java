@@ -12,7 +12,9 @@ import com.aliyuncs.http.FormatType;
 import com.aliyuncs.http.HttpResponse;
 import com.aliyuncs.profile.DefaultProfile;
 import com.aliyuncs.profile.IClientProfile;
+import database.TestMain;
 
+import javax.sound.sampled.Port;
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -30,9 +32,10 @@ import java.util.UUID;
  * 国际短信发送请勿参照此DEMO
  */
 public class send_message{
-    static String data ="192.168.1.0";
-    static int ports = 8085;
+    static String data ="1.1.1.1";
+    static String ports = "0001";
     static String Content =" ";
+
     //static String Content ="{\"data\":\"192.168.1.1\", \"ports\":\"8087\"}";
     //产品名称:云通信短信API产品,开发者无需替换
     static final String product = "Dysmsapi";
@@ -42,8 +45,10 @@ public class send_message{
     // TODO 此处需要替换成开发者自己的AK(在阿里云访问控制台寻找)
     static final String accessKeyId = "LTAIm3a0HkfzA2Sg";
     static final String accessKeySecret = "T5ISzxNgw2nQLLUCYno8ZbsUISgmoO";
-
     public static SendSmsResponse sendSms() throws ClientException {
+        TestMain read_port = new TestMain();//实例读端口
+        String Key="Port";
+        ports =read_port.GetValueBykey(Key);//读出数据库的端口号
         Content="{\"data\":\""+data+"\", \"ports\":\""+ports+"\"}";
         //可自助调整超时时间
         System.setProperty("sun.net.client.defaultConnectTimeout", "10000");
