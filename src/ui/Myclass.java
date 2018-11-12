@@ -7,6 +7,7 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import java.awt.*;
@@ -324,8 +325,12 @@ public class Myclass extends JFrame implements ActionListener{
      * 完全展开一个JTree
      */
     public void expandTree(){
+        DefaultTreeCellRenderer renderer=new DefaultTreeCellRenderer();  //定义一个树节点的编辑器
+        inspectorSelectorTree.setCellRenderer(renderer);  //设置树的节点绘制器
+//        renderer.getDefaultOpenIcon(new ImageIcon(连接成功.png));
         DefaultMutableTreeNode root = new DefaultMutableTreeNode("");
 //        root.se
+
         inspectorSelectorTree = new JTree(root);
         inspectorSelectorTree.addTreeSelectionListener(new TreeSelectionListener() {
 
