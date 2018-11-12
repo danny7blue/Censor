@@ -34,9 +34,21 @@ public class TableAmend extends JDialog implements ActionListener {
         jl2=new JLabel("监测点位置");
         //定义当前节点
         DefaultMutableTreeNode currentNode=((DefaultMutableTreeNode)this.owner.getTree().getLastSelectedPathComponent());
-        jtf1=new JTextField((String) currentNode.getUserObject(),10);//获得文本框中监测点名称的原始值
+        String moniterName=currentNode.toString();
+        jtf1=new JTextField(moniterName,10);//获得文本框中监测点名称的原始值
+
+        try {
+            dataOper = new Test();
+            String moniterPosition=dataOper.returnMonitor(moniterName);
+            jtf2=new JTextField(moniterPosition,10);//将监测点位置原始值反回
+       } catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+
+
 //        String moniterPosition=currentNode.
-        jtf2=new JTextField(10);
+
 
         jb1=new JButton("修改");
         jb1.addActionListener(this);
@@ -74,7 +86,7 @@ public class TableAmend extends JDialog implements ActionListener {
             DefaultMutableTreeNode node = (DefaultMutableTreeNode) this.owner.getTree().getSelectionPath().getLastPathComponent();
 
             try {
-                dataOper = new Test();
+//                dataOper = new Test();
                 dataOper.updateMonitorInfo(name, position, node.toString());
             } catch (SQLException e1) {
                 e1.printStackTrace();

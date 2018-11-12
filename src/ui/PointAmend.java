@@ -36,9 +36,21 @@ public class PointAmend extends JDialog implements ActionListener {
         jl3=new JLabel("测量点变比");
         //定义当前节点
         DefaultMutableTreeNode currentNode=((DefaultMutableTreeNode)this.owner.getTree().getLastSelectedPathComponent());
-        jtf1=new JTextField(10);
-        jtf2=new JTextField((String) currentNode.getUserObject(),10);
-        jtf3=new JTextField(10);
+        String MeasurePointName=(String) currentNode.getUserObject();
+        String moniterName=currentNode.getParent().toString();
+
+        try{
+            dataOper=new Test();
+            String MeasurePointNo=dataOper.returnMeasurePointNo(moniterName,MeasurePointName);
+            String Parameter=dataOper.returnMeasurePointParameter(moniterName,MeasurePointName);
+            jtf1=new JTextField( MeasurePointNo,10);
+            jtf3=new JTextField(Parameter,10);
+        }catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+        jtf2=new JTextField(MeasurePointName,10);
+
         jb1=new JButton("修改");
         jb1.addActionListener(this);
         jb2=new JButton("取消");
@@ -78,7 +90,7 @@ public class PointAmend extends JDialog implements ActionListener {
 
             LOGGER.debug("更改测量点名称成功");
             try {
-                dataOper = new Test();
+//                dataOper = new Test();
                 boolean containMeasurePoint = dataOper.containMeasurePoint(monitorName, Integer.parseInt(id));
                 if (!containMeasurePoint) {
                     dataOper.updateMeasurePointInfo(Integer.parseInt(id), name, Float.parseFloat(parameter), node.getParent().toString(), node.toString());

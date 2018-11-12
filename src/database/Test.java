@@ -1,7 +1,5 @@
 package database;
-import org.junit.rules.TestName;
 
-import java.lang.management.MonitorInfo;
 import java.sql.*;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -19,8 +17,8 @@ public class Test {
 
     public static Connection getConn() {
         String user = "root";
-//      String password = "575615578";
-        String password = "123456";
+      String password = "575615578";
+//        String password = "123456";
         String url = "jdbc:mysql://localhost:3306/StationDatabase?useSSL=false&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
         String driver = "com.mysql.cj.jdbc.Driver";
         Connection conn = null;
@@ -343,6 +341,68 @@ public class Test {
             e.printStackTrace();
         }
         return isflag;
+    }
+  //方法名为returnMonitor(),实现用户修改监测点信息时，可以显示监测点的位置。
+    public  String  returnMonitor(String MonitorName)throws SQLException {
+        String mp = null;
+        try {
+            String selMonitorInfo = "select MonitorPosition from MonitorInfo where MonitorName='" + MonitorName + "'";
+            Connection conn = getConn();
+            Statement stmt;
+            stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
+            ResultSet rs = stmt.executeQuery(selMonitorInfo);//执行查询语句
+            while (rs.next()) {
+                mp = rs.getString("MonitorPosition");
+                //System.out.println("监测点位置为" + mp);
+            }
+        } catch (SQLException e) {
+            System.out.println("SQLException异常" + e.getMessage());//打印输出异常信息
+            e.printStackTrace();
+        }
+        return mp;
+    }
+     //方法名为returnMeasurePointNo()
+     // 用户实现测量点信息的修改时，传入监测点的名称和测量点的名称来返回测量点编号和变比。
+    public  String returnMeasurePointNo(String MonitorName,String MeasurePointName)throws SQLException {
+        // String [] temp=new String[2];
+        String temp = null;
+        try {
+//            temp = 0;
+            String selMeasurePointInfo = "select MeasurePointNo from MeasurePointInfo where MeasurePointName='" + MeasurePointName + "'" +
+                    " and MonitorID=(select MonitorID from MonitorInfo where MonitorName='" + MonitorName + "')";
+            Connection conn = getConn();
+            Statement stmt;
+            stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
+            ResultSet rs = stmt.executeQuery(selMeasurePointInfo);//执行查询语句
+            while (rs.next()) {
+                temp = rs.getString("MeasurePointNo");
+            }
+        } catch (SQLException e) {
+            System.out.println("SQLException异常" + e.getMessage());//打印输出异常信息
+            e.printStackTrace();
+        }
+        return temp;
+    }
+    //方法名为returnMeasurePointtParameter
+    public String returnMeasurePointParameter(String MonitorName, String MeasurePointName)throws SQLException {
+        // String [] temp=new String[2];
+        String temp = null;
+        try {
+//            temp = 0;
+            String selMeasurePointInfo = "select Parameter from MeasurePointInfo where MeasurePointName='" + MeasurePointName + "'" +
+                    " and MonitorID=(select MonitorID from MonitorInfo where MonitorName='" + MonitorName + "')";
+            Connection conn = getConn();
+            Statement stmt;
+            stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
+            ResultSet rs = stmt.executeQuery(selMeasurePointInfo);//执行查询语句
+            while (rs.next()) {
+                temp = rs.getString("Parameter");
+            }
+        } catch (SQLException e) {
+            System.out.println("SQLException异常" + e.getMessage());//打印输出异常信息
+            e.printStackTrace();
+        }
+        return  temp;
     }
 }
 
