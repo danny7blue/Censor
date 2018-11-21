@@ -1,13 +1,15 @@
 package ui;
 
 import database.Test;
+import sun.swing.table.DefaultTableCellHeaderRenderer;
+import tests.MyDefaultTreeCellRenderer;
 
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import java.awt.*;
@@ -35,7 +37,7 @@ public class Myclass extends JFrame implements ActionListener{
     //    JButton jb3;
     //西部区域
     JTree inspectorSelectorTree ;
-    DefaultTreeModel tm;
+//    DefaultTreeModel tm;
     JScrollPane jTreeScrollPanel;
 
     //中部区域
@@ -54,6 +56,7 @@ public class Myclass extends JFrame implements ActionListener{
     DefaultTableModel tableModel;
 //    DateSelector ser;
     static Test dataOper;
+    private static final long   serialVersionUID    = 1L;
 
     static {
 
@@ -107,6 +110,15 @@ public class Myclass extends JFrame implements ActionListener{
         // 新建表格
         tableModel = new DefaultTableModel(rowData,columnNames);
         dataTable=new JTable();
+        //设置表数据居中显示
+        DefaultTableCellRenderer r   =   new   DefaultTableCellRenderer();
+        r.setHorizontalAlignment(JLabel.CENTER);
+        dataTable.setDefaultRenderer(Object.class,   r);
+        //设置表头居中显示
+        DefaultTableCellHeaderRenderer hr=new DefaultTableCellHeaderRenderer();
+        hr.setHorizontalTextPosition(JLabel.CENTER);
+        dataTable.getTableHeader().setDefaultRenderer(hr);
+
         dataTable.setModel(tableModel);
         try {
             //初始化树结构
@@ -163,8 +175,16 @@ public class Myclass extends JFrame implements ActionListener{
         jp1.add(dateTextField);
         jp1.add(portnumAmend);
         this.add(jp1, BorderLayout.NORTH);
-        //对树的滚动面板进行设置
+////创建数据
+//        DefaultTreeModel defaultTreeModel = createModel();
+//
+//        //设置数据
+//        inspectorSelectorTree.setModel(defaultTreeModel);
 
+        //设置自定义描述类
+        inspectorSelectorTree.setCellRenderer(new MyDefaultTreeCellRender());
+
+        //对树的滚动面板进行设置
         jTreeScrollPanel=new JScrollPane();
         jTreeScrollPanel.setViewportView(inspectorSelectorTree);
         jTreeScrollPanel.setPreferredSize(new Dimension(120,100));
@@ -199,18 +219,18 @@ public class Myclass extends JFrame implements ActionListener{
     //右键点击根节点导航树的菜单
     private void rootpopMenuInit(){
         rootpopMenu = new JPopupMenu();
-        JMenuItem addItem = new JMenuItem("添加");
+        JMenuItem addItem = new JMenuItem("添加监测点");
         addItem.addActionListener(new TreeAddViewMenuEvent(this));
         rootpopMenu.add(addItem);
     }
     //右键点击监测点导航树的菜单
     private void inspectorpopMenuInit(){
         inspectorpopMenu = new JPopupMenu();
-        JMenuItem addItem = new JMenuItem("添加");
+        JMenuItem addItem = new JMenuItem("添加测量点");
         addItem.addActionListener(new TreeAddViewMenuEvent(this));
-        JMenuItem delItem = new JMenuItem("删除");
+        JMenuItem delItem = new JMenuItem("删除监测点");
         delItem.addActionListener(new TreeDeleteViewMenuEvent(this));
-        JMenuItem modifyItem = new JMenuItem("修改");
+        JMenuItem modifyItem = new JMenuItem("修改监测点");
         modifyItem.addActionListener(new TreeModifyViewMenuEvent(this));
         inspectorpopMenu.add(addItem);
         inspectorpopMenu.add(delItem);
@@ -219,11 +239,9 @@ public class Myclass extends JFrame implements ActionListener{
     //右键点击测量点导航树的菜单
     private void measurePointpopMenuInit(){
         measurePointpopMenu= new JPopupMenu();
-//        JMenuItem addItem = new JMenuItem("添加");
-//        addItem.addActionListener(new TreeAddViewMenuEvent(this));
-        JMenuItem delItem = new JMenuItem("删除");
+        JMenuItem delItem = new JMenuItem("删除测量点");
         delItem.addActionListener(new TreeDeleteViewMenuEvent(this));
-        JMenuItem modifyItem = new JMenuItem("修改");
+        JMenuItem modifyItem = new JMenuItem("修改测量点");
         modifyItem.addActionListener(new TreeModifyViewMenuEvent(this));
         measurePointpopMenu.add(delItem);
         measurePointpopMenu.add(modifyItem);
@@ -233,7 +251,6 @@ public class Myclass extends JFrame implements ActionListener{
     public final void init_tree() {
 
         try {
-//            expandTree();
             ArrayList list = new ArrayList();
             list.add("监测点列表");
             String sql = "SELECT * from monitorinfo";
@@ -249,6 +266,7 @@ public class Myclass extends JFrame implements ActionListener{
 
             DefaultTreeModel treeModel = new DefaultTreeModel(root);
             inspectorSelectorTree.setModel(treeModel);
+
 
             //添加树的右键监听事件
             inspectorSelectorTree.addMouseListener(new TreePopMenuEvent(this));
@@ -321,25 +339,25 @@ public class Myclass extends JFrame implements ActionListener{
 
 
 
+
     /**
      * 完全展开一个JTree
      */
-    public void expandTree(){
-        DefaultTreeCellRenderer renderer=new DefaultTreeCellRenderer();  //定义一个树节点的编辑器
-        inspectorSelectorTree.setCellRenderer(renderer);  //设置树的节点绘制器
-//        renderer.getDefaultOpenIcon(new ImageIcon(连接成功.png));
-        DefaultMutableTreeNode root = new DefaultMutableTreeNode("");
-//        root.se
+    public void expandTree() {
 
+        DefaultMutableTreeNode root = new DefaultMutableTreeNode("");
         inspectorSelectorTree = new JTree(root);
         inspectorSelectorTree.addTreeSelectionListener(new TreeSelectionListener() {
 
-         public void valueChanged(TreeSelectionEvent e) { //选中菜单节点的事件
+         public void valueChanged(TreeSelectionEvent e) {
+             //选中菜单节点的事件
                 DefaultMutableTreeNode node = (DefaultMutableTreeNode) inspectorSelectorTree.getLastSelectedPathComponent();
             }
         });
+
         inspectorSelectorTree.updateUI();
         jTreeScrollPanel.getViewport().add(inspectorSelectorTree);
+
     }
 
 //添加端口号的修改事件
@@ -397,7 +415,7 @@ public class Myclass extends JFrame implements ActionListener{
             if (rs != null) {
                 ResultSetMetaData rsmd = rs.getMetaData();
                 for(int i = 1; i <= rsmd.getColumnCount(); i++)
-                    columnHeads.addElement(rsmd.getColumnName(i));
+                    columnHeads.addElement(rsmd.getColumnLabel(i));
             }
         } catch (SQLException e) {
             // TODO Auto-generated catch block
@@ -428,8 +446,6 @@ public class Myclass extends JFrame implements ActionListener{
         }
 
     }
-
-
 
 
 
