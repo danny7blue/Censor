@@ -6,7 +6,6 @@ package tests;
 import database.Test;
 
 import javax.swing.*;
-import javax.swing.tree.DefaultMutableTreeNode;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -69,7 +68,7 @@ public class MeasurePointModifyDialog extends JDialog implements ActionListener 
             String id = measurePointNoTextField.getText();
             String name = measurePointNameTextField.getText();
             String parameter = parameterTextField.getText();
-            DefaultMutableTreeNode node = ((DefaultMutableTreeNode)tree.getLastSelectedPathComponent());
+            MyDefaultNode node = ((MyDefaultNode)tree.getLastSelectedPathComponent());
             String monitorName = node.getParent().toString();
             try {
                 dataOper = new Test();
