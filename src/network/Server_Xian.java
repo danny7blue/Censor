@@ -1,4 +1,5 @@
 package network;
+import database.Test;
 import org.apache.log4j.Logger;
 
 import java.net.*;
@@ -10,6 +11,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.*;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.net.InetAddress;
 import database.TestMain;
 public class Server_Xian {
     static ServerSocket serverSocket = null;
@@ -18,49 +22,53 @@ public class Server_Xian {
     static InputStream is = null;
     static InetAddress ia=null;
     static int port = 800;//监听端口号8087
+    static boolean link_value = false;
     private static  final Logger LOGGER = Logger.getLogger(Server_Xian.class);
-
+    static String IP_A="1.1.1.1";
+    static String IP_B=" ";
     //主函数
     public static void main(String[] args) {
-        send_message Send=new send_message();//实例发送短信
+//        deal();
+    }
+    //处理输入流
+    public boolean socket_listen(){
         LOGGER.warn("socket主程序...");
-        //String hello = "Hello,ImServer";
-        try {
-            //获取本机IP地址,并发送短信
+//        send_message Send=new send_message();//实例发送短信
+//        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//        Boolean result = false;
+//        int count = 0;
+
+//        try {
+//            Thread.sleep(3 * 1000); //设置暂停的时间 5 秒
+//        }catch (Exception e){
+//            e.printStackTrace();
+//        }
+        try {//获取本机IP地址,并发送短信
+
             ia = ia.getLocalHost();
+
             String lip = ia.getHostAddress();
-            Send.data=lip;
-            Send.sendSms();
+//            Send.data=lip;//ip地址
+            //Send.sendSms();//发送短信
             //建立连接
-            port=(int)Short.parseShort(send_message.ports);
+            TestMain read_port = new TestMain();//实例读端口
+            String Key="Port";
+            String ports =read_port.GetValueBykey(Key);//读出数据库的端口号
+            port=(int)Short.parseShort(ports);
             //port=(int)Short.parseShort(TestMain.GetValueBykey(send_message.ports));//获取数据库的端口
             serverSocket = new ServerSocket(port);
+            System.out.println(port);
+            link_value =true;
+            System.out.println(link_value);
             socket = serverSocket.accept();
             System.out.println(("connect successful!"));//输出“connect successful!”
-            //初始化流
             is = socket.getInputStream();
             os = socket.getOutputStream();
-            for(int i = 0;i <4;i++) {
-                byte lipp[] = new byte[16];
-
-                String[] lip_split = lip.split("\\.");//去掉IP地址的间隔“.”
-                for (String c : lip_split) {
-                    System.out.print(c + " ");  //输出以空格间隔的ip
-                }
-                LOGGER.debug("获取本地IP地址成功:" + lip);
-                System.out.println();//隔一行
-
-                lipp = sendData(lip_split);//送到方法处理发送的数据
-                os.write(lipp);
-                LOGGER.info("发送数据成功:");
-                LOGGER.info("开始解析输入流...");
-                byte[] b = new byte[1024];//定义字符串b
-                int n = is.read(b);//计算读取到的b的长=度;
-                System.out.println("客户端发送的内容为" + new String(b, 0, n));//显示
-                dnp(b, n);//数据解析
-            }
+            SocketDeal();//处理socket数据流
         }catch (Exception e){
             e.printStackTrace();
+            link_value =false;
+            System.out.println(link_value);
             LOGGER.error("socket连接失败...");
         }finally {
             try {
@@ -68,93 +76,145 @@ public class Server_Xian {
                 is.close();
                 socket.close();
                 serverSocket.close();
-            }catch (Exception e){
+                link_value =false;
+                System.out.println(link_value);
+            } catch (Exception e) {
                 e.printStackTrace();
+                link_value =false;
+                System.out.println(link_value);
                 LOGGER.error("关闭socket失败...");
             }
         }
+        return link_value;
     }
-    //方法，数据发送处理
-    private static byte[] sendData(String[] lip_split){
-        byte lipp[] = new byte[17];//定义输出数组的长度
-        //定义头文件
-        byte head_1 = 0x05;
-        byte head_2 = 0x64;
-        byte con_num1 = 0x01;//定义控制字
-        String des_add = "10.1";//定义目的地址
-        String sou_add = "20.1";//定义源地址
-        String[] des_add_split=des_add.split("\\.");//去掉目的地址的间隔“.”
-        String[] sou_add_split=sou_add.split("\\.");//去掉源地址的间隔“.”
-        //添加头文件
-        lipp[0] =head_1;
-        lipp[1] =head_2;
-        char lengh=17;//定义长度
+    public  void SocketDeal(){
 
-        lipp[2] =  (byte) ((lengh & 0xFF00) >> 8);//长度的高位字节
-        lipp[3] = (byte) (lengh & 0xFF);//长度的低位字节
+        for(int i = 0;i <2;i++) {  //for(int i = 0;i <4;i++)
+            byte lipp[] = new byte[16];
+            String[] lip_split = IP_A.split("\\.");//去掉IP地址的间隔“.”
+            for (String c : lip_split) {
+                System.out.print(c + " ");  //输出以空格间隔的ip
+            }
+            LOGGER.debug("获取本地IP地址成功:" + IP_A);
+            System.out.println();//隔一行
 
-        lipp[4] =con_num1;//控制字
+//                    lipp = sendData(lip_split);//送到方法处理发送的数据
+            try {
+                os.write(lipp);
+            }catch (IOException e){
+                 e.printStackTrace();
+            }
 
-        lipp[5] =(byte)Short.parseShort(des_add_split[0]);//目的地址
-        lipp[6] =(byte)Short.parseShort(des_add_split[1]);
-
-        lipp[7] =(byte)Short.parseShort(sou_add_split[0]);//源地址
-        lipp[8] =(byte)Short.parseShort(sou_add_split[1]);
-        //发送IP地址数据
-        lipp[11] =(byte)Short.parseShort(lip_split[0]);
-        lipp[12] =(byte)Short.parseShort(lip_split[1]);
-        lipp[13] =(byte)Short.parseShort(lip_split[2]);
-        lipp[14] =(byte)Short.parseShort(lip_split[3]);
-        //计算第一个crc值
-
-        int crc_1 =getCrc(lipp);
-        System.out.println("crc校验1： "+crc_1);//显示crc值
-        lipp[9] =(byte) ((crc_1>>8)&0xff);//crc处理高位
-        lipp[10] =(byte) (crc_1&0xff);//crc处理低位
-        LOGGER.debug("计算第一个CRC:"+crc_1);
-        //计算第二个crc值
-        int crc_2 =getCrc(lipp);
-        System.out.println("crc校验2： "+crc_2);//显示crc值
-        lipp[15] =(byte) ((crc_2>>8)&0xff);//crc处理高位
-        lipp[16] =(byte) (crc_2&0xff);//crc处理低位
-        LOGGER.debug("计算第二个CRC:"+crc_2);
-        return lipp;//返回发送的数组
+            byte[] b = new byte[1024];//定义字符串b
+            try {
+                int n = is.read(b);//计算读取到的b的长=度;
+                System.out.println("客户端发送的内容为" + new String(b, 0, n));//显示
+                dnp(b, n);//数据解析
+            }catch (IOException e){
+                e.printStackTrace();
+            }
+        }
     }
+
+//    private static String getIpAddress() throws UnknownHostException {
+//        InetAddress address = InetAddress.getLocalHost();
+//
+//        return address.getHostAddress();
+//    }
+//    //获取本地IP地址
+//    public static String Read_LoIp()throws UnknownHostException{
+//
+//        ia = ia.getLocalHost();
+//        String lip = ia.getHostAddress();
+//        return lip;
+//    }
+//    //方法，数据发送处理
+//    private static byte[] sendData(String[] lip_split){
+//        byte lipp[] = new byte[17];//定义输出数组的长度
+//        //定义头文件
+//        byte head_1 = 0x05;
+//        byte head_2 = 0x64;
+//        byte con_num1 = 0x01;//定义控制字
+//        String des_add = "10.1";//定义目的地址
+//        String sou_add = "20.1";//定义源地址
+//        String[] des_add_split=des_add.split("\\.");//去掉目的地址的间隔“.”
+//        String[] sou_add_split=sou_add.split("\\.");//去掉源地址的间隔“.”
+//        //添加头文件
+//        lipp[0] =head_1;
+//        lipp[1] =head_2;
+//        char lengh=17;//定义长度
+//
+//        lipp[2] =  (byte) ((lengh & 0xFF00) >> 8);//长度的高位字节
+//        lipp[3] = (byte) (lengh & 0xFF);//长度的低位字节
+//
+//        lipp[4] =con_num1;//控制字
+//
+//        lipp[5] =(byte)Short.parseShort(des_add_split[0]);//目的地址
+//        lipp[6] =(byte)Short.parseShort(des_add_split[1]);
+//
+//        lipp[7] =(byte)Short.parseShort(sou_add_split[0]);//源地址
+//        lipp[8] =(byte)Short.parseShort(sou_add_split[1]);
+//        //发送IP地址数据
+//        lipp[11] =(byte)Short.parseShort(lip_split[0]);
+//        lipp[12] =(byte)Short.parseShort(lip_split[1]);
+//        lipp[13] =(byte)Short.parseShort(lip_split[2]);
+//        lipp[14] =(byte)Short.parseShort(lip_split[3]);
+//        //计算第一个crc值
+//
+//        int crc_1 =getCrc(lipp);
+//        System.out.println("crc校验1： "+crc_1);//显示crc值
+//        lipp[9] =(byte) ((crc_1>>8)&0xff);//crc处理高位
+//        lipp[10] =(byte) (crc_1&0xff);//crc处理低位
+//        LOGGER.debug("计算第一个CRC:"+crc_1);
+//        //计算第二个crc值
+//        int crc_2 =getCrc(lipp);
+//        System.out.println("crc校验2： "+crc_2);//显示crc值
+//        lipp[15] =(byte) ((crc_2>>8)&0xff);//crc处理高位
+//        lipp[16] =(byte) (crc_2&0xff);//crc处理低位
+//        LOGGER.debug("计算第二个CRC:"+crc_2);
+//        return lipp;//返回发送的数组
+//    }
     //方法，数据接收解析，数组
     private static void dnp(byte[] rev_data,int n) {  //rev_data为接收的数组，n为该数组的长度
         //private static void dnp(int n) {
         //接收数据处理
-            int i;
-      //  if((rev_data[0]==0x05)&&(rev_data[1]==0x64)){    //判断头文件，报错
-            String source_id = rev_data[7]+"."+rev_data[8];//输出源地址
-            System.out.println("源地址为："+source_id);
-            LOGGER.debug("获取到源地址:"+source_id);
-            //只获取有效的重量数据
-            LOGGER.debug("开始提取有效重量数据...");
-            byte[] new_data = new byte[n-11];
-            for(i=0;i<(n-11);i++){
-                new_data[i]=rev_data[i+9];//重新定义一个新的只含有效数据的数组
-            }
-            getList(new_data,(n-11),source_id);//对新的数组进行处理
-       // }
-      //  else {
-        //    System.out.println("receive data error!!!");//当头文件不是0x0564时报错
-      //  }
+        int i;
+        if((rev_data[0]==0x05)&&(rev_data[1]==0x64)){    //判断头文件，报错
+        String source_id = (rev_data[7]&0xff)+"."+(rev_data[8]&0xff);//输出源地址
+        System.out.println("源地址为："+source_id);
+        LOGGER.debug("获取到源地址:"+source_id);
+        //只获取有效的重量数据
+        LOGGER.debug("开始提取有效重量数据...");
+        byte[] new_data = new byte[n-11];
+        for(i=0;i<(n-11);i++){
+            new_data[i]=rev_data[i+9];//重新定义一个新的只含有效数据的数组
+        }
+        getList(new_data,(n-11),source_id);//对新的数组进行处理
+         }
+          else {
+            System.out.println("receive data error!!!");//当头文件不是0x0564时报错
+          }
     }
     //方法，解析有效数据方法
-    private static void getList(byte[] list,int n,String Sourse_id) {
-        String[] strdata=new String[100];
+    public static void getList(byte[] list,int n,String Sourse_id) {
+        Test data_a = new Test();
+        int[] strdata=new int[100];
         if (n%4==0){
             int i = 0;
             int[] da = new int[(n/4)];//每隔四位重新新建一个数组
             for (int j=0;j<(n/4);j++) {
+                byte[] buf = new byte[4];
                 //将四个数据重新组合成一个数据
-                da[j] = (int) (list[(4*i)]*1)+(int)(list[(4*i)+1]*2)+(int)(list[(4*i)+2]*4)+(int)(list[(4*i)+3]*8);
+                //da[j] = (int) (list[(4*i)]*1)+(int)(list[(4*i)+1]*2)+(int)(list[(4*i)+2]*4)+(int)(list[(4*i)+3]*8);
+                da[j]=((list[(4*i)]*1)&0xff)<<24
+                        | (list[(4*i)+1]*2)<<16
+                        | (list[(4*i)+2]*4)<<8
+                        | (list[(4*i)+3]*8);
                 i++;
-                strdata[2*j]="测量点"+(j+1);
-                strdata[(2*j+1)] =String.valueOf(da[j]);
+                strdata[2*j]=(j+1);//"测量点"
+                strdata[(2*j+1)] =da[j];
                 System.out.println(da[j]);//显示这个数据
-                LOGGER.debug("重量数据"+(j+1)+":"+da[j]);
+                LOGGER.debug("重量数据"+(j+1)+":"+da[j]);//"重量数据"
             }
             System.out.println(Sourse_id);
             for(int p=0;p<strdata.length;p++)
@@ -167,14 +227,14 @@ public class Server_Xian {
             System.out.println("heavy data error!!!!");
             LOGGER.error("heavy data error!!!!");
         }
-//        try {
-//            insert(strdata); //往数据库插入数据
-//        } catch (SQLException e) {
-//            e.printStackTrace();
+        try {
+            data_a.insertMeasurePointData(strdata); //往数据库插
+            System.out.println("往数据库插入数据 ");
+        } catch (SQLException e) {
+            e.printStackTrace();
 //            LOGGER.error("往数据库插入数据失败...");
-//        }
-
-    }
+        }
+}
     //方法，crc校验 16位
     private static Integer getCrc(byte[] data) {
         int high;
@@ -195,74 +255,6 @@ public class Server_Xian {
         // return Integer.toHexString(wcrc); //参数所表示的值以十六进制
     }
 
-    public static Connection getConn() {
-        LOGGER.debug("建立数据库连接...");
-        String user = "root";
-        String password = "123456";
-        String url = "jdbc:mysql://localhost:3306/StationDatabase?useUnicode=true&characterEncoding=utf-8&useSSL=false";
-        String driver = "com.mysql.cj.jdbc.Driver";
-        Connection conn=null;
-        try {
-            //加载驱动
-            Class.forName(driver);
-            //创建连接
-            conn = DriverManager.getConnection(url, user, password);
-            LOGGER.debug("数据库连接成功");
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return conn;
-    }
 
-    /**功能介绍：与数据采集进行信息交互，主要将前端采集过来的数据，存放在数据库中。
-     * 实现插入数据的操作方法。输入参数为一个数组。
-     *  如果传过来的数组数据不是按照测试点名称和测试点数据值，那么如何处理这种异常？
-     *  这个异常处理机制还没有解决。思考ing中。
-     */
 
-//    public static int insert(String [] temp ) throws SQLException {
-//        LOGGER.info("开始写入数据库...");
-//        Connection conn = getConn();
-//        int num=1;
-//        PreparedStatement pstmt;
-//        Statement stmt = conn.createStatement();
-//        try {
-//            //将数据进行分割处理，将测试点名称放在数组temp01，将对应的测量数据值放在数组temp02中
-//            String  temp01[],temp02[];
-//            int size01 =temp.length%2==0?(temp.length/2):(temp.length/2+1);
-//            int size02 =temp.length-size01;
-//            temp01 =new String[size01];
-//            temp02 =new String[size02];
-//            LOGGER.debug("开始分类数组...");
-//            for(int i =0,j=0,k=0;i<temp.length;i++){
-//                if(i%2==0){
-//                    temp01[j++]=temp[i];
-//                }else {
-//                    temp02[k++]=temp[i];
-//                }
-//            }
-//            LOGGER.debug("分类成功。");
-//            //分别将temp01的测量点名称和temp02的测量数据值插入数据库中对应的测量数据表中。
-//            LOGGER.info("开始往数据表插入数据...");
-//            for (int m=0,n=0; m<temp01.length|n<temp02.length;m++,n++) {
-//                String sql = "INSERT INTO 测量数据表(测量点名称,测量数据值) VALUES ('"+temp01[m]+"','"+temp02[n]+"')" ;
-//                num=stmt.executeUpdate(sql);
-//                System.out.println("插入数据成功！");
-//            }
-//            LOGGER.debug("插入完成。");
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-//        LOGGER.info("写入数据库成功");
-//        return num;
-//    }
-//
-//    /**功能介绍如下：实现监测点信息表，用户实现增加，删除，修改的功能。
-//     * 主要构建三个方法，分别为用户向监测点信息表中添加相关信息，删除相关信息，修改相关信息。
-//     * @param MonitorId,MonitorName,MonitorPosition;
-//     * @return
-//     * @throws SQLException
-//     */
 }
