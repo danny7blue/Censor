@@ -31,7 +31,6 @@ public class TableAdd extends JDialog implements ActionListener {
     static Test dataOper;
     public TableAdd(Frame owner, String title, boolean model) {
         super(owner, title, model);//调用父类构造方法，达到模式对话框效果
-        LOGGER.info("进入添加监测点模式...");
         //定义组件
         this.owner = (Myclass) owner;
         jl1 = new JLabel("监测点名称");
@@ -91,10 +90,9 @@ public class TableAdd extends JDialog implements ActionListener {
                 return;
             }
             ((DefaultMutableTreeNode) owner.getTree().getLastSelectedPathComponent()).add(treenode);
-            LOGGER.debug("将新建的测量点名称添加到树模型中");
+
             owner.getTree().expandPath(new TreePath(((DefaultMutableTreeNode) this.owner.getTree().getLastSelectedPathComponent()).getPath()));
             owner.getTree().updateUI();
-            LOGGER.debug("刷新显示树模型");
             this.setVisible(false);
             //获取MonitorInfo的信息
             ResultSet result1 = null;

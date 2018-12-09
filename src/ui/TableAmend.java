@@ -27,7 +27,6 @@ public class TableAmend extends JDialog implements ActionListener {
     public  TableAmend(Frame owner,String title,boolean model)
     {
         super(owner, title,model);//调用父类构造方法，达到模式对话框效果
-        LOGGER.info("进入修改监测点模式...");
         //定义组件
         this.owner = (Myclass)owner;
         jl1=new JLabel("监测点名称");
@@ -72,7 +71,6 @@ public class TableAmend extends JDialog implements ActionListener {
         this.setLocation(500,200);
         this.setSize(300,200);
         this.setVisible(true);
-        LOGGER.info("显示窗体...");
 //        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 
@@ -92,11 +90,11 @@ public class TableAmend extends JDialog implements ActionListener {
                 e1.printStackTrace();
             }//改名
             node.setUserObject(name);
-            LOGGER.debug("更改监测点名称成功");
+
             //刷新
             this.owner.getTree().updateUI();
             this.setVisible(false);
-            LOGGER.debug("刷新监测点信息成功");
+            LOGGER.debug("更改监测点名称成功");
 
         } else if (e.getSource() == jb2) {
             this.setVisible(false);

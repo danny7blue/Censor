@@ -24,7 +24,7 @@ public class SimpleSocketClient {
 
         //服务器端IP地址
 
-        String serverIP = "10.0.0.3";
+        String serverIP = "127.0.0.1";
 
         //服务器端端口号
 

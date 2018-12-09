@@ -1,5 +1,7 @@
 package database;
 
+import org.apache.log4j.Logger;
+
 import java.sql.*;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -14,11 +16,13 @@ public class Test {
      * 获取数据库的连接的方法getConn();
      * 2018.10.10
      */
-
+    private static  final Logger LOGGER = Logger.getLogger(Test.class);
     public static Connection getConn() {
+        LOGGER.info("数据库");
         String user = "root";
-      String password = "575615578";
-//        String password = "123456";
+//      String password = "575615578";
+        String password = "123456";
+        LOGGER.warn("数据库账号密码:"+user+" "+password);
         String url = "jdbc:mysql://localhost:3306/StationDatabase?useSSL=false&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
         String driver = "com.mysql.cj.jdbc.Driver";
         Connection conn = null;
@@ -43,6 +47,7 @@ public class Test {
      */
 
     public static int insertMeasurePointData(int[] temp) throws SQLException {
+        LOGGER.info("插入测量点数据...");
         Connection conn = getConn();
         int num = 1;
         PreparedStatement pstmt;
@@ -69,6 +74,7 @@ public class Test {
             }
         } catch (SQLException e) {
             e.printStackTrace();
+            LOGGER.warn("插入测量点失败");
         }
         return num;
     }
@@ -85,7 +91,7 @@ public class Test {
     //输入参数为监测点编号，监测点名称，监测点所在的位置，调用此方法，实现监测点信息的增添功能。
     public boolean insertMonitorInfo(String MonitorName, String MonitorPosition) throws SQLException {
         boolean insflag = false;
-
+        LOGGER.info("增加监测点信息");
         Statement stmt;
         Connection conn = getConn();
         stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
@@ -107,6 +113,7 @@ public class Test {
     //(2)实现用户对监测点信息进行更新数据的操作。更新的信息主要有监测点编号，监测点名称，监测点位置这三个信息，并保存在监测点信息表中
     //输入参数为监测点编号，监测点名称，监测点所在的位置，调用此方法，实现监测点信息的更新功能。
     public boolean updateMonitorInfo(String MonitorName_new, String MonitorPosition_new, String MonitorName_old) throws SQLException {
+        LOGGER.info("更新监测点信息");
         boolean upflag = false;
         try {
             Connection conn = getConn();
@@ -125,6 +132,7 @@ public class Test {
         } catch (SQLException e) {
             System.out.println("SQLException异常" + e.getMessage());
             e.printStackTrace();
+            LOGGER.warn("SQLException异常");
         }
         return false;
     }
@@ -133,6 +141,7 @@ public class Test {
     // 输入参数为监测点编号，调用此方法，实现监测点信息的删除功能。
     //删除监测点的记录信息。
     public boolean deleteMonitorInfo(String MonitorName) throws SQLException {
+        LOGGER.info("删除监测点信息");
         boolean deflag = false;
         try {
             Connection conn = getConn();
@@ -151,12 +160,14 @@ public class Test {
         } catch (SQLException e) {
             System.out.println("SQLException异常" + e.getMessage());
             e.printStackTrace();
+            LOGGER.warn("SQLException异常");
         }
         return deflag;
     }
 
     //(4)查询测量点信息的方法selectMonitorInfo.输入参数为监测点的名称，查询出的结果为编号，名称以及所在位置。
     public ResultSet selectMonitorInfo() throws SQLException {
+        LOGGER.info("查询测量点信息");
         // boolean insflag =false;
         ResultSet rs = null;
         try {
@@ -171,6 +182,7 @@ public class Test {
         } catch (SQLException e) {
             System.out.println("SQLException异常" + e.getMessage());
             e.printStackTrace();
+            LOGGER.warn("SQLException异常");
         }
         // return insflag;
         return rs;
@@ -186,6 +198,7 @@ public class Test {
     //输入参数为测量点编号，测量点名称，所属监测点的编号，调用此方法，实现测量点信息的增添功能。
     //方法名为insertMeasurePointInfo();
     public boolean insertMeasurePointInfo(int MeasurePointNo, String MeasurePointName, float Parameter, String MonitorName) throws SQLException {
+        LOGGER.info("增加测量点信息");
         boolean insflag = false;
         Connection conn = getConn();
         Statement stmt;
@@ -211,6 +224,7 @@ public class Test {
     // 方法名为updateMeasurePointInfo();
     public boolean updateMeasurePointInfo(int MeasurePointNo_new, String MeasurePointName_new, float Parameter_new, String MonitorName, String MeasurePointName_old) throws SQLException {
         boolean upflag = false;
+        LOGGER.info("更新测量点信息");
         try {
             Connection conn = getConn();
             Statement stmt;
@@ -230,6 +244,7 @@ public class Test {
         } catch (SQLException e) {
             System.out.println("SQLException异常" + e.getMessage());
             e.printStackTrace();
+            LOGGER.warn("SQLException异常");
         }
         return false;
     }
@@ -238,6 +253,7 @@ public class Test {
     //输入参数为测量点编号调用此方法，实现测量点信息的删除功能。
     public boolean deleteMeasurePointInfo(String MonitorName, String MeasurePointName) throws SQLException {
         boolean deflag = false;
+        LOGGER.info("删除测量点信息");
         try {
             Connection conn = getConn();
             int i = 0;
@@ -255,6 +271,7 @@ public class Test {
         } catch (SQLException e) {
             System.out.println("SQLException异常" + e.getMessage());
             e.printStackTrace();
+            LOGGER.warn("SQLException异常");
         }finally {
 
         }
@@ -264,6 +281,7 @@ public class Test {
     //(4)查询测量点信息的方法selectMeasurePointInfo.输入参数为测量点的名称，查询出的结果为编号，名称以及所属监测点的编号。
     public ResultSet selectMeasurePointInfo(String MonitorName) throws SQLException {
         ResultSet rs = null;
+        LOGGER.info("查询测量点信息");
         try {
             Statement stmt;
             Connection conn = getConn();
@@ -276,6 +294,7 @@ public class Test {
         } catch (SQLException e) {
             System.out.println("SQLException异常" + e.getMessage());
             e.printStackTrace();
+            LOGGER.warn("SQLException异常");
         }
         return rs;
     }
@@ -285,6 +304,7 @@ public class Test {
      * 此方法的输入参数为MonitorName,MeasurePointName,time即监测点名称，测试点名称，以及时间。
      */
     public ResultSet search(String MonitorName, String MeasurePointName, String time) throws SQLException {
+        LOGGER.info("查询某个测试点的数据");
         ResultSet rs = null;
         String pdemo = "%";//定义一个字符%
         String time_new = time.concat(pdemo);//将传入的日期转换为 "yy-mm-dd %"，便于在mysql中进行模糊查询当前日期的所有数据。
@@ -312,6 +332,7 @@ public class Test {
     }
     //功能介绍：实现对某个监测点下是否该测量点编号的查询方法。
     public boolean containMeasurePoint(String MonitorName,int MeasurePointNo){
+        LOGGER.info("查询监测点下测量点");
         boolean isflag=true;
         String selectMeasurePointNo="";
         if (MonitorName.equals("") ) {

@@ -1,6 +1,7 @@
 package ui;
 
 import database.Test;
+import network.Server_Xian;
 import sun.swing.table.DefaultTableCellHeaderRenderer;
 import tests.MyDefaultTreeCellRenderer;
 
@@ -39,6 +40,7 @@ public class Myclass extends JFrame implements ActionListener{
     JTree inspectorSelectorTree ;
 //    DefaultTreeModel tm;
     JScrollPane jTreeScrollPanel;
+    JButton Jupdate;
 
     //中部区域
     JScrollPane jTableScrollPane ;
@@ -141,6 +143,8 @@ public class Myclass extends JFrame implements ActionListener{
         titlelabel=new JLabel("电 研 所 数 据 采 集 终 端");   //设置标题
         titlelabel.setFont(new Font("宋体",Font.PLAIN,30));
         titlelabel.setLocation(50,10);
+        Jupdate=new JButton("刷新");
+        Jupdate.addActionListener(this);
         portnumAmend=new JButton("修改端口号");    //修改端口号按钮
         portnumAmend.addActionListener(this);
         //获取日期控件工具类
@@ -174,6 +178,7 @@ public class Myclass extends JFrame implements ActionListener{
         jp1.add(label);
         jp1.add(dateTextField);
         jp1.add(portnumAmend);
+        jp1.add(Jupdate);
         this.add(jp1, BorderLayout.NORTH);
 ////创建数据
 //        DefaultTreeModel defaultTreeModel = createModel();
@@ -181,8 +186,8 @@ public class Myclass extends JFrame implements ActionListener{
 //        //设置数据
 //        inspectorSelectorTree.setModel(defaultTreeModel);
 
-        //设置自定义描述类
-        inspectorSelectorTree.setCellRenderer(new MyDefaultTreeCellRender());
+//        //设置自定义描述类
+//        inspectorSelectorTree.setCellRenderer(new MyDefaultTreeCellRender());
 
         //对树的滚动面板进行设置
         jTreeScrollPanel=new JScrollPane();
@@ -364,10 +369,15 @@ public class Myclass extends JFrame implements ActionListener{
     @Override
     public void actionPerformed(ActionEvent e) {
 
-        if(e.getSource()==portnumAmend)
-        {
-            PortnumAmend pa=new PortnumAmend(this,"修改端口号",true);
+        if(e.getSource()==portnumAmend) {
+            PortnumAmend pa = new PortnumAmend(this, "修改端口号", true);
         }
+//        }else if(e.getSource()==Jupdate)
+//        {
+//            //设置自定义描述类
+//            inspectorSelectorTree.setCellRenderer(new MyDefaultTreeCellRender());
+//        }
+
     }
     // 得到数据库表数据
     public static Vector getRows(ResultSet rs){
@@ -647,10 +657,17 @@ class TreePopMenuEvent implements MouseListener {
     public void mouseExited(MouseEvent e) {
     }
     public static void main(String[] args) {
+
         try {
             JFrame.setDefaultLookAndFeelDecorated(true);
             UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
             Myclass  m1 = new Myclass ();
+            int[] heavydata=new int[100];
+            boolean value = false;
+            Server_Xian soc = new Server_Xian(m1);
+            value = soc.socket_listen();
+//            System.out.println(value);
+//            soc.SocketDeal();
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(Myclass .class.getName()).log(Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
@@ -660,6 +677,7 @@ class TreePopMenuEvent implements MouseListener {
         } catch (UnsupportedLookAndFeelException ex) {
             Logger.getLogger(Myclass .class.getName()).log(Level.SEVERE, null, ex);
         }
+
     }
 
 

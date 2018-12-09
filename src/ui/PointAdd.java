@@ -29,7 +29,6 @@ public class PointAdd extends JDialog implements ActionListener {
     public  PointAdd(Frame owner,String title,boolean model)
     {
         super(owner, title,model);//调用父类构造方法，达到模式对话框效果
-        LOGGER.info("进入添加测量点模式...");
         //定义组件
         this.owner = (Myclass)owner;
         jl1=new JLabel("测量点编号");
@@ -100,9 +99,7 @@ public class PointAdd extends JDialog implements ActionListener {
             owner.getTree().expandPath(new TreePath(((DefaultMutableTreeNode)
                     this.owner.getTree().getLastSelectedPathComponent()).getPath()));
             owner.getTree().updateUI();    //刷新以显示该树模型
-            LOGGER.debug("将新建的测量点名称添加到树模型中");
             this.setVisible(false);
-            LOGGER.debug("刷新显示树模型");
         } else if (e.getSource() == jb2) {
             this.setVisible(false);
         }
