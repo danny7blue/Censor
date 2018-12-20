@@ -2,16 +2,19 @@ package network;
 import database.Test;
 import org.apache.log4j.Logger;
 
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.net.*;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.IOException;
-import java.net.InetAddress;
+
 import database.TestMain;
 import ui.MyDefaultTreeCellRenderer;
 import ui.Myclass;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
 public class Server_Xian{
     static ServerSocket serverSocket = null;
     static Socket socket = null;
@@ -34,89 +37,123 @@ public class Server_Xian{
 
     }
     //处理输入流
-    public boolean socket_listen(){
-        LOGGER.info("socket开启监听...");
+    public  void Socket_ini(){
 //        send_message Send=new send_message();//实例发送短信
 //        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 //        Boolean result = false;
 //        int count = 0;
-
-//        try {
-//            Thread.sleep(3 * 1000); //设置暂停的时间 5 秒
-//        }catch (Exception e){
-//            e.printStackTrace();
-//        }
-        try {//获取本机IP地址,并发送短信
+        //获取本机IP地址,并发送短信
 
 //            ia = ia.getLocalHost();
 //
 //            String lip = ia.getHostAddress();
 //            Send.data=lip;//ip地址
-            //Send.sendSms();//发送短信
-            //建立连接
-            System.out.println(link_value);
-            myclass.getTree().setCellRenderer(new MyDefaultTreeCellRenderer(link_value));
-            TestMain read_port = new TestMain();//实例读端口
-            String Key = "Port";
-            String ports = read_port.GetValueBykey(Key);//读出数据库的端口号
-            port = (int) Short.parseShort(ports);
-            //port=(int)Short.parseShort(TestMain.GetValueBykey(send_message.ports));//获取数据库的端口
+        //Send.sendSms();//发送短信
+        //建立连接
+        System.out.println(link_value);
+        myclass.getTree().setCellRenderer(new MyDefaultTreeCellRenderer(link_value));
+        TestMain read_port = new TestMain();//实例读端口
+        String Key = "Port";
+        String ports = read_port.GetValueBykey(Key);//读出数据库的端口号
+        port = (int) Short.parseShort(ports);
+        //port=(int)Short.parseShort(TestMain.GetValueBykey(send_message.ports));//获取数据库的端口
+        try {
             serverSocket = new ServerSocket(port);
-            System.out.println(port);
-            socket = serverSocket.accept();
-            link_value = true;
-            System.out.println(link_value);
-            myclass.getTree().setCellRenderer(new MyDefaultTreeCellRenderer(link_value));
-            System.out.println(("connect successful!"));//输出“connect successful!”
-            LOGGER.debug("连接成功...");
-            is = socket.getInputStream();
-            os = socket.getOutputStream();
+        } catch (IOException e) {
+            System.out.println("打开端口异常");
+            e.printStackTrace();
 
-            while (true){//for(int i = 0;i <4;i++){
-                if(is.available()>0){
-                    System.out.println(link_value=true);
-                    myclass.getTree().setCellRenderer(new MyDefaultTreeCellRenderer(link_value));
-                }else {
-                    System.out.println(link_value=false);
-                    myclass.getTree().setCellRenderer(new MyDefaultTreeCellRenderer(link_value));
+        }
+        System.out.println(port);
+    }
+    public void socket_listen(){
+        while(true) {
+            LOGGER.info("socket开启监听...");
+            Socket_ini();
+            try {
+                socket = serverSocket.accept();
+                link_value = true;
+                myclass.getTree().setCellRenderer(new MyDefaultTreeCellRenderer(link_value));
+                System.out.println(("connect successful!"));//输出“connect successful!”
+                LOGGER.debug("连接成功...");
+
+            } catch (IOException e) {
+                System.out.println("socketaccept异常");
+//                e.printStackTrace();
+                link_value = false;
+                myclass.getTree().setCellRenderer(new MyDefaultTreeCellRenderer(link_value));
+            }
+            try {
+                is = socket.getInputStream();
+            } catch (IOException e) {
+                System.out.println("socket is异常");
+                e.printStackTrace();
+                link_value = false;
+                myclass.getTree().setCellRenderer(new MyDefaultTreeCellRenderer(link_value));
+            }
+            try {
+                os = socket.getOutputStream();
+            } catch (IOException e) {
+                System.out.println("socket os异常");
+                e.printStackTrace();
+                link_value = false;
+                myclass.getTree().setCellRenderer(new MyDefaultTreeCellRenderer(link_value));
+            }
+            boolean a=true;//判断是否执行循环
+            int x=0;
+            while (a) {
+//                int n=0;
+//                byte[] b = new byte[1024];//定义字符串b
+//                try {
+//                   is.read(b,1024,n);
+//                   System.out.println(n+"aa");
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//                if(n==0){
+//                    try {
+//                        Thread.sleep(1000);
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
+//                    x++;
+//                    System.out.println(x);
+//                }else {
+//                    SocketDeal(b,n);
+//                    System.out.println("AA");
+//                }
+//
+//                if(x==3){
+//                    x=0;
+//                    link_value=sendData();
+//                }
+                SocketDeal();
+                    try {
+                    Thread.sleep(25000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
-
-                    SocketDeal();//处理socket数据流
-                    System.out.println(link_value=true);
-                    myclass.getTree().setCellRenderer(new MyDefaultTreeCellRenderer(link_value));
-
-
-                for(int i = 0;i <11;i++){  //10分钟
-                    Thread.sleep(1000);//1s
-                    if(i<10){
-                        System.out.println(link_value);
-//                        sendData();
-                        LOGGER.debug("发送心跳包成功...");
-                        //link_value =true;
-                        //myclass.getTree().setCellRenderer(new MyDefaultTreeCellRenderer(link_value));
-                    }else {
-                        link_value =false;
+                link_value=sendData();
+                    if (link_value == false) {
+                        link_value = false;
                         myclass.getTree().setCellRenderer(new MyDefaultTreeCellRenderer(link_value));
-                        System.out.println(link_value);
-                        LOGGER.error("数据接收超时...");
+                        a=false;//判断是否执行循环
                         break;
+                    } else {
+                        link_value = true;
+                        myclass.getTree().setCellRenderer(new MyDefaultTreeCellRenderer(link_value));
                     }
 
-                }
+
+//                try {
+//                    socket.sendUrgentData(0xFF);
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                link_value = false;
+//                myclass.getTree().setCellRenderer(new MyDefaultTreeCellRenderer(link_value));
+//                }
+
             }
-
-//
-//            while (true){
-//                Thread.sleep(2000);
-//                sendData();
-//            }
-
-        }catch (Exception e){
-            e.printStackTrace();
-            link_value =false;
-            myclass.getTree().setCellRenderer(new MyDefaultTreeCellRenderer(link_value));
-            System.out.println(link_value);
-            LOGGER.error("socket连接失败...");
             try {
                 os.close();
                 is.close();
@@ -125,25 +162,7 @@ public class Server_Xian{
                 link_value =false;
                 myclass.getTree().setCellRenderer(new MyDefaultTreeCellRenderer(link_value));
                 System.out.println(link_value);
-                LOGGER.debug("关闭socket...");
-            } catch (Exception a) {
-                a.printStackTrace();
-            }
-            Myclass  m1 = new Myclass ();
-            int[] heavydata=new int[100];
-            boolean value = false;
-            Server_Xian soc = new Server_Xian(m1);
-            value = soc.socket_listen();
-            LOGGER.debug("重新开启socket...");
-        }finally {
-            try {
-//                os.close();
-//                is.close();
-//                socket.close();
-//                serverSocket.close();
-                link_value =false;
-                myclass.getTree().setCellRenderer(new MyDefaultTreeCellRenderer(link_value));
-                System.out.println(link_value);
+                LOGGER.info("关闭socket...");
             } catch (Exception e) {
                 e.printStackTrace();
                 link_value =false;
@@ -152,44 +171,48 @@ public class Server_Xian{
                 LOGGER.error("关闭socket失败...");
             }
         }
-//        myclass.getTree().setCellRenderer(new MyDefaultTreeCellRenderer(link_value));
-        return link_value;
     }
     public  void SocketDeal() {
         LOGGER.info("接收数据流...");
+        int n=0;
+        byte[] b = new byte[1024];//定义字符串b
 //        for(int i = 0;i <4;i++){//for(int i = 0;i <4;i++)
-            byte[] b = new byte[1024];//定义字符串b
             try {
-                int n = is.read(b);//计算读取到的b的长=度;
+                n = is.read(b);//计算读取到的b的长=度;
                 System.out.println("客户端发送的内容为" + new String(b, 0, n));//显示
-                dnp(b, n);//数据解析
-                LOGGER.debug("数据解析中...");
+                if(n>11){
+                    dnp(b, n);//数据解析
+                    LOGGER.debug("数据解析中...");
+                }
             } catch (IOException e) {
                 e.printStackTrace();
                 LOGGER.error("读取数据流失败...");
             }
     }
-
     //方法，数据发送处理
-    public void sendData(){
+    public boolean sendData(){
         LOGGER.info("发送心跳包...");
-        try {
-            ia = ia.getLocalHost();
-
-            IP_A = ia.getHostAddress();
-        }catch (Exception e){
-            e.printStackTrace();
-        }
 
         byte lipp[] = new byte[16];
-        String[] lip_split = IP_A.split("\\.");//去掉IP地址的间隔“.”
-        for (String c : lip_split) {
-            System.out.print(c + " ");  //输出以空格间隔的ip
+        String[] lip_split=null;//去掉IP地址的间隔“.”
+        try {
+            ia = ia.getLocalHost();
+            IP_A = ia.getHostAddress();
+            lip_split = IP_A.split("\\.");
+
+            for (String c : lip_split) {
+                System.out.print(c + " ");  //输出以空格间隔的ip
+            }
+            LOGGER.debug("获取本地IP地址成功:" + IP_A);
+            System.out.println();//隔一行
+        } catch (UnknownHostException e) {
+            System.out.println("获取本地ip失败");
+            e.printStackTrace();
+
         }
-        LOGGER.debug("获取本地IP地址成功:" + IP_A);
-        System.out.println();//隔一行
-        //lipp=sendData(lip_split);
-        //                    lipp = sendData(lip_split);//送到方法处理发送的数据
+
+//        lipp=sendData(lip_split);
+//        lipp = sendData(lip_split);//送到方法处理发送的数据
 
         byte lippi[] = new byte[17];//定义输出数组的长度
         //定义头文件
@@ -233,22 +256,29 @@ public class Server_Xian{
         lippi[15] =(byte) ((crc_2>>8)&0xff);//crc处理高位
         lippi[16] =(byte) (crc_2&0xff);//crc处理低位
         LOGGER.debug("计算第二个CRC:"+crc_2);
+
         try {
             os.write(lippi);
             link_value =true;
             myclass.getTree().setCellRenderer(new MyDefaultTreeCellRenderer(link_value));
             LOGGER.debug("发送成功。");
         } catch (IOException e) {
-            //e.printStackTrace();
+            LOGGER.debug("发送失败。");
+            e.printStackTrace();
             link_value =false;
             myclass.getTree().setCellRenderer(new MyDefaultTreeCellRenderer(link_value));
-            //sendData();
-            try {
-                os.close();
-                os.write(lippi);
-            }catch (IOException A){
-                A.printStackTrace();
-            }
+//            sendData();
+//            try {
+//                os.close();
+//                os.write(lippi);
+//                System.out.println(link_value=true);
+//                myclass.getTree().setCellRenderer(new MyDefaultTreeCellRenderer(link_value));
+//                LOGGER.debug("重新发送。");
+//            }catch (IOException A){
+//                A.printStackTrace();
+//                System.out.println(link_value=false);
+//                myclass.getTree().setCellRenderer(new MyDefaultTreeCellRenderer(link_value));
+//            }
         }
 
 //        try {
@@ -261,6 +291,7 @@ public class Server_Xian{
 //        }catch (Exception e){
 //                    e.printStackTrace();
 //                }
+            return link_value;
     }
     //方法，数据接收解析，数组
     private static void dnp(byte[] rev_data,int n) {  //rev_data为接收的数组，n为该数组的长度
@@ -318,8 +349,8 @@ public class Server_Xian{
         }
         try {
 
-            data_a.insertMeasurePointData(strdata); //往数据库插
-            LOGGER.debug("插入数据中... ");
+//            data_a.insertMeasurePointData(strdata); //往数据库插
+//            LOGGER.debug("插入数据中... ");
         } catch (Exception e) {
             e.printStackTrace();
             LOGGER.error("往数据库插入数据失败...");
@@ -347,9 +378,4 @@ public class Server_Xian{
     }
 
 
-//try{
-//        socket.sendUrgentData(0xFF);
-//    }catch(Exception ex){
-//        reconnect();
-//    }
 }
